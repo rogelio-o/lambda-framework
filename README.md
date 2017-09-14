@@ -1,4 +1,4 @@
-# Lambda Framework
+# Lambda Framework
 
 A framework to create serverless web applications in AWS Lambda. It is based
 on Express Framework.
@@ -14,7 +14,7 @@ on Express Framework.
 - [ ] Database integration
 - [ ] Extensible with modules
 
-## How to use it?
+## How to use it?
 
 TODO
 
