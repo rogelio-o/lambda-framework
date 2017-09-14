@@ -1,7 +1,7 @@
 import defaultConfiguration from './configuration/default-configuration'
 
 export interface IApp {
-    init(settings: object): void
+    init(settings?: object): void
     enable(key: string): void
     disable(key: string): void
     set(key: string, value: any): void
@@ -12,7 +12,11 @@ export class App implements IApp {
 
   private _settings: object
 
-  init(settings: object):void {
+  constructor() {
+    this._settings = {}
+  }
+
+  init(settings?: object):void {
     this._initDefaultConfiguration(settings);
   }
 
