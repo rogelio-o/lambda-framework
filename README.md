@@ -4,7 +4,7 @@ on Express Framework.
 
 ## Features
 
-- [ ] Configurable
+- [X] Configurable
 - [ ] HTTP requests routing
 - [ ] Other events requests routing
 - [ ] HTTP helpers (redirection, caching, etc)
