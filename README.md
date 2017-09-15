@@ -5,7 +5,7 @@ on Express Framework.
 
 ## Features
 
-- [X] Configurable
+- [x] Configurable
 - [ ] HTTP requests routing
 - [ ] Other events requests routing
 - [ ] HTTP helpers (redirection, caching, etc)
@@ -13,6 +13,7 @@ on Express Framework.
 - [ ] Error handling
 - [ ] Database integration
 - [ ] Extensible with modules
+- [ ] res.sendFile and res.download from S3 bucket to send files as response
 
 ## How to use it?
 
