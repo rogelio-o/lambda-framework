@@ -2,15 +2,41 @@ import IHttpRequest from './../types/http-request'
 
 export default class HttpRequest implements IHttpRequest {
 
-  protocol: string
-  secure: boolean
-  ip: string
-  body: object|string
-  path: string
-  hostname: string
-  fresh: boolean
-  stale: boolean
-  xhr: boolean
+  get protocol(): string {
+    return 'TODO'; // TODO
+  }
+
+  get secure(): boolean {
+    return this.protocol === 'https';
+  }
+
+  get ip(): string {
+    return 'TODO'; // TODO
+  }
+
+  get body(): object|string {
+    return 'TODO'; // TODO
+  }
+
+  get path(): string {
+    return 'TODO'; // TODO
+  }
+
+  get hostname(): string {
+    return 'TODO'; // TODO
+  }
+
+  get fresh(): boolean {
+    return false; // TODO
+  }
+
+  get stale(): boolean {
+    return !this.fresh;
+  }
+
+  get xhr(): boolean {
+    return false; // TODO
+  }
 
   constructor() {
 
