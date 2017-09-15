@@ -1,14 +1,7 @@
+import IApp from './types/app'
 import defaultConfiguration from './configuration/default-configuration'
 
-export interface IApp {
-    init(settings?: object): void
-    enable(key: string): void
-    disable(key: string): void
-    set(key: string, value: any): void
-    get(key: string): any
-}
-
-export class App implements IApp {
+export default class App implements IApp {
 
   private _settings: object
 

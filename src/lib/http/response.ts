@@ -1,20 +1,4 @@
-export interface IHttpResponse {
-  status(code: number): IHttpResponse
-  send(body: string|number|boolean|object|Buffer): void
-  json(obj: string|number|boolean|object): void
-  jsonp(obj: string|number|boolean|object): void
-  sendStatus(code: number): void
-  contentType(type: string): IHttpResponse
-  format(obj: Map<string, Function>): IHttpResponse
-  header(field: string, value: string | Array<string>): IHttpResponse
-  header(obj: object): IHttpResponse
-  header(field: string): string
-  clearCookie(name: string, options?: object): IHttpResponse
-  cookie(name: string, value: string|object, options?: object): IHttpResponse
-  location(url: string): IHttpResponse
-  redirect(url: string): void
-  render(view: string, options?: object, callback?: Function): void
-}
+import IHttpResponse from './../types/http-response'
 
 function stringify(value, replacer, spaces) {
   // v8 checks arguments.length for optimizing simple call
@@ -24,6 +8,58 @@ function stringify(value, replacer, spaces) {
     : JSON.stringify(value);
 }
 
-export class HttpResponse implements IHttpResponse {
+export default class HttpResponse implements IHttpResponse {
+
+  status(code: number): IHttpResponse {
+    return this;
+  }
+
+  send(body: string|number|boolean|object|Buffer): void {
+
+  }
+
+  json(obj: string|number|boolean|object): void {
+
+  }
+
+  jsonp(obj: string|number|boolean|object): void {
+
+  }
+
+  sendStatus(code: number): void {
+
+  }
+
+  contentType(type: string): IHttpResponse {
+    return this;
+  }
+
+  format(obj: Map<string, Function>): IHttpResponse {
+    return this;
+  }
+
+  header(field: string|object, value?: string | Array<string>): IHttpResponse {
+    return this;
+  }
+
+  clearCookie(name: string, options?: object): IHttpResponse {
+    return this;
+  }
+
+  cookie(name: string|object, value?: string|object, options?: object): IHttpResponse {
+    return this;
+  }
+
+  location(url: string): IHttpResponse {
+    return this;
+  }
+
+  redirect(url: string): void {
+
+  }
+
+  render(view: string, options?: object, callback?: Function): void {
+
+  }
 
 }
