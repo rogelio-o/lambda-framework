@@ -1,5 +1,5 @@
 export default interface IHttpRequest {
-  
+
   /**
    * The protocol of the incomig request. Can be http or https.
    */
@@ -59,7 +59,7 @@ export default interface IHttpRequest {
    * Return the mime type of the given ones with the best fit
    * according to the incoming request.
    *
-   * @param  {string | Array<string>} type A Content-Type or
+   * @param  {string|Array<string>} type A Content-Type or
    *                                       a collection of them.
    * @return {string}      The Content-Type with the best fit.
    *                       If there is no one, the method will return null.
@@ -70,7 +70,7 @@ export default interface IHttpRequest {
    * Return the encoding of the given ones with the best fit
    * according to the incoming request.
    *
-   * @param  {string | Array<string>} encoding A encoding or
+   * @param  {string|Array<string>} encoding A encoding or
    *                                           a collection of them.
    * @return {string}      The encoding with the best fit.
    *                       If there is no one, the method will return null.
@@ -81,7 +81,7 @@ export default interface IHttpRequest {
    * Return the charset of the given ones with the best fit
    * according to the incoming request.
    *
-   * @param  {string | Array<string>} charset A charset or
+   * @param  {string|Array<string>} charset A charset or
    *                                          a collection of them.
    * @return {string}      The charset with the best fit.
    *                       If there is no one, the method will return null.
@@ -92,7 +92,7 @@ export default interface IHttpRequest {
    * Return the languages of the given ones with the best fit
    * according to the incoming request.
    *
-   * @param  {string | Array<string>} language A language or
+   * @param  {string|Array<string>} language A language or
    *                                           a collection of them.
    * @return {string}      The language with the best fit.
    *                       If there is no one, the method will return null.
