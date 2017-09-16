@@ -1,6 +1,11 @@
 export default interface IHttpResponse {
 
   /**
+   * The response HTTP status code.
+   */
+  statusCode: number;
+
+  /**
    * Set the status `code` of the response.
    *
    * @param  {number}        code The new status code.

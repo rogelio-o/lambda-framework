@@ -9,6 +9,7 @@ on Express Framework.
 - [ ] HTTP requests routing
 - [ ] Other events requests routing
 - [ ] HTTP helpers (redirection, caching, etc)
+- [ ] Static files from S3 bucket
 - [ ] View system with template engines
 - [ ] Error handling
 - [ ] Database integration

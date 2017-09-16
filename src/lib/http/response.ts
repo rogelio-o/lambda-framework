@@ -10,6 +10,12 @@ function stringify(value, replacer, spaces) {
 
 export default class HttpResponse implements IHttpResponse {
 
+  private _statusCode: number
+
+  get statusCode(): number {
+    return this._statusCode;
+  }
+
   status(code: number): IHttpResponse {
     return this;
   }
@@ -38,7 +44,7 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  header(field: string|object, value?: string | Array<string>): IHttpResponse {
+  header(field: string|object, value?: string | Array<string>): IHttpResponse | string {
     return this;
   }
 
@@ -46,7 +52,7 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  cookie(name: string|object, value?: string|object, options?: object): IHttpResponse {
+  cookie(name: string|object, value?: string|object, options?: object): IHttpResponse | string{
     return this;
   }
 

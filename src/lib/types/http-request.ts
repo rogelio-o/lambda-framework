@@ -1,3 +1,5 @@
+import { APIGatewayEvent } from 'aws-lambda'
+
 export default interface IHttpRequest {
 
   /**
@@ -26,6 +28,11 @@ export default interface IHttpRequest {
   path: string
 
   /**
+   * The incoming request HTTP method (GET, POST, PUT, DELETE,...)
+   */
+  method: string
+
+  /**
    * The "Host" header field.
    */
   hostname: string
@@ -46,6 +53,21 @@ export default interface IHttpRequest {
    * Check if the request was an _XMLHttpRequest_.
    */
   xhr: boolean
+
+  /**
+   * The incoming request headers.
+   */
+  headers: { [name: string]: string }
+
+  /**
+   * All the params of the incoming request (query, path variables and body).
+   */
+  params: { [name: string]: any }
+
+  /**
+   * The original AWS event of the incoming request.
+   */
+  event: APIGatewayEvent
 
   /**
    * Return request header.
@@ -113,9 +135,9 @@ export default interface IHttpRequest {
   /**
    * Check if the incoming request has the "Content-Type" header and
    * if the header value is the given mime type.
-   * @param  {string}  type The mime type we want to check.
+   * @param  {string|Array<string>}  type The mime type we want to check.
    * @return {boolean}      The result of the checking.
    */
-  is(type: string): boolean
+  is(type: string|Array<string>): boolean
 
 }
