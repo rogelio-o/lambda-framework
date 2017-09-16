@@ -1,3 +1,5 @@
+import IHttpError from './http-error'
+
 export default interface IHttpResponse {
 
   /**
@@ -23,16 +25,9 @@ export default interface IHttpResponse {
   /**
    * Send a JSON response.
    *
-   * @param {string|number|boolean|object} obj The JSON response.
+   * @param {object} obj The JSON response.
    */
-  json(obj: string|number|boolean|object): void
-
-  /**
-   * Send JSON response with JSONP callback support.
-   *
-   * @param {string|number|boolean|object} obj The JSON response.
-   */
-  jsonp(obj: string|number|boolean|object): void
+  json(obj: object): void
 
   /**
    * Send given HTTP status code.
@@ -81,7 +76,7 @@ export default interface IHttpResponse {
    * @param  {Map<string, Function>} obj           The callbacks object.
    * @return {IHttpResponse}
    */
-  format(obj: Map<string, Function>): IHttpResponse
+  format(obj: {[name: string]: Function}): IHttpResponse
 
   /**
    * If `field` is a string and `value` exists or `field` is an object:
@@ -92,9 +87,27 @@ export default interface IHttpResponse {
    *
    * @param  {string|object} field
    * @param  {string|Array<string>}
-   * @return {IHttpResponse|string}
+   * @return {IHttpResponse|string|Array<string>}
    */
-  header(field: string|object, value?: string | Array<string>): IHttpResponse | string
+  header(field: string|object, value?: string | Array<string>): IHttpResponse | string | Array<string>
+
+/**
+ * Append to a existing header a new value.
+ *
+ * @param  {string}        field
+ * @param  {string|Array<string>} value
+ * @return {IHttpResponse}
+ */
+  appendHeader(field: string, value: string | Array<string>): IHttpResponse
+
+  /**
+   * Remove the `field` header from the headers that
+   * will be send as response.
+   *
+   * @param  {string}        field
+   * @return {IHttpResponse}
+   */
+  removeHeader(field: string): IHttpResponse
 
   /**
    * Clear cookie `name`.
@@ -157,5 +170,14 @@ export default interface IHttpResponse {
    *                            rendering is finished.
    */
   render(view: string, options?: object, callback?: Function): void
+
+  /**
+   * When a exception happens, the error is set with the exception
+   * to be returned in the response.
+   *
+   * @param  {IHttpError}    error
+   * @return {IHttpResponse}
+   */
+  setError(error: IHttpError): IHttpResponse
 
 }

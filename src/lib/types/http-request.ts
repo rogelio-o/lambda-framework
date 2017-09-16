@@ -70,6 +70,14 @@ export default interface IHttpRequest {
   event: APIGatewayEvent
 
   /**
+   * Next handler to be executed.
+   *
+   * @param  {string} key
+   * @return {string}
+   */
+  next: Function
+
+  /**
    * Return request header.
    *
    * @param  {string} key Header key.

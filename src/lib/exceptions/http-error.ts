@@ -1,4 +1,6 @@
-export default class HttpError extends Error {
+import IHttpError from './../types/http-error'
+
+export default class HttpError extends Error implements IHttpError {
 
   private _statusCode: number;
   private _parent: Error;

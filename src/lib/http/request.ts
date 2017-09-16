@@ -7,6 +7,7 @@ import fresh from 'fresh'
 import { is  as typeis } from 'typeis'
 import accepts from 'accepts'
 import HttpRouting from './../types/http-routing'
+import { merge } from 'utils-merge'
 
 export default class HttpRequest implements IHttpRequest {
 
@@ -16,6 +17,7 @@ export default class HttpRequest implements IHttpRequest {
   private _response: IHttpResponse
 
   public body: object|string
+  public next: Function
 
   constructor(app: IApp, event: APIGatewayEvent, routing: HttpRouting) {
     this._app = app;
@@ -92,7 +94,7 @@ export default class HttpRequest implements IHttpRequest {
     const query = this._event.queryStringParameters || {};
     const stageVariables = this._event.stageVariables || {};
 
-    return Object.assign({}, pathParams, body, query, stageVariables);
+    return merge({}, pathParams, body, query, stageVariables);
   }
 
   get event(): APIGatewayEvent {
