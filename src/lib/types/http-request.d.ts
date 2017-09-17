@@ -1,3 +1,4 @@
+import IHTtpResponse from './http-response'
 import { APIGatewayEvent } from 'aws-lambda'
 
 export default interface IHttpRequest {
@@ -36,18 +37,6 @@ export default interface IHttpRequest {
    * The "Host" header field.
    */
   hostname: string
-
-  /**
-   * Check if the request is fresh. This is if the Last-Modified and/or
-   * the ETag headers for the resource still match.
-   */
-  fresh: boolean
-
-  /**
-   * Check if the request is stale. This is if the Last-Modified and/or
-   * the ETag headers for the resource has changed.
-   */
-  stale: boolean
 
   /**
    * Check if the request was an _XMLHttpRequest_.
@@ -147,5 +136,20 @@ export default interface IHttpRequest {
    * @return {boolean}      The result of the checking.
    */
   is(type: string|Array<string>): boolean
+
+  /**
+   * Check if the request is fresh looking the response data. This is if
+   * the Last-Modified and/or the ETag headers for the resource still match.
+   *
+   * @param  {IHTtpResponse} response [description]
+   * @return {boolean}                [description]
+   */
+  fresh(response: IHTtpResponse): boolean
+
+  /**
+   * Check if the request is stale looking the response data. This is if
+   * the Last-Modified and/or the ETag headers for the resource has changed.
+   */
+  stale(response: IHTtpResponse): boolean
 
 }

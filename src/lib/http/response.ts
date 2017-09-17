@@ -127,7 +127,7 @@ export default class HttpResponse implements IHttpResponse {
     }
 
     // freshness
-    if (this._request.fresh) this._statusCode = 304; // TODO make fresh as a funciton with response as parameter?
+    if (this._request.fresh(this)) this._statusCode = 304;
 
     // strip irrelevant headers
     if (204 === this.statusCode || 304 === this.statusCode) {

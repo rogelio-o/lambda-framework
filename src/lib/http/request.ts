@@ -14,7 +14,6 @@ export default class HttpRequest implements IHttpRequest {
   private _app: IApp
   private _event: APIGatewayEvent
   private _pathParameters: { [name: string]: string }
-  private _response: IHttpResponse
 
   public body: object|string
   public next: Function
@@ -58,29 +57,6 @@ export default class HttpRequest implements IHttpRequest {
 
   get hostname(): string {
     return this.header('Host');
-  }
-
-  get fresh(): boolean {
-    const method = this.method;
-    const res = this._response;
-    const status = res.statusCode;
-
-    // GET or HEAD for weak freshness validation only
-    if ('GET' !== method && 'HEAD' !== method) return false;
-
-    // 2xx or 304 as per rfc2616 14.26
-    if ((status >= 200 && status < 300) || 304 === status) {
-      return fresh(this.headers, {
-        'etag': res.header('ETag'),
-        'last-modified': res.header('Last-Modified')
-      })
-    }
-
-    return false;
-  }
-
-  get stale(): boolean {
-    return !this.fresh;
   }
 
   get xhr(): boolean {
@@ -136,6 +112,28 @@ export default class HttpRequest implements IHttpRequest {
 
   is(types: string|Array<string>): boolean {
     return typeis(this.header('content-type'), types);
+  }
+
+  fresh(response: IHttpResponse): boolean {
+    const method = this.method;
+    const status = response.statusCode;
+
+    // GET or HEAD for weak freshness validation only
+    if ('GET' !== method && 'HEAD' !== method) return false;
+
+    // 2xx or 304 as per rfc2616 14.26
+    if ((status >= 200 && status < 300) || 304 === status) {
+      return fresh(this.headers, {
+        'etag': response.header('ETag'),
+        'last-modified': response.header('Last-Modified')
+      })
+    }
+
+    return false;
+  }
+
+  stale(response: IHttpResponse): boolean {
+    return !this.fresh(response);
   }
 
 }
