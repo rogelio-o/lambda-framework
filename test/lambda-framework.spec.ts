@@ -4,7 +4,7 @@ import defaultConfiguration from '../src/lib/configuration/default-configuration
 import * as Chai from 'chai'
 
 /**
- * Test for Calculator
+ * Test for App.
  */
 describe('App', () => {
   let app
