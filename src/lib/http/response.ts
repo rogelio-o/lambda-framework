@@ -98,7 +98,7 @@ export default class HttpResponse implements IHttpResponse {
 
       // reflect this in content-type
       if (typeof type === 'string') {
-        this.header('Content-Type', setCharset(type, 'utf-8'));
+        this.putHeader('Content-Type', setCharset(type, 'utf-8'));
       }
     }
 
@@ -114,7 +114,7 @@ export default class HttpResponse implements IHttpResponse {
       }
 
       len = buff.length;
-      this.header('Content-Length', len);
+      this.putHeader('Content-Length', len);
     }
 
     // populate ETag
@@ -122,7 +122,7 @@ export default class HttpResponse implements IHttpResponse {
     var generateETag = len !== undefined && this._app.get(Configuration.ETAG_FN);
     if (typeof generateETag === 'function' && !this.header('ETag')) {
       if ((etag = generateETag(buff, encoding))) {
-        this.header('ETag', etag);
+        this.putHeader('ETag', etag);
       }
     }
 
@@ -149,7 +149,7 @@ export default class HttpResponse implements IHttpResponse {
   json(obj: object): void {
     // content-type
     if (!this.header('Content-Type')) {
-      this.header('Content-Type', 'application/json');
+      this.putHeader('Content-Type', 'application/json');
     }
 
     this._end(obj);
@@ -167,7 +167,7 @@ export default class HttpResponse implements IHttpResponse {
   contentType(type: string): IHttpResponse {
     const ct = normalizeType(type);
 
-    this.header('Content-Type', ct);
+    this.putHeader('Content-Type', ct);
 
     return this;
   }
@@ -183,7 +183,7 @@ export default class HttpResponse implements IHttpResponse {
       : false;
 
     if (key) {
-      this.header('Content-Type', normalizeType(key));
+      this.putHeader('Content-Type', normalizeType(key));
       obj[key](this._request, this, next);
     } else if (fn) {
       fn();
@@ -197,22 +197,22 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  header(field: string|object, value?: string | Array<string>): IHttpResponse | string | Array<string> {
-    if(null != value) {
-      if(typeof field === 'string') {
-        this._headers[field] = value;
-      } else {
-        // Nothing to do
-      }
-    } else {
-      if(typeof field === 'string') {
-        return this._headers[field];
-      } else {
-        for (var key in field) {
-          this.header(key, field[key]);
-        }
-      }
+  putHeader(field: string, value: string | Array<string>): IHttpResponse {
+    this._headers[field] = value;
+
+    return this;
+  }
+
+  putHeaders(field: object): IHttpResponse {
+    for (var key in field) {
+      this.putHeader(key, field[key]);
     }
+
+    return this;
+  }
+
+  header(field: string): string | Array<string> {
+    return this._headers[field];
   }
 
   appendHeader(field: string, value: string | Array<string>): IHttpResponse {
@@ -222,20 +222,20 @@ export default class HttpResponse implements IHttpResponse {
       // concat the new and prev vals
       if(Array.isArray(prev)) {
         if(Array.isArray(value)) {
-          this.header(field, prev.concat(value));
+          this.putHeader(field, prev.concat(value));
         } else {
-          this.header(field, prev.concat([value]));
+          this.putHeader(field, prev.concat([value]));
         }
-      } else if(typeof prev === 'string') { // FIXME remove "if" when fix header function
+      } else {
         if(Array.isArray(value)) {
-          this.header(field, [prev].concat(value));
+          this.putHeader(field, [prev].concat(value));
         } else {
-          this.header(field, [prev].concat([value]));
+          this.putHeader(field, [prev].concat([value]));
         }
       }
 
     } else {
-      this.header(field, value)
+      this.putHeader(field, value)
     }
 
     return this;
@@ -250,12 +250,12 @@ export default class HttpResponse implements IHttpResponse {
   clearCookie(name: string, options?: object): IHttpResponse {
     var opts = merge({ expires: new Date(1), path: '/' }, options);
 
-    this.cookie(name, '', opts);
+    this.addCookie(name, '', opts);
 
     return this;
   }
 
-  cookie(name: string|object, value?: string|object, options?: object): IHttpResponse | string {
+  addCookie(name: string, value: string|object, options?: object): IHttpResponse {
     const opts = merge({}, options);
     const secret = this._app.get(Configuration.COOKIE_SECRET);
     const signed = opts.signed;
@@ -286,6 +286,24 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
+  addCookies(obj: object, options?: object): IHttpResponse {
+    for (var key in obj) {
+      this.addCookie(key, obj[key]);
+    }
+
+    return this;
+  }
+
+  cookie(name: string): string {
+    const cookiesHeader = this.header('Set-Cookie');
+
+    const cookies = cookie.parse(Array.isArray(cookiesHeader) ?
+      cookiesHeader.join('; ') : cookiesHeader
+    );
+
+    return cookies[name];
+  }
+
   location(url: string): IHttpResponse {
     let loc = url;
 
@@ -295,7 +313,7 @@ export default class HttpResponse implements IHttpResponse {
     }
 
     // set location
-    this.header('Location', encodeUrl(loc));
+    this.putHeader('Location', encodeUrl(loc));
 
     return this;
   }
@@ -324,7 +342,7 @@ export default class HttpResponse implements IHttpResponse {
 
     // Respond
     this._statusCode = status;
-    this.header('Content-Length', Buffer.byteLength(body).toString());
+    this.putHeader('Content-Length', Buffer.byteLength(body).toString());
 
     if (this._request.method === 'HEAD') {
       this._end();

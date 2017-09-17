@@ -79,25 +79,38 @@ export default interface IHttpResponse {
   format(obj: {[name: string]: Function}): IHttpResponse
 
   /**
-   * If `field` is a string and `value` exists or `field` is an object:
-   * Set header `field` to `val`, or pass an object of header fields.
+   * Set header `field` to `val`.
    *
-   * If `field` is a string and `value` does not exists:
+   * @param  {string} field
+   * @param  {string|Array<string>}
+   * @return {IHttpResponse}
+   */
+  putHeader(field: string, value: string | Array<string>): IHttpResponse
+
+  /**
+   * Set each header indicated by the key of `object` to the value indicated
+   * by the value of the key.
+   *
+   * @param  {object}        field
+   * @return {IHttpResponse}
+   */
+  putHeaders(field: object): IHttpResponse
+
+  /**
    * Return the value of the header `field`.
    *
-   * @param  {string|object} field
-   * @param  {string|Array<string>}
-   * @return {IHttpResponse|string|Array<string>}
+   * @param  {string} field
+   * @return {string}
    */
-  header(field: string|object, value?: string | Array<string>): IHttpResponse | string | Array<string>
+  header(field: string): string | Array<string>
 
-/**
- * Append to a existing header a new value.
- *
- * @param  {string}        field
- * @param  {string|Array<string>} value
- * @return {IHttpResponse}
- */
+  /**
+  * Append to a existing header a new value.
+  *
+  * @param  {string}        field
+  * @param  {string|Array<string>} value
+  * @return {IHttpResponse}
+  */
   appendHeader(field: string, value: string | Array<string>): IHttpResponse
 
   /**
@@ -119,18 +132,32 @@ export default interface IHttpResponse {
   clearCookie(name: string, options?: object): IHttpResponse
 
   /**
-   * If `name` and `value` exist:
    * Set cookie `name` to `value`, with the given `options`.
    *
-   * If `name` exists and `value` does not exist:
-   * Get the value of the cookie `name`.
-   *
-   * @param  {string|object} name
+   * @param  {string}        name
    * @param  {string|object} value
    * @param  {object}        options
-   * @return {IHttpResponse|string}
+   * @return {IHttpResponse}
    */
-  cookie(name: string|object, value?: string|object, options?: object): IHttpResponse | string
+  addCookie(name: string, value: string|object, options?: object): IHttpResponse
+
+  /**
+   * Set each cookie indicated by the key of `object` to the value indicated
+   * by the value of the key.
+   *
+   * @param  {object}        name
+   * @param  {object}        options
+   * @return {IHttpResponse}
+   */
+  addCookies(name: object, options?: object): IHttpResponse
+
+  /**
+   * Get the value of the cookie `name`.
+   *
+   * @param  {string} name
+   * @return {string}
+   */
+  cookie(name: string): string
 
   /**
    * Set the location header to `url`.
