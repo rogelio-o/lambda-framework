@@ -9,7 +9,7 @@
     "url": "https://github.com/rogelio-o/lambda-framework.git"
   },
   "scripts": {
-    "test": "mocha --recursive dist/test/"
+    "test": "DEBUG=lambda-framework mocha --recursive dist/test/"
   },
   "keywords": [
     "serverless",
@@ -33,6 +33,7 @@
     "encodeurl": "^1.0.1",
     "escape-html": "^1.0.3",
     "fresh": "^0.5.2",
+    "logger": "0.0.1",
     "mime-types": "^2.1.17",
     "path-to-regexp": "^2.0.0",
     "randomstring": "^1.1.5",

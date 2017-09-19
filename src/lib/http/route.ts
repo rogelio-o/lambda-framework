@@ -1,4 +1,4 @@
-import IHttpRouting from '../types/http-routing'
+import IHttpRoute from '../types/http-route'
 import IHttpHandler from '../types/http-handler'
 import { Key, RegExpOptions } from 'path-to-regexp'
 import HttpError from './../exceptions/http-error'
@@ -21,7 +21,7 @@ function decode_param(val) {
   }
 }
 
-export default class HttpRouting implements IHttpRouting {
+export default class HttpRoute implements IHttpRoute {
 
   private _method: string;
   private _regexp: RegExp;

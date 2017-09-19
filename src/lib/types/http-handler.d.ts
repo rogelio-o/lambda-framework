@@ -3,5 +3,5 @@ import IHttpResponse from './http-response'
 import { Context } from 'aws-lambda'
 
 export default interface IHttpHandler {
-    (req: IHttpRequest, res: IHttpResponse): void;
+    (req: IHttpRequest, res: IHttpResponse, next: Function): void;
 }

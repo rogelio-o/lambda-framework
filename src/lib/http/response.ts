@@ -10,7 +10,7 @@ import statuses from 'statuses'
 import encodeUrl from 'encodeurl'
 import escapeHtml from 'escape-html'
 import HttpError from './../exceptions/http-error'
-import { merge } from 'utils-merge'
+import { merge } from './../utils/utils'
 import { sign } from 'cookie-signature'
 import { cookie } from 'cookie'
 
@@ -152,6 +152,11 @@ export default class HttpResponse implements IHttpResponse {
       this.putHeader('Content-Type', 'application/json');
     }
 
+    // content-length
+    if (!this.header('Content-Length')) {
+      this.putHeader('Content-Length', new Buffer(JSON.stringify(obj), 'utf-8').length.toString());
+    }
+
     this._end(obj);
   }
 
@@ -247,14 +252,6 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  clearCookie(name: string, options?: object): IHttpResponse {
-    var opts = merge({ expires: new Date(1), path: '/' }, options);
-
-    this.addCookie(name, '', opts);
-
-    return this;
-  }
-
   addCookie(name: string, value: string|object, options?: object): IHttpResponse {
     const opts = merge({}, options);
     const secret = this._app.get(Configuration.COOKIE_SECRET);
@@ -290,6 +287,14 @@ export default class HttpResponse implements IHttpResponse {
     for (var key in obj) {
       this.addCookie(key, obj[key]);
     }
+
+    return this;
+  }
+
+  clearCookie(name: string, options?: object): IHttpResponse {
+    var opts = merge({ expires: new Date(1), path: '/' }, options);
+
+    this.addCookie(name, '', opts);
 
     return this;
   }

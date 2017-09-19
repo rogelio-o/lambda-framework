@@ -1,7 +1,7 @@
 import IHttpHandler from './http-handler'
 import { Key } from 'path-to-regexp'
 
-export default interface IHttpRouting {
+export default interface IHttpRoute {
   method: string
   regexp: RegExp
   keys: Key[]

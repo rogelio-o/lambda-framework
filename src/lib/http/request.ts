@@ -3,29 +3,34 @@ import IHttpResponse from './../types/http-response'
 import IApp from './../types/app'
 import { APIGatewayEvent } from 'aws-lambda'
 import Configuration from './../configuration/configuration'
-import fresh from 'fresh'
-import { is  as typeis } from 'typeis'
-import accepts from 'accepts'
-import HttpRouting from './../types/http-routing'
-import { merge } from 'utils-merge'
+const fresh = require('fresh')
+const accepts = require('accepts')
+import { merge } from './../utils/utils'
+import HttpRoute from './../types/http-route'
 
 export default class HttpRequest implements IHttpRequest {
 
   private _app: IApp
   private _event: APIGatewayEvent
   private _pathParameters: { [name: string]: string }
+  private _headers: { [name: string]: string }
 
   public body: object|string
   public next: Function
 
-  constructor(app: IApp, event: APIGatewayEvent, routing: HttpRouting) {
+  constructor(app: IApp, event: APIGatewayEvent, route: HttpRoute) {
     this._app = app;
     this._event = event;
-    this._pathParameters = routing.parsePathParameters(event.path);
+    this._pathParameters = route.parsePathParameters(event.path);
+
+    this._headers = {}
+    for(let key in this._event.headers) {
+      this._headers[key.toLowerCase()] = this._event.headers[key]
+    }
   }
 
   get headers(): { [name: string]: string } {
-    return this._event.headers;
+    return this._headers;
   }
 
   get protocol(): string {
@@ -70,7 +75,7 @@ export default class HttpRequest implements IHttpRequest {
     const query = this._event.queryStringParameters || {};
     const stageVariables = this._event.stageVariables || {};
 
-    return merge({}, pathParams, body, query, stageVariables);
+    return merge(pathParams, body, query, stageVariables);
   }
 
   get event(): APIGatewayEvent {
@@ -78,7 +83,7 @@ export default class HttpRequest implements IHttpRequest {
   }
 
   header(key: string): string {
-    return this.headers[key];
+    return this.headers[key.toLowerCase()];
   }
 
   accepts(type: string | Array<string>): string {
@@ -111,7 +116,7 @@ export default class HttpRequest implements IHttpRequest {
   }
 
   is(types: string|Array<string>): boolean {
-    return typeis(this.header('content-type'), types);
+    return typeof this.accepts(types) != 'boolean';
   }
 
   fresh(response: IHttpResponse): boolean {
