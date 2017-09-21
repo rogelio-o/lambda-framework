@@ -1,4 +1,4 @@
-import contentType from 'content-type';
+import { parse, format } from 'content-type';
 
 export function setCharset(type, charset) {
   if (!type || !charset) {
@@ -6,13 +6,13 @@ export function setCharset(type, charset) {
   }
 
   // parse type
-  var parsed = contentType.parse(type);
+  var parsed = parse(type);
 
   // set charset
   parsed.parameters.charset = charset;
 
   // format type
-  return contentType.format(parsed);
+  return format(parsed);
 };
 
 export function merge(...objs: object[]): any {

@@ -76,7 +76,7 @@ export default interface IHttpResponse {
    * @param  {Map<string, Function>} obj           The callbacks object.
    * @return {IHttpResponse}
    */
-  format(obj: {[name: string]: Function}): IHttpResponse
+  format(obj: {[name: string]: Function}, next?: Function): IHttpResponse
 
   /**
    * Set header `field` to `val`.

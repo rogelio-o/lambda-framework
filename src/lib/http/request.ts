@@ -121,7 +121,7 @@ export default class HttpRequest implements IHttpRequest {
 
   fresh(response: IHttpResponse): boolean {
     const method = this.method;
-    const status = response.statusCode;
+    const status = response.statusCode || 200;
 
     // GET or HEAD for weak freshness validation only
     if ('GET' !== method && 'HEAD' !== method) return false;

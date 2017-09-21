@@ -5,18 +5,18 @@ import IHttpError from './../types/http-error'
 import Configuration from './../configuration/configuration'
 import { Callback } from 'aws-lambda'
 import { setCharset } from './../utils/utils'
-import mime from 'mime-types'
-import statuses from 'statuses'
-import encodeUrl from 'encodeurl'
-import escapeHtml from 'escape-html'
+import { lookup } from 'mime-types'
+var statuses = require('statuses')
+var encodeUrl = require('encodeurl')
+var escapeHtml = require('escape-html')
 import HttpError from './../exceptions/http-error'
 import { merge } from './../utils/utils'
 import { sign } from 'cookie-signature'
-import { cookie } from 'cookie'
+import { parse, serialize } from 'cookie'
 
 const normalizeType = (type: string): string => {
   return type.indexOf('/') === -1
-    ? mime.lookup(type)
+    ? lookup(type)
     : type
 }
 
@@ -59,7 +59,7 @@ export default class HttpResponse implements IHttpResponse {
     }
 
     const error = this._error ? this._error.cause : null;
-    this._callback(error, {statusCode, headers, body});
+    this._callback(error, {statusCode, headers, body: resultBody});
   }
 
   send(body: string|number|boolean|object|Buffer): void {
@@ -83,7 +83,7 @@ export default class HttpResponse implements IHttpResponse {
           chunk = '';
         } else if (Buffer.isBuffer(chunk)) {
           if (!this.header('Content-Type')) {
-            this.header('bin');
+            this.putHeader('Content-Type', 'bin');
           }
         } else if(typeof chunk === 'object') {
           return this.json(chunk);
@@ -114,7 +114,7 @@ export default class HttpResponse implements IHttpResponse {
       }
 
       len = buff.length;
-      this.putHeader('Content-Length', len);
+      this.putHeader('Content-Length', len.toString());
     }
 
     // populate ETag
@@ -147,9 +147,8 @@ export default class HttpResponse implements IHttpResponse {
   }
 
   json(obj: object): void {
-    // content-type
     if (!this.header('Content-Type')) {
-      this.putHeader('Content-Type', 'application/json');
+      this.putHeader('Content-Type', setCharset('application/json', 'utf-8'));
     }
 
     // content-length
@@ -177,8 +176,7 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  format(obj: {[name: string]: Function}): IHttpResponse {
-    var next = this._request.next;
+  format(obj: {[name: string]: Function}, next?: Function): IHttpResponse {
     const fn = obj.default;
     if (fn) delete obj.default;
     const keys = Object.keys(obj);
@@ -196,6 +194,8 @@ export default class HttpResponse implements IHttpResponse {
       var err = new HttpError('Not Acceptable: ' + keys.map(o => normalizeType(o)).join(', '), 406);
       if(next) {
         next(err);
+      } else {
+        throw err;
       }
     }
 
@@ -278,14 +278,14 @@ export default class HttpResponse implements IHttpResponse {
       opts.path = '/';
     }
 
-    this.appendHeader('Set-Cookie', cookie.serialize(name, String(val), opts));
+    this.appendHeader('Set-Cookie', serialize(name, String(val), opts));
 
     return this;
   }
 
   addCookies(obj: object, options?: object): IHttpResponse {
     for (var key in obj) {
-      this.addCookie(key, obj[key]);
+      this.addCookie(key, obj[key], options);
     }
 
     return this;
@@ -302,7 +302,7 @@ export default class HttpResponse implements IHttpResponse {
   cookie(name: string): string {
     const cookiesHeader = this.header('Set-Cookie');
 
-    const cookies = cookie.parse(Array.isArray(cookiesHeader) ?
+    const cookies = parse(Array.isArray(cookiesHeader) ?
       cookiesHeader.join('; ') : cookiesHeader
     );
 

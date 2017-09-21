@@ -10,6 +10,8 @@ export default class HttpError extends Error implements IHttpError {
 
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, HttpError.prototype);
+    this._statusCode = statusCode;
+    this._parent = parent;
   }
 
   get statusCode(): number {

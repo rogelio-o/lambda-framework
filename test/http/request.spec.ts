@@ -1,5 +1,6 @@
 import * as Chai from 'chai'
 import HttpRequest from './../../src/lib/http/request'
+import IHttpRequest from './../../src/lib/types/http-request'
 import HttpResponse from './../../src/lib/http/response'
 import HttpRoute from './../../src/lib/http/route'
 import App from './../../src/lib/lambda-framework'
@@ -9,11 +10,12 @@ import { APIGatewayEvent } from 'aws-lambda'
  * Test for HttpRequest.
  */
 describe('HttpRequest', () => {
-  let request
+  let request: IHttpRequest
   let nextResult
   let event: APIGatewayEvent
   const app = new App()
   beforeEach(function(done) {
+    nextResult = undefined
     event = {
       body: 'BODY',
       headers: {
