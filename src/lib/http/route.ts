@@ -1,5 +1,8 @@
 import IHttpRoute from '../types/http-route'
 import IHttpHandler from '../types/http-handler'
+import IHttpRequest from '../types/http-request'
+import IHttpResponse from '../types/http-response'
+import INext from '../types/next'
 import { Key, RegExpOptions } from 'path-to-regexp'
 import HttpError from './../exceptions/http-error'
 const pathToRegexp = require('path-to-regexp')
@@ -23,41 +26,27 @@ function decode_param(val) {
 
 export default class HttpRoute implements IHttpRoute {
 
-  private _method: string;
+  private _methods: Array<string>;
   private _regexp: RegExp;
   private _keys: Key[];
-  private _handler: IHttpHandler;
 
   private _regexpFastStar: boolean;
   private _regexpFastSlash: boolean;
 
 
-  constructor(method: string, regexp: string, handler: IHttpHandler, regexOptions?: RegExpOptions) {
+  constructor(regexp: string, regexOptions?: RegExpOptions) {
     const opts = regexOptions || {};
 
-    this._method = method;
+    this._methods = [];
     this._keys = [];
     this._regexp = pathToRegexp(regexp, this._keys, opts);
-    this._handler = handler;
 
     this._regexpFastStar = regexp === '*';
     this._regexpFastSlash = regexp === '/' && opts.end === false;
   }
 
-  get method(): string {
-    return this._method;
-  }
-
   get regexp(): RegExp {
     return this._regexp;
-  }
-
-  get keys(): Key[] {
-    return this._keys;
-  }
-
-  get handler(): IHttpHandler {
-    return this._handler;
   }
 
   parsePathParameters(path: string): { [name: string]: string } {
@@ -94,6 +83,40 @@ export default class HttpRoute implements IHttpRoute {
     } else {
       return {};
     }
+  }
+
+  dispatch(req: IHttpRequest, res: IHttpResponse, next: INext): void {
+    // TODO
+  }
+
+  get(IHttpHandler): IHttpRoute {
+    // TODO
+
+    return this;
+  }
+
+  put(IHttpHandler): IHttpRoute {
+    // TODO
+
+    return this;
+  }
+
+  delete(IHttpHandler): IHttpRoute {
+    // TODO
+
+    return this;
+  }
+
+  post(IHttpHandler): IHttpRoute {
+    // TODO
+
+    return this;
+  }
+
+  all(IHttpHandler): IHttpRoute {
+    // TODO
+
+    return this;
   }
 
 }

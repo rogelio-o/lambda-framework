@@ -7,6 +7,7 @@ const fresh = require('fresh')
 const accepts = require('accepts')
 import { merge } from './../utils/utils'
 import HttpRoute from './../types/http-route'
+import INext from './../types/next'
 
 export default class HttpRequest implements IHttpRequest {
 
@@ -16,7 +17,6 @@ export default class HttpRequest implements IHttpRequest {
   private _headers: { [name: string]: string }
 
   public body: object|string
-  public next: Function
 
   constructor(app: IApp, event: APIGatewayEvent, route: HttpRoute) {
     this._app = app;

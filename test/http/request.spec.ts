@@ -67,9 +67,7 @@ describe('HttpRequest', () => {
       },
       resource: 'API'
     }
-    const route = new HttpRoute('GET', '/blog/:id', (req, res, next) => {
-      next(nextResult)
-    })
+    const route = new HttpRoute('/blog/:id')
     request = new HttpRequest(app, event, route)
 
     done()

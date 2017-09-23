@@ -2,6 +2,7 @@ import IHttpResponse from './../types/http-response'
 import IHttpRequest from './../types/http-request'
 import IApp from './../types/app'
 import IHttpError from './../types/http-error'
+import INext from './../types/next'
 import Configuration from './../configuration/configuration'
 import { Callback } from 'aws-lambda'
 import { setCharset } from './../utils/utils'
@@ -28,16 +29,22 @@ export default class HttpResponse implements IHttpResponse {
   private _callback: Callback;
   private _headers: { [name: string]: string|Array<string> };
   private _error: IHttpError;
+  private _isSent: boolean
 
   constructor(app: IApp, request: IHttpRequest, callback: Callback) {
     this._app = app;
     this._request = request;
     this._callback = callback;
     this._headers = {};
+    this._isSent = false;
   }
 
   get statusCode(): number {
     return this._statusCode;
+  }
+
+  get isSent(): boolean {
+    return this._isSent;
   }
 
   status(code: number): IHttpResponse {
@@ -59,6 +66,7 @@ export default class HttpResponse implements IHttpResponse {
     }
 
     const error = this._error ? this._error.cause : null;
+    this._isSent = true;
     this._callback(error, {statusCode, headers, body: resultBody});
   }
 
@@ -176,7 +184,7 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  format(obj: {[name: string]: Function}, next?: Function): IHttpResponse {
+  format(obj: {[name: string]: Function}, next?: INext): IHttpResponse {
     const fn = obj.default;
     if (fn) delete obj.default;
     const keys = Object.keys(obj);

@@ -5,6 +5,8 @@ export default class HttpError extends Error implements IHttpError {
   private _statusCode: number;
   private _parent: Error;
 
+  public headers: {[name: string]: string|Array<string>};
+
   constructor(m: string, statusCode: number, parent?: Error) {
     super(m);
 

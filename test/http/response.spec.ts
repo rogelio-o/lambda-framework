@@ -15,7 +15,6 @@ import { APIGatewayEvent } from 'aws-lambda'
 describe('HttpResponse', () => {
   let request: IHttpRequest
   let response: IHttpResponse
-  let nextResult
   let event: APIGatewayEvent
   let errResult
   let succResult
@@ -24,7 +23,6 @@ describe('HttpResponse', () => {
     app = new App()
     errResult = undefined
     succResult = undefined
-    nextResult = undefined
     event = {
       body: 'BODY',
       headers: {
@@ -76,9 +74,7 @@ describe('HttpResponse', () => {
       },
       resource: 'API'
     }
-    const route = new HttpRoute('GET', '/blog/:id', (req, res, next) => {
-      next(nextResult)
-    })
+    const route = new HttpRoute('/blog/:id')
     request = new HttpRequest(app, event, route)
     response = new HttpResponse(app, request, (err, succ) => {
       errResult = err;
@@ -103,6 +99,7 @@ describe('HttpResponse', () => {
     response.send('ABC')
     Chai.expect(succResult.headers['Content-Type']).to.be.equal('text/html; charset=utf-8')
     Chai.expect(succResult.headers['Content-Length']).to.be.equal('3')
+    Chai.expect(response.isSent).to.be.true
   });
 
   it('#send should set the outcoming response body to the given number with no content type header and the right content length header', () => {
@@ -110,6 +107,7 @@ describe('HttpResponse', () => {
     Chai.expect(succResult.headers['Content-Type']).to.be.undefined
     Chai.expect(succResult.headers['Content-Length']).to.be.equal('5')
     Chai.expect(succResult.body).to.be.equal('false')
+    Chai.expect(response.isSent).to.be.true
   });
 
   it('#send should set the outcoming response body to the given boolean with no content type header and the right content length header', () => {
@@ -117,6 +115,7 @@ describe('HttpResponse', () => {
     Chai.expect(succResult.headers['Content-Type']).to.be.undefined
     Chai.expect(succResult.headers['Content-Length']).to.be.equal('1')
     Chai.expect(succResult.body).to.be.equal('1')
+    Chai.expect(response.isSent).to.be.true
   });
 
   it('#send should set the outcoming response body to the given Buffer with "bin" content type header and the right content length header', () => {
@@ -124,6 +123,7 @@ describe('HttpResponse', () => {
     Chai.expect(succResult.headers['Content-Type']).to.be.equal('bin')
     Chai.expect(succResult.headers['Content-Length']).to.be.equal('4')
     Chai.expect(succResult.body).to.be.equal('test')
+    Chai.expect(response.isSent).to.be.true
   });
 
   it('#send should set the outcoming response header ETag to the generated with the function in #app.get(Configuration.ETAG_FN)', () => {

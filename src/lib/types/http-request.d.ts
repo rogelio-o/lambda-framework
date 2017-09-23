@@ -1,4 +1,5 @@
 import IHTtpResponse from './http-response'
+import INext from './next'
 import { APIGatewayEvent } from 'aws-lambda'
 
 export default interface IHttpRequest {
@@ -52,19 +53,6 @@ export default interface IHttpRequest {
    * All the params of the incoming request (query, path variables and body).
    */
   params: { [name: string]: any }
-
-  /**
-   * The original AWS event of the incoming request.
-   */
-  event: APIGatewayEvent
-
-  /**
-   * Next handler to be executed.
-   *
-   * @param  {string} key
-   * @return {string}
-   */
-  next: Function
 
   /**
    * Return request header.

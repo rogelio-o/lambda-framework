@@ -1,4 +1,5 @@
 import IHttpError from './http-error'
+import INext from './next'
 
 export default interface IHttpResponse {
 
@@ -6,6 +7,8 @@ export default interface IHttpResponse {
    * The response HTTP status code.
    */
   statusCode: number;
+
+  isSent: boolean;
 
   /**
    * Set the status `code` of the response.
@@ -76,7 +79,7 @@ export default interface IHttpResponse {
    * @param  {Map<string, Function>} obj           The callbacks object.
    * @return {IHttpResponse}
    */
-  format(obj: {[name: string]: Function}, next?: Function): IHttpResponse
+  format(obj: {[name: string]: Function}, next?: INext): IHttpResponse
 
   /**
    * Set header `field` to `val`.
