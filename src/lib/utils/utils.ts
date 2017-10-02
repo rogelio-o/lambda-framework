@@ -1,4 +1,5 @@
-import { parse, format } from 'content-type';
+import { APIGatewayEvent } from 'aws-lambda'
+import { parse, format } from 'content-type'
 
 export function setCharset(type, charset) {
   if (!type || !charset) {
@@ -67,4 +68,12 @@ export function getEventType(obj: any): string {
   } else {
     return null
   }
+}
+
+export function mergeParams(event: APIGatewayEvent) {
+  const body = typeof this.body === 'object' ? this.body : {};
+  const query = this._event.queryStringParameters || {};
+  const stageVariables = this._event.stageVariables || {};
+
+  return merge(body, query, stageVariables);
 }

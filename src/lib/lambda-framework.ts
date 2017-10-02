@@ -69,7 +69,7 @@ export default class App implements IApp {
   handle(event: any, context: Context, callback?: Callback): void {
     const type = getEventType(event)
     if(type === 'APIGatewayEvent') {
-      const req: IHttpRequest = new HttpRequest(this, event, null) // TODO
+      const req: IHttpRequest = new HttpRequest(this, event)
       const res: IHttpResponse = new HttpResponse(this, req, callback)
       const done = httpFinalHandler(req, res, {
         env: this.get(Configuration.ENVIRONMENT),

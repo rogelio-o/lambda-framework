@@ -5,6 +5,16 @@ import { APIGatewayEvent } from 'aws-lambda'
 export default interface IHttpRequest {
 
   /**
+   * Base path of the handling router.
+   */
+  basePath: string
+
+  /**
+   * The original base path of the handling router.
+   */
+  originalBasePath: string
+
+  /**
    * The protocol of the incomig request. Can be http or https.
    */
   protocol: string
@@ -53,6 +63,11 @@ export default interface IHttpRequest {
    * All the params of the incoming request (query, path variables and body).
    */
   params: { [name: string]: any }
+
+  /**
+   * Next function to be called.
+   */
+  next: INext
 
   /**
    * Return request header.

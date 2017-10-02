@@ -14,6 +14,44 @@ import IEventRequest from './types/event-request'
 import IHttpResponse from './types/http-response'
 import INext from './types/next'
 
+function restore(fn: INext, req: IHttpRequest, ...params: string[]) {
+  var vals = new Array(params.length);
+
+  for (var i = 0; i < params.length; i++) {
+    vals[i] = req[params[i]];
+  }
+
+  return function (err) {
+    // restore vals
+    for (var i = 0; i < params.length; i++) {
+      req[params[i]] = vals[i];
+    }
+
+    return fn.apply(this);
+  };
+}
+
+// wrap a function
+function wrap(old: Function, fn: Function) {
+  return function proxy() {
+    var args = new Array(1);
+    args[0] = old;
+
+    fn.apply(this, args);
+  };
+}
+
+// send an OPTIONS response
+function sendOptionsResponse(res: IHttpResponse, options: Array<string>, next: INext) {
+  try {
+    var body = options.join(',');
+    res.putHeader('Allow', body);
+    res.send(body);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export default class Router implements IRouter {
 
   private _subpath: string
@@ -23,6 +61,12 @@ export default class Router implements IRouter {
   private _eventStack: Array<IEventLayer>
   private _caseSensitive: boolean
   private _strict: boolean
+
+  private _idStack: number
+  private _idSubrouter: number
+  private _options: Array<string>
+  private _done: INext
+  private _parentParams: { [name: string]: any }
 
   constructor(opts?: {[name: string]: any}) {
     const options = opts || {}
@@ -100,8 +144,29 @@ export default class Router implements IRouter {
     return this;
   }
 
-  httpHandle(req: IHttpRequest, res: IHttpResponse, next: INext): void {
-    // TODO
+  private _httpNext(err?: Error) {
+
+  }
+
+  httpHandle(req: IHttpRequest, res: IHttpResponse, out: INext): void {
+    this._idStack = 0
+    this._idSubrouter = 0
+    this._options = []
+    this._done =  restore(out, req, 'basePath', 'originalBasePath', 'next', 'params');
+    this._parentParams = req.params
+
+    req.next = this._httpNext
+    req.originalBasePath = req.basePath || ''
+    req.basePath = req.originalBasePath + (this._subpath || '')
+
+    if(req.method === 'OPTIONS') {
+      this._done = wrap(this._done, (old, err) => {
+        if (err || this._options.length === 0) return old(err);
+        sendOptionsResponse(res, this._options, old);
+      })
+    }
+
+    this._httpNext()
   }
 
   eventHandle(req: IEventRequest, next: INext): void {

@@ -5,7 +5,7 @@ import { APIGatewayEvent } from 'aws-lambda'
 import Configuration from './../configuration/configuration'
 const fresh = require('fresh')
 const accepts = require('accepts')
-import { merge } from './../utils/utils'
+import { mergeParams } from './../utils/utils'
 import HttpRoute from './../types/http-route'
 import INext from './../types/next'
 
@@ -13,15 +13,18 @@ export default class HttpRequest implements IHttpRequest {
 
   private _app: IApp
   private _event: APIGatewayEvent
-  private _pathParameters: { [name: string]: string }
   private _headers: { [name: string]: string }
 
   public body: object|string
+  public basePath: string
+  public originalBasePath: string
+  public next: INext
+  public params: { [name: string]: string }
 
-  constructor(app: IApp, event: APIGatewayEvent, route: HttpRoute) {
+  constructor(app: IApp, event: APIGatewayEvent) {
     this._app = app;
     this._event = event;
-    this._pathParameters = route.parsePathParameters(event.path);
+    this.params = mergeParams(event);
 
     this._headers = {}
     for(let key in this._event.headers) {
@@ -67,15 +70,6 @@ export default class HttpRequest implements IHttpRequest {
   get xhr(): boolean {
     const val = this.header('X-Requested-With') || '';
     return val.toLowerCase() === 'xmlhttprequest';
-  }
-
-  get params(): { [name: string]: any } {
-    const pathParams = this._pathParameters || {};
-    const body = typeof this.body === 'object' ? this.body : {};
-    const query = this._event.queryStringParameters || {};
-    const stageVariables = this._event.stageVariables || {};
-
-    return merge(pathParams, body, query, stageVariables);
   }
 
   get event(): APIGatewayEvent {
