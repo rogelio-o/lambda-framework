@@ -8,12 +8,15 @@ import INext from './next'
 import IEventHandler from './event-handler'
 import IEventRoutePredicate from './event-route-predicate'
 import IApp from './app'
+import IHttpLayer from './http-layer'
 
 export default interface IRouter {
 
+  httpStack: Array<IHttpLayer>
+
   subrouters: Array<IRouter>
 
-  setSubpath(subpath: string): void
+  subpath: string
 
   /**
    * Map the given param placeholder `name`(s) to the given callback.

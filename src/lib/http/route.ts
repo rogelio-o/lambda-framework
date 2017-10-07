@@ -26,7 +26,7 @@ function decode_param(val) {
 
 export default class HttpRoute implements IHttpRoute {
 
-  private _methods: Array<string>;
+  private _handlers: {[name: string]: IHttpHandler};
   private _regexp: RegExp;
   private _keys: Key[];
 
@@ -37,7 +37,7 @@ export default class HttpRoute implements IHttpRoute {
   constructor(regexp: string, regexOptions?: RegExpOptions) {
     const opts = regexOptions || {};
 
-    this._methods = [];
+    this._handlers = {};
     this._keys = [];
     this._regexp = pathToRegexp(regexp, this._keys, opts);
 
@@ -47,6 +47,10 @@ export default class HttpRoute implements IHttpRoute {
 
   get regexp(): RegExp {
     return this._regexp;
+  }
+
+  hasMethod(method: string): boolean {
+    return this._handlers[method] !== undefined;
   }
 
   parsePathParameters(path: string): { [name: string]: string } {

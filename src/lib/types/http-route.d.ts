@@ -7,6 +7,8 @@ import { Key } from 'path-to-regexp'
 export default interface IHttpRoute {
   regexp: RegExp
 
+  hasMethod(method: string): boolean
+
   parsePathParameters(path: string): { [name: string]: string }
 
   dispatch(req: IHttpRequest, res: IHttpResponse, next: INext): void

@@ -1,5 +1,6 @@
-import IHTtpResponse from './http-response'
+import IHttpResponse from './http-response'
 import INext from './next'
+import IHttpRoute from './http-route'
 import { APIGatewayEvent } from 'aws-lambda'
 
 export default interface IHttpRequest {
@@ -68,6 +69,11 @@ export default interface IHttpRequest {
    * Next function to be called.
    */
   next: INext
+
+  /**
+   * Actual route that is being processing
+   */
+  route: IHttpRoute
 
   /**
    * Return request header.
@@ -144,15 +150,15 @@ export default interface IHttpRequest {
    * Check if the request is fresh looking the response data. This is if
    * the Last-Modified and/or the ETag headers for the resource still match.
    *
-   * @param  {IHTtpResponse} response [description]
+   * @param  {IHttpResponse} response [description]
    * @return {boolean}                [description]
    */
-  fresh(response: IHTtpResponse): boolean
+  fresh(response: IHttpResponse): boolean
 
   /**
    * Check if the request is stale looking the response data. This is if
    * the Last-Modified and/or the ETag headers for the resource has changed.
    */
-  stale(response: IHTtpResponse): boolean
+  stale(response: IHttpResponse): boolean
 
 }

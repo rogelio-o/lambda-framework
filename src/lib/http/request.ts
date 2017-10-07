@@ -6,7 +6,7 @@ import Configuration from './../configuration/configuration'
 const fresh = require('fresh')
 const accepts = require('accepts')
 import { mergeParams } from './../utils/utils'
-import HttpRoute from './../types/http-route'
+import IHttpRoute from './../types/http-route'
 import INext from './../types/next'
 
 export default class HttpRequest implements IHttpRequest {
@@ -20,6 +20,7 @@ export default class HttpRequest implements IHttpRequest {
   public originalBasePath: string
   public next: INext
   public params: { [name: string]: string }
+  public route: IHttpRoute
 
   constructor(app: IApp, event: APIGatewayEvent) {
     this._app = app;

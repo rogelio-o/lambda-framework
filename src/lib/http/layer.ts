@@ -28,7 +28,7 @@ export default class HttpLayer implements IHttpLayer {
     if(!this._handler) {
       next(error)
     } else {
-      const isErrorHandler = this._handler.length == 4;
+      const isErrorHandler = this.isErrorHandler();
       if((isErrorHandler && error) || (!isErrorHandler && !error)) {
         try {
           this._handler(req, res, next, error)
@@ -39,6 +39,10 @@ export default class HttpLayer implements IHttpLayer {
         next(error)
       }
     }
+  }
+
+  isErrorHandler() {
+    return !this.route && this._handler.length == 4;
   }
 
 }

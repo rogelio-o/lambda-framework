@@ -12,4 +12,6 @@ export default interface IHttpLayer {
 
   handle(req: IHttpRequest, res: IHttpResponse, next: INext, error?: Error): void
 
+  isErrorHandler(): boolean
+
 }
