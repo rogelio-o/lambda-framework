@@ -3,24 +3,24 @@ import IHttpRequest from './http-request'
 import IHttpResponse from './http-response'
 import INext from './next'
 import { Key } from 'path-to-regexp'
+import IHttpLayer from './http-layer'
 
 export default interface IHttpRoute {
-  regexp: RegExp
+
+  readonly layer: IHttpLayer
 
   hasMethod(method: string): boolean
 
-  parsePathParameters(path: string): { [name: string]: string }
-
   dispatch(req: IHttpRequest, res: IHttpResponse, next: INext): void
 
-  get(IHttpHandler): IHttpRoute
+  get(handler: IHttpHandler): IHttpRoute
 
-  put(IHttpHandler): IHttpRoute
+  put(handler: IHttpHandler): IHttpRoute
 
-  delete(IHttpHandler): IHttpRoute
+  delete(handler: IHttpHandler): IHttpRoute
 
-  post(IHttpHandler): IHttpRoute
+  post(handler: IHttpHandler): IHttpRoute
 
-  all(IHttpHandler): IHttpRoute
+  all(handler: IHttpHandler): IHttpRoute
 
 }

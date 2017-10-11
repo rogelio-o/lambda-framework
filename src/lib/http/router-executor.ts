@@ -4,6 +4,7 @@ import IHttpRequest from './../types/http-request'
 import IHttpResponse from './../types/http-response'
 import INext from './../types/next'
 import IHttpLayer from './../types/http-layer'
+var mixin = require('utils-merge');
 
 function restore(fn: INext, req: IHttpRequest, ...params: string[]) {
   var vals = new Array(params.length);
@@ -22,22 +23,63 @@ function restore(fn: INext, req: IHttpRequest, ...params: string[]) {
   };
 }
 
+// merge params with parent params
+function mergeParams(params: { [name: string]: any }, parent: { [name: string]: any }): { [name: string]: any } {
+  if (typeof parent !== 'object' || !parent) {
+    return params;
+  }
+
+  // make copy of parent for base
+  var obj = mixin({}, parent);
+
+  // simple non-numeric merging
+  if (!(0 in params) || !(0 in parent)) {
+    return mixin(obj, params);
+  }
+
+  var i = 0;
+  var o = 0;
+
+  // determine numeric gaps
+  while (i in params) {
+    i++;
+  }
+
+  while (o in parent) {
+    o++;
+  }
+
+  // offset numeric indices in params before merge
+  for (i--; i >= 0; i--) {
+    params[i + o] = params[i];
+
+    // create holes for the merge when necessary
+    if (i < o) {
+      delete params[i];
+    }
+  }
+
+  return mixin(obj, params);
+}
+
 export default class HttpRouterExecutor implements IHttpRouterExecutor {
 
   private _router:IRouter
   private _req:IHttpRequest
   private _res:IHttpResponse
   private _stackIndex:number
-  private _routerIndex:number
+  private _subrouterIndex:number
   private _parentParams: { [name: string]: any }
   private _done:INext
+  private _executedParams: Array<string>
 
   constructor(router: IRouter, req:IHttpRequest, res:IHttpResponse, done:INext) {
     this._router = router;
     this._stackIndex = 0;
-    this._routerIndex = -1;
+    this._subrouterIndex = 0;
     this._parentParams = req.params
     this._done =  restore(done, req, 'basePath', 'originalBasePath', 'next', 'params');
+    this._executedParams = [];
 
     req.next = this.next
     req.originalBasePath = req.basePath || ''
@@ -65,8 +107,17 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
   }
 
   private _findNextSubrouter():IRouter {
-    // TODO find next router matching with the param
-    return null;
+    let result:IRouter = null;
+    while(this._subrouterIndex < this._router.httpStack.length) {
+      let subrouter:IRouter = this._subrouterIndex[this._subrouterIndex];
+      this._subrouterIndex++;
+
+      if(this._req.path.startsWith(subrouter.fullSubpath)) {
+        result = subrouter;
+        break;
+      }
+    }
+    return result;
   }
 
   next(error?: Error): void {
@@ -82,13 +133,18 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
         this.next(error);
       } else {
         this._req.route = layer.route;
-        // TODO this._req.params = layer.params (merge with parents);
+        const layerParams = layer.parsePathParameters(this._req.path);
+        this._req.params = mergeParams(layerParams, this._parentParams);
 
-        // TODO process_params (of layer path)
-
-        layer.handle(this._req, this._res, this.next, error);
+        this._router.httpProcessParams(layerParams, this._executedParams, this._req, this._res, (paramsError) => {
+          if(error) {
+            this.next(paramsError);
+          } else {
+            layer.handle(this._req, this._res, this.next, error);
+          }
+        });
       }
-    } else if(this._routerIndex < this._router.subrouters.length) {
+    } else if(this._subrouterIndex < this._router.subrouters.length) {
       // Process from subrouters
       const subrouter:IRouter = this._findNextSubrouter();
 
@@ -102,7 +158,7 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
       }
     } else {
       // Finalize
-      this._done(error);
+      setImmediate(this._done, error);
     }
   }
 

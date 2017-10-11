@@ -8,6 +8,8 @@ export default interface IHttpLayer {
 
   route: IHttpRoute
 
+  parsePathParameters(path: string): { [name: string]: string }
+
   match(path: string): boolean
 
   handle(req: IHttpRequest, res: IHttpResponse, next: INext, error?: Error): void

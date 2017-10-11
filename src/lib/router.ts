@@ -16,6 +16,8 @@ import INext from './types/next'
 import IHttpRouterExecutor from './types/http-router-executor'
 import HttpRouterExecutor from './http/router-executor'
 
+const HTTP_METHODS = ['GET', 'PUT', 'DELETE', 'POST'];
+
 // send an OPTIONS response
 function sendOptionsResponse(res: IHttpResponse, options: Array<string>, next: INext) {
   try {
@@ -35,8 +37,33 @@ export default class Router implements IRouter {
   private _eventStack: Array<IEventLayer>
   private _caseSensitive: boolean
   private _strict: boolean
+  private _subpath: string
+  private _parent: IRouter
 
-  public subpath: string
+  get subpath(): string {
+    return this._subpath;
+  }
+
+  get fullSubpath(): string {
+    if(!this._subpath && !this._parent) {
+      return this._subpath;
+    } else {
+      let result = null;
+
+      if(this.parent) {
+        const parentFullSubpath = this.parent.fullSubpath;
+        if(parentFullSubpath) result = parentFullSubpath;
+      }
+
+      if(!result) {
+        result = '';
+      }
+
+      result = result + this._subpath;
+
+      return result;
+    }
+  }
 
   constructor(opts?: {[name: string]: any}) {
     const options = opts || {}
@@ -54,6 +81,10 @@ export default class Router implements IRouter {
 
   get httpStack(): Array<IHttpLayer> {
     return this._httpStack;
+  }
+
+  get parent(): IRouter {
+    return this._parent;
   }
 
   param(name: string, handler: IHttpPlaceholderHandler): IRouter {
@@ -84,19 +115,19 @@ export default class Router implements IRouter {
   }
 
   mount(router: IRouter, path?: string): IRouter {
-    router.subpath = path;
+    router.doSubrouter(path, this);
     this._subrouters.push(router);
 
     return this;
   }
 
   route(path: string): IHttpRoute {
-    const route = new HttpRoute(path)
     const layer = new HttpLayer(path, {
       sensitive: this._caseSensitive,
       strict: this._strict,
       end: true
-    }, route.dispatch)
+    })
+    const route = new HttpRoute(layer)
     layer.route = route
 
     this._httpStack.push(layer)
@@ -116,14 +147,94 @@ export default class Router implements IRouter {
 
   httpHandle(req: IHttpRequest, res: IHttpResponse, out: INext): void {
     if(req.method === 'OPTIONS') {
-      /* TODO this._done = wrap(this._done, (old, err) => {
-        if (err || this._options.length === 0) return old(err);
-        sendOptionsResponse(res, this._options, old);
-      })*/
+      const options = this.getAvailableMethodsForPath(req.path);
+      if (options.length === 0)
+        return out();
+      else
+        sendOptionsResponse(res, options, out);
     } else {
       const routerExecutor:IHttpRouterExecutor = new HttpRouterExecutor(this, req, res, out);
       routerExecutor.next();
     }
+  }
+
+  doSubrouter(subpath: string, parent: IRouter) {
+    this._subpath = subpath;
+    this._parent = parent;
+  }
+
+  httpProcessParams(layerParams: { [name: string]: string }, executedParams: Array<string>, req: IHttpRequest, res: IHttpResponse, done: INext): void {
+    const keys = Object.keys(layerParams);
+    if(keys.length > 0) {
+      const processParam = (index: number) => {
+        const partialDone: INext = (error?: Error) => {
+          if(error) {
+            done(error);
+          } else {
+            const newIndex = index + 1;
+            if(newIndex < keys.length) {
+              processParam(newIndex);
+            } else {
+              done();
+            }
+          }
+        };
+
+        const key = keys[index];
+        const value = layerParams[key];
+        const handlers = this._params[key];
+        if(executedParams.indexOf(key) == -1 && handlers && handlers.length > 0) {
+          const processHandler = (index2: number) => {
+            const partialPartialDone: INext = (error?: Error) => {
+              if(error) {
+                partialDone(error);
+              } else {
+                const newIndex = index + 1;
+                if(newIndex < handlers.length) {
+                  processHandler(newIndex);
+                } else {
+                  executedParams.push(key);
+                  partialDone();
+                }
+              }
+            };
+
+            const handler = handlers[index2];
+            handler(req, res, partialPartialDone, value);
+          };
+
+          processHandler(0);
+        } else {
+          partialDone();
+        }
+      };
+
+      processParam(0);
+    }
+  }
+
+  getAvailableMethodsForPath(path: string): Array<string> {
+    const result = [];
+
+    this._httpStack.forEach((layer) => {
+      if(layer.route) {
+        HTTP_METHODS.forEach((method) => {
+          if(result.indexOf(method) == -1 && layer.route.hasMethod(method)) {
+            result.push(method);
+          }
+        })
+      }
+    });
+
+    this._subrouters.forEach((subrouter) => {
+      subrouter.getAvailableMethodsForPath(path).forEach((method) => {
+        if(result.indexOf(method) == -1) {
+          result.push(method);
+        }
+      });
+    });
+
+    return result;
   }
 
   eventHandle(req: IEventRequest, next: INext): void {

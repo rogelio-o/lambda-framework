@@ -16,7 +16,19 @@ export default interface IRouter {
 
   subrouters: Array<IRouter>
 
-  subpath: string
+  /**
+   * Get the indicated subpath for the router when
+   * it is done a subrouter. If it is not a subrouter,
+   * the subpath will be null.
+   */
+  readonly subpath: string
+
+  /**
+   * Get the full subpath of the router, it is done
+   * by the concadenation of each subpath of each router
+   * from the begginig (root router) to the end.
+   */
+  readonly fullSubpath: string
 
   /**
    * Map the given param placeholder `name`(s) to the given callback.
@@ -86,6 +98,32 @@ export default interface IRouter {
    * @param {INext}         next
    */
   httpHandle(req: IHttpRequest, res: IHttpResponse, next: INext): void
+
+  /*
+  This method transform a router to a subrouter of the
+  given subrouter in the given subpath.
+   */
+  doSubrouter(subpath: string, parent: IRouter)
+
+  /**
+   * Call the handlers added with the method _param_
+   * for the params of the layer.
+   *
+   * @param { [name: string]: string }  layerParams
+   * @param {IHttpRequest}  req
+   * @param {IHttpResponse} res
+   * @param {INext}         done
+   */
+  httpProcessParams(layerParams: { [name: string]: string }, executedParams: Array<string>, req: IHttpRequest, res: IHttpResponse, done: INext): void
+
+  /**
+   * Returns the available methods for the
+   * given path.
+   *
+   * @param  {string}        path
+   * @return {Array<string>}
+   */
+  getAvailableMethodsForPath(path: string): Array<string>
 
   /**
    * Handle an incoming event.

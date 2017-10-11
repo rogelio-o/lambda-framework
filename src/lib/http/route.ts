@@ -1,124 +1,66 @@
 import IHttpRoute from '../types/http-route'
 import IHttpHandler from '../types/http-handler'
 import IHttpRequest from '../types/http-request'
+import IHttpLayer from '../types/http-layer'
 import IHttpResponse from '../types/http-response'
 import INext from '../types/next'
-import { Key, RegExpOptions } from 'path-to-regexp'
-import HttpError from './../exceptions/http-error'
-const pathToRegexp = require('path-to-regexp')
-
-function decode_param(val) {
-  if (typeof val !== 'string' || val.length === 0) {
-    return val;
-  }
-
-  try {
-    return decodeURIComponent(val);
-  } catch (err) {
-    if (err instanceof URIError) {
-      const newErr = new HttpError('Failed to decode param \'' + val + '\'', 400, err);
-      throw newErr;
-    } else {
-      throw err;
-    }
-  }
-}
 
 export default class HttpRoute implements IHttpRoute {
 
+  private _layer: IHttpLayer;
+
   private _handlers: {[name: string]: IHttpHandler};
-  private _regexp: RegExp;
-  private _keys: Key[];
 
-  private _regexpFastStar: boolean;
-  private _regexpFastSlash: boolean;
-
-
-  constructor(regexp: string, regexOptions?: RegExpOptions) {
-    const opts = regexOptions || {};
-
+  constructor(layer: IHttpLayer) {
     this._handlers = {};
-    this._keys = [];
-    this._regexp = pathToRegexp(regexp, this._keys, opts);
-
-    this._regexpFastStar = regexp === '*';
-    this._regexpFastSlash = regexp === '/' && opts.end === false;
+    this._layer = layer;
   }
 
-  get regexp(): RegExp {
-    return this._regexp;
+  get layer(): IHttpLayer {
+    return this._layer;
   }
 
   hasMethod(method: string): boolean {
-    return this._handlers[method] !== undefined;
-  }
-
-  parsePathParameters(path: string): { [name: string]: string } {
-    if (path != null) {
-      // fast path non-ending match for / (any path matches)
-      if (this._regexpFastSlash) {
-        return {};
-      }
-
-      // fast path for * (everything matched in a param)
-      if (this._regexpFastStar) {
-        return {'0': decode_param(path)}
-      }
-
-      // match the path
-      const match = this.regexp.exec(path)
-
-      // store values
-      const params = {};
-
-      var keys = this._keys;
-
-      for (var i = 1; i < match.length; i++) {
-        var key = keys[i - 1];
-        var prop = key.name;
-        var val = decode_param(match[i])
-
-        if (val !== undefined) {
-          params[prop] = val;
-        }
-      }
-
-      return params;
-    } else {
-      return {};
-    }
+    return this._handlers._all !== undefined || this._handlers[method] !== undefined;
   }
 
   dispatch(req: IHttpRequest, res: IHttpResponse, next: INext): void {
-    // TODO
+    const method = req.method ? req.method.toLowerCase() : '';
+    if(this._handlers[method]) {
+      this._handlers[method](req, res, next);
+    } else if(this._handlers._all) {
+      this._handlers._all(req, res, next);
+    } else {
+      next();
+    }
   }
 
-  get(IHttpHandler): IHttpRoute {
-    // TODO
+  get(handler: IHttpHandler): IHttpRoute {
+    this._handlers.get = handler;
 
     return this;
   }
 
-  put(IHttpHandler): IHttpRoute {
-    // TODO
+  put(handler: IHttpHandler): IHttpRoute {
+    this._handlers.put = handler;
 
     return this;
   }
 
-  delete(IHttpHandler): IHttpRoute {
-    // TODO
+  delete(handler: IHttpHandler): IHttpRoute {
+    this._handlers.delete = handler;
 
     return this;
   }
 
-  post(IHttpHandler): IHttpRoute {
-    // TODO
+  post(handler: IHttpHandler): IHttpRoute {
+    this._handlers.post = handler;
 
     return this;
   }
 
-  all(IHttpHandler): IHttpRoute {
-    // TODO
+  all(handler: IHttpHandler): IHttpRoute {
+    this._handlers._all = handler;
 
     return this;
   }
