@@ -67,8 +67,7 @@ describe('HttpRequest', () => {
       },
       resource: 'API'
     }
-    const route = new HttpRoute('/blog/:id')
-    request = new HttpRequest(app, event, route)
+    request = new HttpRequest(app, event)
 
     done()
   });
@@ -124,11 +123,10 @@ describe('HttpRequest', () => {
     Chai.expect(request.xhr).to.be.false
   });
 
-  it('#params should return the intersection between the path, query, body and stage params', () => {
+  it('#params should return the intersection between the query, body and stage params (the path params will be included in router)', () => {
     Chai.expect(request.params).to.include({
       query1: 'Query 1',
-      stage1: 'Stage 1',
-      id: '1'
+      stage1: 'Stage 1'
     })
   });
 
@@ -182,10 +180,6 @@ describe('HttpRequest', () => {
 
   it('#acceptsLanguages should return the preferred language to be used as response language between the ones given in the parameter', () => {
     Chai.expect(request.acceptsLanguages(['es', 'en'])).to.be.equal('es')
-  });
-
-  it('#param should return the value of the param given as argument if it is into the path params', () => {
-    Chai.expect(request.param('id')).to.be.equal('1')
   });
 
   it('#param should return the value of the param given as argument if it is into the query params', () => {

@@ -74,8 +74,7 @@ describe('HttpResponse', () => {
       },
       resource: 'API'
     }
-    const route = new HttpRoute('/blog/:id')
-    request = new HttpRequest(app, event, route)
+    request = new HttpRequest(app, event)
     response = new HttpResponse(app, request, (err, succ) => {
       errResult = err;
       succResult = succ

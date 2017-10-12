@@ -71,9 +71,9 @@ export function getEventType(obj: any): string {
 }
 
 export function mergeParams(event: APIGatewayEvent) {
-  const body = typeof this.body === 'object' ? this.body : {};
-  const query = this._event.queryStringParameters || {};
-  const stageVariables = this._event.stageVariables || {};
+  const body = typeof event.body === 'object' ? event.body : {};
+  const query = event.queryStringParameters || {};
+  const stageVariables = event.stageVariables || {};
 
   return merge(body, query, stageVariables);
 }
