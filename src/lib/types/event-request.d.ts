@@ -1,7 +1,11 @@
+import INext from './next'
+
 export default interface IEventRequest {
 
-    event: any
+    readonly event: any
 
-    eventType: string
+    readonly eventType: string
+
+    next: INext
 
 }

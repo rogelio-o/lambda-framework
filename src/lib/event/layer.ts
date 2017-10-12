@@ -2,6 +2,7 @@ import IEventHandler from './../types/event-handler'
 import IEventLayer from './../types/event-layer'
 import IEventRequest from './../types/event-request'
 import IEventRoutePredicate from './../types/event-route-predicate'
+import INext from './../types/next'
 
 export default class EventLayer implements IEventLayer {
 
@@ -21,6 +22,18 @@ export default class EventLayer implements IEventLayer {
     } else {
       return this._event(req)
     }
+  }
+
+  handle(req: IEventRequest, next: INext, error: Error) {
+    if(this._handler) {
+      this._handler(req, next, error);
+    } else {
+      next(error);
+    }
+  }
+
+  isErrorHandler() {
+    return this._handler.length == 3;
   }
 
 }

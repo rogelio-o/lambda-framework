@@ -15,6 +15,8 @@ import IHttpResponse from './types/http-response'
 import INext from './types/next'
 import IHttpRouterExecutor from './types/http-router-executor'
 import HttpRouterExecutor from './http/router-executor'
+import IEventRouterExecutor from './types/event-router-executor'
+import EventRouterExecutor from './event/router-executor'
 
 const HTTP_METHODS = ['GET', 'PUT', 'DELETE', 'POST'];
 
@@ -81,6 +83,10 @@ export default class Router implements IRouter {
 
   get httpStack(): Array<IHttpLayer> {
     return this._httpStack;
+  }
+
+  get eventStack(): Array<IEventLayer> {
+    return this._eventStack;
   }
 
   get parent(): IRouter {
@@ -237,8 +243,9 @@ export default class Router implements IRouter {
     return result;
   }
 
-  eventHandle(req: IEventRequest, next: INext): void {
-    // TODO
+  eventHandle(req: IEventRequest, out: INext): void {
+    const routerExecutor:IEventRouterExecutor = new EventRouterExecutor(this, req, out);
+    routerExecutor.next();
   }
 
 }

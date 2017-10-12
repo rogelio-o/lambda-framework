@@ -108,8 +108,8 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
 
   private _findNextSubrouter():IRouter {
     let result:IRouter = null;
-    while(this._subrouterIndex < this._router.httpStack.length) {
-      let subrouter:IRouter = this._subrouterIndex[this._subrouterIndex];
+    while(this._subrouterIndex < this._router.subrouters.length) {
+      let subrouter:IRouter = this._router.subrouters[this._subrouterIndex];
       this._subrouterIndex++;
 
       if(this._req.path.startsWith(subrouter.fullSubpath)) {

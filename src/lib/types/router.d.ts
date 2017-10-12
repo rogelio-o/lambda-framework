@@ -9,12 +9,15 @@ import IEventHandler from './event-handler'
 import IEventRoutePredicate from './event-route-predicate'
 import IApp from './app'
 import IHttpLayer from './http-layer'
+import IEventLayer from './event-layer'
 
 export default interface IRouter {
 
-  httpStack: Array<IHttpLayer>
+  readonly httpStack: Array<IHttpLayer>
 
-  subrouters: Array<IRouter>
+  readonly eventStack: Array<IEventLayer>
+
+  readonly subrouters: Array<IRouter>
 
   /**
    * Get the indicated subpath for the router when
