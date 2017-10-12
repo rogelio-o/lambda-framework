@@ -8,13 +8,12 @@ on Express Framework.
 - [x] Configurable
 - [ ] HTTP requests routing
 - [ ] Other events requests routing
-- [ ] HTTP helpers (redirection, caching, etc)
-- [ ] Static files from S3 bucket
-- [ ] View system with template engines
-- [ ] Error handling
+- [x] HTTP helpers (redirection, etc)
+- [ ] View system with template engines (and files in S3)
+- [x] Error handling
 - [ ] Database integration
 - [ ] Extensible with modules
-- [ ] res.sendFile and res.download from S3 bucket to send files as response
+- [ ] res.sendFile and res.download from S3 bucket to send files as response and save it from request
 
 ## How to use it?
 
