@@ -5,7 +5,7 @@ import IHttpRequest from './../../src/lib/types/http-request'
 import HttpResponse from './../../src/lib/http/response'
 import IHttpResponse from './../../src/lib/types/http-response'
 import HttpRoute from './../../src/lib/http/route'
-import App from './../../src/lib/lambda-framework'
+import App from './../../src/lib/app'
 import IApp from './../../src/lib/types/app'
 import { APIGatewayEvent } from 'aws-lambda'
 
