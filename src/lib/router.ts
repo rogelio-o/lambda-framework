@@ -42,31 +42,6 @@ export default class Router implements IRouter {
   private _subpath: string
   private _parent: IRouter
 
-  get subpath(): string {
-    return this._subpath;
-  }
-
-  get fullSubpath(): string {
-    if(!this._subpath && !this._parent) {
-      return this._subpath;
-    } else {
-      let result = null;
-
-      if(this.parent) {
-        const parentFullSubpath = this.parent.fullSubpath;
-        if(parentFullSubpath) result = parentFullSubpath;
-      }
-
-      if(!result) {
-        result = '';
-      }
-
-      result = result + this._subpath;
-
-      return result;
-    }
-  }
-
   constructor(opts?: {[name: string]: any}) {
     const options = opts || {}
 
@@ -91,6 +66,31 @@ export default class Router implements IRouter {
 
   get parent(): IRouter {
     return this._parent;
+  }
+
+  get subpath(): string {
+    return this._subpath;
+  }
+
+  get fullSubpath(): string {
+    if(!this._subpath && !this._parent) {
+      return this._subpath;
+    } else {
+      let result = null;
+
+      if(this.parent) {
+        const parentFullSubpath = this.parent.fullSubpath;
+        if(parentFullSubpath) result = parentFullSubpath;
+      }
+
+      if(!result) {
+        result = '';
+      }
+
+      result = result + this._subpath;
+
+      return result;
+    }
   }
 
   param(name: string, handler: IHttpPlaceholderHandler): IRouter {
@@ -216,6 +216,8 @@ export default class Router implements IRouter {
       };
 
       processParam(0);
+    } else {
+      done();
     }
   }
 

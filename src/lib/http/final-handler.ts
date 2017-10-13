@@ -69,7 +69,18 @@ function createHtmlDocument(message: string): string {
 
 function send(req: IHttpRequest, res: IHttpResponse, status: number, headers: {[name: string]: string}, message: string) {
   // response body
-  var body = createHtmlDocument(message)
+  let body
+  let contentType
+  if(req.accepts('text/html')) {
+    body = createHtmlDocument(message)
+    contentType = 'text/html; charset=utf-8'
+  } else if(req.accepts('application/json')) {
+    body = {message: message, error: status}
+    contentType = 'application/json; charset=utf-8'
+  } else {
+    body = message
+    contentType = 'text/plain; charset=utf-8'
+  }
 
   // response status
   res.statusCode = status
@@ -82,7 +93,7 @@ function send(req: IHttpRequest, res: IHttpResponse, status: number, headers: {[
   res.putHeader('X-Content-Type-Options', 'nosniff')
 
   // standard headers
-  res.putHeader('Content-Type', 'text/html; charset=utf-8')
+  res.putHeader('Content-Type', contentType)
   res.putHeader('Content-Length', Buffer.byteLength(body, 'utf8').toString())
   res.send(body)
 }

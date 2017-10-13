@@ -101,7 +101,7 @@ export default class HttpLayer implements IHttpLayer {
       }
     } else {
       const isErrorHandler = this.isErrorHandler();
-      if((isErrorHandler && error) || (!isErrorHandler && !error)) {
+      if((isErrorHandler && error) || !error) {
         try {
           this._handler(req, res, next, error)
         } catch (err) {
@@ -114,7 +114,7 @@ export default class HttpLayer implements IHttpLayer {
   }
 
   isErrorHandler() {
-    return !this.route && this._handler.length == 4;
+    return !this.route && this._handler && this._handler.length == 4;
   }
 
 }

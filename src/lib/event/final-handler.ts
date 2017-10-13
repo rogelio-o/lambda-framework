@@ -14,12 +14,9 @@ export default function finalHandler(req: IEventRequest, options: {[name: string
   const onerror = opts.onerror
 
   return function (err) {
-    // unhandled error
-    if (err) {
-      // schedule onerror callback
-      if (onerror) {
-        defer(onerror, err, req)
-      }
+    // schedule onerror callback
+    if (onerror) {
+      defer(onerror, err, req)
     }
   }
 }
