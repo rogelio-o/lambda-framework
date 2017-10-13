@@ -76,6 +76,12 @@ export default interface IHttpRequest {
   route: IHttpRoute
 
   /**
+   * Context to save thins and use it
+   * in other handlers.
+   */
+  readonly context: { [name: string]: any }
+
+  /**
    * Return request header.
    *
    * @param  {string} key Header key.

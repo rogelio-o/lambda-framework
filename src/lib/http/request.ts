@@ -14,6 +14,7 @@ export default class HttpRequest implements IHttpRequest {
   private _app: IApp
   private _event: APIGatewayEvent
   private _headers: { [name: string]: string }
+  private _context: { [name: string]: any }
 
   public body: object|string
   public basePath: string
@@ -25,6 +26,7 @@ export default class HttpRequest implements IHttpRequest {
   constructor(app: IApp, event: APIGatewayEvent) {
     this._app = app;
     this._event = event;
+    this._context = {};
     this.params = mergeParams(event);
 
     this._headers = {}
@@ -75,6 +77,10 @@ export default class HttpRequest implements IHttpRequest {
 
   get event(): APIGatewayEvent {
     return this._event;
+  }
+
+  get context(): { [name: string]: any } {
+    return this._context;
   }
 
   header(key: string): string {

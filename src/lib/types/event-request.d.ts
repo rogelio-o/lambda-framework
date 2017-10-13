@@ -8,4 +8,10 @@ export default interface IEventRequest {
 
     next: INext
 
+    /**
+     * Context to save thins and use it
+     * in other handlers.
+     */
+    readonly context: { [name: string]: any }
+
 }
