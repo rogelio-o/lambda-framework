@@ -13,7 +13,7 @@ export default function finalHandler(req: IEventRequest, options: {[name: string
   // get error callback
   const onerror = opts.onerror
 
-  return function (err) {
+  return (err?: Error) => {
     // schedule onerror callback
     if (onerror) {
       defer(onerror, err, req)

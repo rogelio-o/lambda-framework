@@ -33,11 +33,15 @@ export function getEventType(obj: any): string {
   } else if('authorizationToken' in obj) {
     return 'CustomAuthorizerEvent'
   } else if('Records' in obj) {
-    const obj2 = obj[0] || {}
+    const obj2 = obj.Records[0] || {}
     if('Sns' in obj2) {
       return 'SNSEvent'
     } else if('s3' in obj2) {
       return 'S3CreateEvent'
+    } else if('kinesis' in obj2) {
+      return 'KinesisEvent'
+    } else if('dynamodb' in obj2) {
+      return 'DynamoDbEvent'
     } else {
       return null
     }
@@ -65,6 +69,8 @@ export function getEventType(obj: any): string {
         default:
           return null
       }
+  } else if('time' in obj) {
+    return 'ScheduledEvent'
   } else {
     return null
   }

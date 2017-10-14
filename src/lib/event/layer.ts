@@ -33,7 +33,7 @@ export default class EventLayer implements IEventLayer {
   }
 
   isErrorHandler() {
-    return this._handler && this._handler.length == 3;
+    return this._handler != null && this._handler.length == 3;
   }
 
 }

@@ -48,6 +48,7 @@ export default class Router implements IRouter {
     this._subrouters = []
     this._params = {}
     this._httpStack = []
+    this._eventStack = []
     this._caseSensitive = options.caseSensitive || false
     this._strict = options.strict || false
   }

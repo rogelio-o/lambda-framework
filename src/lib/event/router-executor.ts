@@ -31,6 +31,7 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
 
   constructor(router: IRouter, req:IEventRequest, done:INext) {
     this._router = router;
+    this._req = req;
     this._stackIndex = 0;
     this._subrouterIndex = 0;
     this._done =  restore(done, req, 'next');
@@ -79,7 +80,7 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
         // We process only error handlers if there is an error
         this.next(error);
       } else {
-        layer.handle(this._req, this.next, error);
+        layer.handle(this._req, this.next.bind(this), error);
       }
     } else if(this._subrouterIndex < this._router.subrouters.length) {
       // Process from subrouters
@@ -91,7 +92,7 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
       } else {
         // Process the subrouter and come back to this executor
         // to process a new subrouter o to finalize
-        subrouter.eventHandle(this._req, this.next);
+        subrouter.eventHandle(this._req, this.next.bind(this));
       }
     } else {
       // Finalize
