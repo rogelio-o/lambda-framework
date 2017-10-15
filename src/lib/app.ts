@@ -73,14 +73,14 @@ export default class App implements IApp {
       const res: IHttpResponse = new HttpResponse(this, req, callback)
       const done = httpFinalHandler(req, res, {
         env: this.get(Configuration.ENVIRONMENT),
-        onerror: this._logError
+        onerror: this._logError.bind(this)
       })
       this._router.httpHandle(req, res, done)
     } else {
       const req: IEventRequest = new EventRequest(event)
       const done = eventFinalHandler(req, {
         env: this.get(Configuration.ENVIRONMENT),
-        onerror: this._logError
+        onerror: this._logError.bind(this)
       })
       this._router.eventHandle(req, done)
     }
