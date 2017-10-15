@@ -11,9 +11,6 @@ language: node_js
 # Specify the node versions to run on
 node_js:
   - "6.11.2"
-# Make sure to bundle the application before any deploys
-before_deploy:
-  - npm run bundle
 # Report code coverage to coveralls after successful test runs
 after_success:
   - npm run coveralls
