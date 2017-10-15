@@ -11,11 +11,8 @@ on Express Framework.
 - [x] HTTP requests routing
 - [x] Other events requests routing
 - [x] HTTP helpers (redirection, etc)
-- [ ] View system with template engines (and files in S3)
 - [x] Error handling
-- [ ] Database integration
-- [x] Extensible with modules
-- [ ] res.sendFile and res.download from S3 bucket to send files as response and save it from request
+- [x] Extensible with modules files as response and save it from request
 
 ## How to use it?
 
