@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "DEBUG=lambda-framework mocha --recursive dist/test/",
+    "bundle": "tsc",
     "coverage": "nyc report"
   },
   "keywords": [
