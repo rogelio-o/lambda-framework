@@ -3,5 +3,8 @@ export default {
   ENVIRONMENT: 'environment',
   TRUST_PROXY: 'trus_proxy',
   ETAG_FN: 'etag_fn',
-  COOKIE_SECRET: 'cookie_secret'
+  COOKIE_SECRET: 'cookie_secret',
+  JSON_REPLACER: 'json_replacer',
+  JSON_SPACES: 'json_spaces',
+  JSON_ESCAPE: 'json_escape'
 }

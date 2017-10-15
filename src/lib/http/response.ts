@@ -11,7 +11,7 @@ var statuses = require('statuses')
 var encodeUrl = require('encodeurl')
 var escapeHtml = require('escape-html')
 import HttpError from './../exceptions/http-error'
-import { merge } from './../utils/utils'
+import { merge, stringify } from './../utils/utils'
 import { sign } from 'cookie-signature'
 import { parse, serialize } from 'cookie'
 
@@ -159,12 +159,10 @@ export default class HttpResponse implements IHttpResponse {
       this.putHeader('Content-Type', setCharset('application/json', 'utf-8'));
     }
 
-    // content-length
-    if (!this.header('Content-Length')) {
-      this.putHeader('Content-Length', new Buffer(JSON.stringify(obj), 'utf-8').length.toString());
-    }
-
-    this._end(obj);
+    const replacer = this._app.get(Configuration.JSON_REPLACER)
+    const spaces = this._app.get(Configuration.JSON_SPACES)
+    const escape = this._app.get(Configuration.JSON_ESCAPE)
+    this.send(stringify(obj, replacer, spaces, escape));
   }
 
   sendStatus(code: number): void {

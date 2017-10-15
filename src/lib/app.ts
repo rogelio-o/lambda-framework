@@ -59,10 +59,20 @@ export default class App implements IApp {
 
   /* Router */
 
-  private _logError(err: Error): void {
+  private _logError(req: IHttpRequest|IEventRequest, err: Error): void {
     /* istanbul ignore next */
     if (this.get(Configuration.ENVIRONMENT) !== 'test') {
-      console.error(err instanceof HttpError ? err.cause.message : err.message);
+      if(err) {
+        console.error(err instanceof HttpError ? err.cause.message : err.message);
+      } else {
+        if(req instanceof EventRequest) {
+          console.error('No handlers for ' + JSON.parse(req.event))
+        } else if(req instanceof HttpRequest){
+          console.error('No handlers for ' + req.method + ' ' + req.path)
+        } else {
+          console.error('No handlers found.')
+        }
+      }
     }
   }
 
@@ -73,14 +83,14 @@ export default class App implements IApp {
       const res: IHttpResponse = new HttpResponse(this, req, callback)
       const done = httpFinalHandler(req, res, {
         env: this.get(Configuration.ENVIRONMENT),
-        onerror: this._logError.bind(this)
+        onerror: this._logError.bind(this, req)
       })
       this._router.httpHandle(req, res, done)
     } else {
       const req: IEventRequest = new EventRequest(event)
       const done = eventFinalHandler(req, {
         env: this.get(Configuration.ENVIRONMENT),
-        onerror: this._logError.bind(this)
+        onerror: this._logError.bind(this, req)
       })
       this._router.eventHandle(req, done)
     }

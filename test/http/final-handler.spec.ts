@@ -109,8 +109,8 @@ describe('finalHandler', () => {
     const handler = finalHandler(req, res, {})
     handler()
     Chai.expect(callBackSuccessResult.statusCode).to.be.equals(404)
-    Chai.expect(callBackSuccessResult.body.message).to.be.equals('Cannot GET /blog/1')
-    Chai.expect(callBackSuccessResult.body.error).to.be.equals(404)
+    Chai.expect(JSON.parse(callBackSuccessResult.body).message).to.be.equals('Cannot GET /blog/1')
+    Chai.expect(JSON.parse(callBackSuccessResult.body).error).to.be.equals(404)
   });
 
   it('should set the response status code, headers and body from #err if it is not undefined.', () => {
@@ -119,8 +119,8 @@ describe('finalHandler', () => {
     error.headers = {errorHeader: 'test'}
     handler(error)
     Chai.expect(callBackSuccessResult.statusCode).to.be.equals(403)
-    Chai.expect(callBackSuccessResult.body.message).to.be.equals('Test msg')
-    Chai.expect(callBackSuccessResult.body.error).to.be.equals(403)
+    Chai.expect(JSON.parse(callBackSuccessResult.body).message).to.be.equals('Test msg')
+    Chai.expect(JSON.parse(callBackSuccessResult.body).error).to.be.equals(403)
     Chai.expect(callBackSuccessResult.headers.errorHeader).to.be.equals('test')
   });
 
@@ -138,7 +138,7 @@ describe('finalHandler', () => {
   it('should send a JSON response and JSON as content type if the request accepts JSON and it does not accept HTML.', () => {
     const handler = finalHandler(req, res, {})
     handler()
-    Chai.expect(callBackSuccessResult.body).to.be.a('object')
+    Chai.expect(JSON.parse(callBackSuccessResult.body)).to.be.a('object')
   });
 
   it('should send a PLAIN response and PLAIN as content type if the request does not accept JSON neither HTML.', () => {

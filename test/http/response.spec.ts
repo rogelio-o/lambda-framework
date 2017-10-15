@@ -8,6 +8,7 @@ import HttpRoute from './../../src/lib/http/route'
 import App from './../../src/lib/app'
 import IApp from './../../src/lib/types/app'
 import { APIGatewayEvent } from 'aws-lambda'
+import { stringify } from './../../src/lib/utils/utils'
 
 /**
  * Test for HttpResponse.
@@ -167,9 +168,10 @@ describe('HttpResponse', () => {
 
   it('#json should set the outcoming response header Content-Length to the right length', () => {
     const body = {test: 'test1'}
+    const parsedBody = stringify(body, undefined, undefined, undefined)
     response.json(body)
-    Chai.expect(succResult.headers['Content-Length']).to.be.equal('16')
-    Chai.expect(succResult.body).to.be.equal(body)
+    Chai.expect(succResult.headers['Content-Length']).to.be.equal(parsedBody.length.toString())
+    Chai.expect(succResult.body).to.be.equal(parsedBody)
   });
 
   it('#sendStatus should set the outcoming response header Content-Length to "txt", the body to the status code body and the satus code to the given status code', () => {
@@ -304,7 +306,6 @@ describe('HttpResponse', () => {
 
   it('#clearCookie should add the cookie `field` with the `options` and the expires to 1 and the path to /', () => {
     response.clearCookie('cookie')
-    console.log(response.header('Set-Cookie'))
     Chai.expect(response.header('Set-Cookie')).to.be.equal('cookie=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT')
   });
 
