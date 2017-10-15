@@ -10,6 +10,7 @@
   },
   "scripts": {
     "clean": "rm -rf build coverage",
+    "bundle": "tsc",
     "precompile": "npm run clean",
     "pretest": "npm run compile",
     "test": "nyc --reporter=html --reporter=text mocha --recursive dist/test/",
