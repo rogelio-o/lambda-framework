@@ -18,7 +18,7 @@ after_success:
 notifications:
   email: false
 deploy:
-  skip_cleanup: false
+  skip_cleanup: true
   provider: npm
   email: yo@rogelioorts.com
   api_key: $NPM_TOKEN
