@@ -9,7 +9,8 @@
     "url": "https://github.com/rogelio-o/lambda-framework.git"
   },
   "scripts": {
-    "test": "DEBUG=lambda-framework mocha --recursive dist/test/"
+    "test": "DEBUG=lambda-framework mocha --recursive dist/test/",
+    "coverage": "nyc report"
   },
   "keywords": [
     "serverless",
@@ -23,7 +24,8 @@
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.28",
-    "chai": "^4.1.2"
+    "chai": "^4.1.2",
+    "nyc": "^11.2.1"
   },
   "dependencies": {
     "accepts": "^1.3.4",
