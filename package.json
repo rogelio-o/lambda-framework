@@ -9,9 +9,12 @@
     "url": "https://github.com/rogelio-o/lambda-framework.git"
   },
   "scripts": {
+    "clean": "rm -rf build coverage",
+    "precompile": "npm run clean",
+    "pretest": "npm run compile",
     "test": "nyc --reporter=html --reporter=text mocha --recursive dist/test/",
     "posttest": "npm run lint && nyc check-coverage --statements 90 --branches 90 --functions 90 --lines 90",
-    "bundle": "tsc",
+    "compile": "tsc",
     "lint": "tslint --config tslint.json --type-check --project tsconfig.json src/**/*.ts",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
