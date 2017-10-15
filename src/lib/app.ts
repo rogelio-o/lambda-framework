@@ -66,11 +66,11 @@ export default class App implements IApp {
         console.error(err instanceof HttpError ? err.cause.message : err.message);
       } else {
         if(req instanceof EventRequest) {
-          console.error('No handlers for ' + JSON.parse(req.event))
+          console.info('No handlers for ' + JSON.parse(req.event))
         } else if(req instanceof HttpRequest){
-          console.error('No handlers for ' + req.method + ' ' + req.path)
+          console.info('No handlers for ' + req.method + ' ' + req.path)
         } else {
-          console.error('No handlers found.')
+          console.info('No handlers found.')
         }
       }
     }
