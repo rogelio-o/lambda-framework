@@ -3,6 +3,6 @@ dist
 
 .DS_Store
 .nyc_output
-.coverage
+coverage
 *.js.map
 *.js
