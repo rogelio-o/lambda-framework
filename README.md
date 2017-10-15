@@ -1,5 +1,7 @@
 # Lambda Framework
 
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1314/badge)](https://bestpractices.coreinfrastructure.org/projects/1314)
+
 A framework to create serverless web applications in AWS Lambda. It is based
 on Express Framework.
 
