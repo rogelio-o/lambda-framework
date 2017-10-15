@@ -67,7 +67,7 @@ describe('HttpRequest', () => {
       },
       resource: 'API'
     }
-    request = new HttpRequest(app, event)
+    request = new HttpRequest(event)
 
     done()
   });

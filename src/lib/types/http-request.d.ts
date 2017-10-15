@@ -76,6 +76,11 @@ export default interface IHttpRequest {
   route: IHttpRoute
 
   /**
+   * Original event.
+   */
+  event: APIGatewayEvent
+
+  /**
    * Context to save thins and use it
    * in other handlers.
    */

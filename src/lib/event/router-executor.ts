@@ -17,7 +17,7 @@ function restore(fn: INext, req: IEventRequest, ...params: string[]) {
       req[params[i]] = vals[i];
     }
 
-    return fn.apply(this);
+    return fn(err);
   };
 }
 

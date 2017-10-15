@@ -21,6 +21,7 @@ export default class HttpRoute implements IHttpRoute {
   }
 
   hasMethod(method: string): boolean {
+    method = method ? method.toLowerCase() : '';
     return this._handlers._all !== undefined || this._handlers[method] !== undefined;
   }
 

@@ -74,7 +74,7 @@ export default class Router implements IRouter {
   }
 
   get fullSubpath(): string {
-    if(!this._subpath && !this._parent) {
+    if(!this._subpath || !this._parent) {
       return this._subpath;
     } else {
       let result = null;
@@ -102,7 +102,6 @@ export default class Router implements IRouter {
   }
 
   use(handler: IHttpHandler|Array<IHttpHandler>, path?: string): IRouter {
-    if(!path) path = '/'
     let fns: Array<IHttpHandler>
     if(Array.isArray(handler)) {
       fns = handler
@@ -110,7 +109,7 @@ export default class Router implements IRouter {
       fns = [handler]
     }
 
-    const layers: Array<IHttpLayer> = fns.map(fn => new HttpLayer(path, {
+    const layers: Array<IHttpLayer> = fns.map(fn => new HttpLayer(this, path, {
       sensitive: this._caseSensitive,
       strict: false,
       end: false
@@ -129,7 +128,7 @@ export default class Router implements IRouter {
   }
 
   route(path: string): IHttpRoute {
-    const layer = new HttpLayer(path, {
+    const layer = new HttpLayer(this, path, {
       sensitive: this._caseSensitive,
       strict: this._strict,
       end: true
@@ -196,7 +195,7 @@ export default class Router implements IRouter {
               if(error) {
                 partialDone(error);
               } else {
-                const newIndex = index + 1;
+                const newIndex = index2 + 1;
                 if(newIndex < handlers.length) {
                   processHandler(newIndex);
                 } else {
@@ -226,7 +225,7 @@ export default class Router implements IRouter {
     const result = [];
 
     this._httpStack.forEach((layer) => {
-      if(layer.route) {
+      if(layer.route && layer.match(path)) {
         HTTP_METHODS.forEach((method) => {
           if(result.indexOf(method) == -1 && layer.route.hasMethod(method)) {
             result.push(method);

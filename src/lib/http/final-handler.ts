@@ -40,7 +40,7 @@ function getErrorMessage (err: Error, status: number, env: string): string {
 
   if (env !== 'production') {
     if(err instanceof HttpError) {
-      msg = err.cause.message
+      msg = err.cause ? err.cause.message : err.message
     } else {
       msg = err.message
     }
@@ -83,7 +83,7 @@ function send(req: IHttpRequest, res: IHttpResponse, status: number, headers: {[
   }
 
   // response status
-  res.statusCode = status
+  res.status(status)
 
   // response headers
   res.putHeaders(headers)
@@ -107,7 +107,7 @@ export default function finalHandler(req: IHttpRequest, res: IHttpResponse, opti
   // get error callback
   const onerror = opts.onerror
 
-  return function (err) {
+  return (err?) => {
     let headers
     let msg
     let status

@@ -7,6 +7,7 @@ import INext from './../types/next'
 import { Key, RegExpOptions } from 'path-to-regexp'
 const pathToRegexp = require('path-to-regexp')
 import HttpError from './../exceptions/http-error'
+import IRouter from './../types/router'
 
 function decode_param(val) {
   if (typeof val !== 'string' || val.length === 0) {
@@ -27,6 +28,7 @@ function decode_param(val) {
 
 export default class HttpLayer implements IHttpLayer {
 
+  private _router: IRouter
   private _path: string
   private _options: {}
   private _handler: IHttpHandler
@@ -39,25 +41,53 @@ export default class HttpLayer implements IHttpLayer {
   private _regexpFastStar: boolean;
   private _regexpFastSlash: boolean;
 
-  constructor(path: string, options: {}, handler?: IHttpHandler, regexOptions?: RegExpOptions) {
+  constructor(router: IRouter, path: string, options: {}, handler?: IHttpHandler, regexOptions?: RegExpOptions) {
+    this._router = router
     this._path = path
     this._options = options
     this._handler = handler
 
     const opts = regexOptions || {};
-    this._keys = [];
-    this._regexp = pathToRegexp(path, this._keys, opts);
+    if(path) {
+      this._keys = [];
+      this._regexp = pathToRegexp(path, this._keys, opts);
 
-    this._regexpFastStar = path === '*';
-    this._regexpFastSlash = path === '/' && opts.end === false;
+      this._regexpFastStar = path === '*';
+      this._regexpFastSlash = path === '/' && opts.end === false;
+    }
   }
 
   match(path: string): boolean {
-    return this._regexp.test(path);
+    let result: boolean = false
+
+    if(this._regexp == null) {
+      result = true;
+    } else {
+      const pathWithoutSubpath = this._getPathWithoutSubpath(path)
+      if(pathWithoutSubpath) {
+        result = this._regexp.test(pathWithoutSubpath);
+      }
+    }
+
+    return result
+  }
+
+  private _getPathWithoutSubpath(path: string): string {
+    let result = path
+    const subpath = this._router.fullSubpath
+    if(subpath) {
+      if(!path.startsWith(subpath)) {
+        result = null
+      } else {
+        result = path.slice(subpath.length)
+      }
+    }
+
+    return result
   }
 
   parsePathParameters(path: string): { [name: string]: string } {
-    if (path != null) {
+    if (path != null && this._path != null) {
       // fast path non-ending match for / (any path matches)
       if (this._regexpFastSlash) {
         return {};
@@ -68,8 +98,13 @@ export default class HttpLayer implements IHttpLayer {
         return {'0': decode_param(path)}
       }
 
+      const pathWithoutSubpath = this._getPathWithoutSubpath(path)
+      if(!pathWithoutSubpath) {
+        return {};
+      }
+
       // match the path
-      const match = this._regexp.exec(path)
+      const match = this._regexp.exec(pathWithoutSubpath)
 
       // store values
       const params = {};
@@ -114,7 +149,7 @@ export default class HttpLayer implements IHttpLayer {
   }
 
   isErrorHandler() {
-    return !this.route && this._handler && this._handler.length == 4;
+    return !this.route && this._handler != null && this._handler.length == 4;
   }
 
 }

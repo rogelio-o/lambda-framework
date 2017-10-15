@@ -6,9 +6,9 @@ export default interface IHttpResponse {
   /**
    * The response HTTP status code.
    */
-  statusCode: number;
+  readonly statusCode: number;
 
-  isSent: boolean;
+  readonly isSent: boolean;
 
   /**
    * Set the status `code` of the response.

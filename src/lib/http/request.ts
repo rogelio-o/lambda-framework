@@ -1,6 +1,5 @@
 import IHttpRequest from './../types/http-request'
 import IHttpResponse from './../types/http-response'
-import IApp from './../types/app'
 import { APIGatewayEvent } from 'aws-lambda'
 import Configuration from './../configuration/configuration'
 const fresh = require('fresh')
@@ -11,7 +10,6 @@ import INext from './../types/next'
 
 export default class HttpRequest implements IHttpRequest {
 
-  private _app: IApp
   private _event: APIGatewayEvent
   private _headers: { [name: string]: string }
   private _context: { [name: string]: any }
@@ -23,8 +21,7 @@ export default class HttpRequest implements IHttpRequest {
   public params: { [name: string]: string }
   public route: IHttpRoute
 
-  constructor(app: IApp, event: APIGatewayEvent) {
-    this._app = app;
+  constructor(event: APIGatewayEvent) {
     this._event = event;
     this._context = {};
     this.params = mergeParams(event);

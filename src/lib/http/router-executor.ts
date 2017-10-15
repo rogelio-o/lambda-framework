@@ -19,7 +19,7 @@ function restore(fn: INext, req: IHttpRequest, ...params: string[]) {
       req[params[i]] = vals[i];
     }
 
-    return fn.apply(this);
+    return fn(err);
   };
 }
 
@@ -75,6 +75,8 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
 
   constructor(router: IRouter, req:IHttpRequest, res:IHttpResponse, done:INext) {
     this._router = router;
+    this._req = req;
+    this._res = res;
     this._stackIndex = 0;
     this._subrouterIndex = 0;
     this._parentParams = req.params
@@ -112,7 +114,7 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
       let subrouter:IRouter = this._router.subrouters[this._subrouterIndex];
       this._subrouterIndex++;
 
-      if(this._req.path.startsWith(subrouter.fullSubpath)) {
+      if(subrouter.fullSubpath == null || this._req.path.startsWith(subrouter.fullSubpath)) {
         result = subrouter;
         break;
       }
@@ -137,10 +139,10 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
         this._req.params = mergeParams(layerParams, this._parentParams);
 
         this._router.httpProcessParams(layerParams, this._executedParams, this._req, this._res, (paramsError) => {
-          if(error) {
+          if(paramsError) {
             this.next(paramsError);
           } else {
-            layer.handle(this._req, this._res, this.next, error);
+            layer.handle(this._req, this._res, this.next.bind(this), error);
           }
         });
       }
@@ -154,7 +156,7 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
       } else {
         // Process the subrouter and come back to this executor
         // to process a new subrouter o to finalize
-        subrouter.httpHandle(this._req, this._res, this.next);
+        subrouter.httpHandle(this._req, this._res, this.next.bind(this));
       }
     } else {
       // Finalize

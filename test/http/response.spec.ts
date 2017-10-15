@@ -74,7 +74,7 @@ describe('HttpResponse', () => {
       },
       resource: 'API'
     }
-    request = new HttpRequest(app, event)
+    request = new HttpRequest(event)
     response = new HttpResponse(app, request, (err, succ) => {
       errResult = err;
       succResult = succ
