@@ -20,3 +20,9 @@ after_success:
 # Do not send build notifications
 notifications:
   email: false
+deploy:
+  provider: npm
+  email: yo@rogelioorts.com
+  api_key: $NPM_TOKEN
+  on:
+    tags: true
