@@ -34,7 +34,7 @@
         "jquery-deferred-must-complete": true,
         "label-position": true,
         "mocha-avoid-only": true,
-        "no-any": true,
+        "no-any": false,
         "no-arg": true,
         "no-backbone-get-set-outside-model": true,
         "no-bitwise": true,
@@ -75,7 +75,7 @@
          */
         "class-name": true,
         "comment-format": [true, "check-space"],
-        "export-name": true,
+        "export-name": [true, "App"],
         "function-name": [ true, {
             "method-regex": "^[a-z][\\w\\d]+$",
             "private-method-regex": "^[a-z][\\w\\d]+$",
@@ -93,7 +93,7 @@
         "new-parens": true,
         "no-construct": true,
         "no-parameter-properties": true,
-        "no-default-export": true,
+        "no-default-export": false,
         "no-empty-interfaces": true,
         "no-for-in": true,
         "no-function-expression": true,

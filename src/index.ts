@@ -1,10 +1,10 @@
-/*!
+/**
  * lambda-framework
  * Copyright(c) 2017 Rogelio Orts
  * MIT Licensed
  */
-import App from './lib/app'
-import Configuration from './lib/configuration/configuration'
+import App from "./lib/App";
+import configuration from "./lib/configuration/configuration";
 
-export { Configuration }
-export default App
+export { configuration };
+export default App;
