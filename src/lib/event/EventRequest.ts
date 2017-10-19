@@ -1,7 +1,10 @@
-import IEventRequest from './../types/event/IEventRequest'
-import { getEventType } from './../utils/utils'
-import INext from './../types/INext'
+import IEventRequest from "./../types/event/IEventRequest";
+import { getEventType } from "./../utils/utils";
+import INext from "./../types/INext";
 
+/**
+ * It represents an incoming event.
+ */
 export default class EventRequest implements IEventRequest {
 
   private _event: any

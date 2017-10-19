@@ -1,11 +1,16 @@
-import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
-import IHttpHandler from "./http/IHttpHandler";
-import IHttpRoute from "./http/IHttpRoute";
+import { Callback, Context } from "aws-lambda";
 import IEventHandler from "./event/IEventHandler";
 import IEventRoutePredicate from "./event/IEventRoutePredicate";
+import IHttpHandler from "./http/IHttpHandler";
+import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
+import IHttpRoute from "./http/IHttpRoute";
 import IRouter from "./IRouter";
-import { Context, Callback } from "aws-lambda";
 
+/**
+ * It stores the main router and the configuration parameters. Also,
+ * it is the main door to start the process when the handler of the
+ * lambda function is called.
+ */
 export default interface IApp {
 
     /**
@@ -15,20 +20,20 @@ export default interface IApp {
      *
      * @param {object} settings
      */
-    init(settings?: object): void
+    init(settings?: object): void;
 
     /**
      * Set to _true_ the configuration param `key`.
      *
      * @param {string} key
      */
-    enable(key: string): void
+    enable(key: string): void;
 
     /**
      * Set to _false_ the configuration param `key`.
      * @param {string} key
      */
-    disable(key: string): void
+    disable(key: string): void;
 
     /**
      * Set to `value` the configuration param `key`.
@@ -36,7 +41,7 @@ export default interface IApp {
      * @param {string} key
      * @param {any}    value
      */
-    setConf(key: string, value: any): void
+    set(key: string, value: any): void;
 
     /**
      * Return the value of the configuration param `key`.
@@ -44,7 +49,7 @@ export default interface IApp {
      * @param  {string} key
      * @return {any}
      */
-    getConf(key: string): any
+    get(key: string): any;
 
     /**
      * Handle an incoming lambda funciton.
@@ -53,7 +58,7 @@ export default interface IApp {
      * @param {Context}  context
      * @param {Callback} callback
      */
-    handle(event: any, context: Context, callback?: Callback): void
+    handle(event: any, context: Context, callback?: Callback): void;
 
     /**
      * Use the given handler, with optional path, defaulting to "/".
@@ -63,10 +68,10 @@ export default interface IApp {
      * functions even if they could respond.
      *
      * @param  {string}              path
-     * @param  {Array<IHttpHandler>} ...handler
+     * @param  {IHttpHandler[]} ...handler
      * @return {IRouter}
      */
-    use(path?: string, ...handler: Array<IHttpHandler>): IApp
+    use(path?: string, ...handler: IHttpHandler[]): IApp;
 
     /**
      * Mount router in the given path. If no path is given, the default path
@@ -76,7 +81,7 @@ export default interface IApp {
      * @param  {string}  path
      * @return {IApp}
      */
-    mount(router: IRouter, path?: string): IApp
+    mount(router: IRouter, path?: string): IApp;
 
     /**
      * Map the given param placeholder `name`(s) to the given callback.
@@ -94,7 +99,7 @@ export default interface IApp {
      * @param  {string}       name
      * @param  {IHttpHandler} handler
      */
-    param(name: string, handler: IHttpPlaceholderHandler): IApp
+    param(name: string, handler: IHttpPlaceholderHandler): IApp;
 
     /**
      * Create a new HTTP route for the given path.
@@ -103,7 +108,7 @@ export default interface IApp {
      * @param  {string}     method
      * @return {IHttpRoute}
      */
-    route(path: string): IHttpRoute
+    route(path: string): IHttpRoute;
 
     /**
      * Use the given handler for the given event or for the event requests
@@ -113,6 +118,6 @@ export default interface IApp {
      * @param {IEventHandler} handler
      * @return {IEventRoute}
      */
-    event(event: string|IEventRoutePredicate, handler: IEventHandler): IApp
+    event(event: string|IEventRoutePredicate, handler: IEventHandler): IApp;
 
 }

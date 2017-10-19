@@ -1,9 +1,12 @@
-import IEventHandler from './../types/event/IEventHandler'
-import IEventLayer from './../types/event/IEventLayer'
-import IEventRequest from './../types/event/IEventRequest'
-import IEventRoutePredicate from './../types/event/IEventRoutePredicate'
-import INext from './../types/INext'
+import IEventHandler from "./../types/event/IEventHandler";
+import IEventLayer from "./../types/event/IEventLayer";
+import IEventRequest from "./../types/event/IEventRequest";
+import IEventRoutePredicate from "./../types/event/IEventRoutePredicate";
+import INext from "./../types/INext";
 
+/**
+ * A event router layer to be executed over an event request.
+ */
 export default class EventLayer implements IEventLayer {
 
   private _event: string|IEventRoutePredicate

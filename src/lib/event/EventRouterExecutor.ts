@@ -1,26 +1,29 @@
-import IEventRouterExecutor from './../types/event/IEventRouterExecutor'
-import IRouter from './../types/IRouter'
-import IEventRequest from './../types/event/IEventRequest'
-import INext from './../types/INext'
-import IEventLayer from './../types/event/IEventLayer'
+import IEventRouterExecutor from "./../types/event/IEventRouterExecutor";
+import IRouter from "./../types/IRouter";
+import IEventRequest from "./../types/event/IEventRequest";
+import INext from "./../types/INext";
+import IEventLayer from "./../types/event/IEventLayer";
 
-function restore(fn: INext, req: IEventRequest, ...params: string[]) {
-  var vals = new Array(params.length);
+function restore(fn: INext, req: IEventRequest, ...params: string[]): INext {
+  var vals = [];
 
   for (var i = 0; i < params.length; i++) {
     vals[i] = req[params[i]];
   }
 
-  return function (err) {
+  return (err?: Error): void => {
     // restore vals
     for (var i = 0; i < params.length; i++) {
       req[params[i]] = vals[i];
     }
 
-    return fn(err);
+    fn(err);
   };
 }
 
+/**
+ * This class execute all the layers for an incoming event.
+ */
 export default class EventRouterExecutor implements IEventRouterExecutor {
 
   private _router:IRouter
@@ -39,7 +42,39 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
     req.next = this.next
   }
 
-  private _findNextLayer():IEventLayer {
+  public next(error?: Error): void {
+    if(this._stackIndex < this._router.eventStack.length) {
+      // Process from stack
+      const layer:IEventLayer = this.findNextLayer();
+
+      if(!layer) {
+        // If no layer found, call next again to process subrouters or finalize
+        this.next(error);
+      } else if(error && !layer.isErrorHandler()) {
+        // We process only error handlers if there is an error
+        this.next(error);
+      } else {
+        layer.handle(this._req, this.next.bind(this), error);
+      }
+    } else if(this._subrouterIndex < this._router.subrouters.length) {
+      // Process from subrouters
+      const subrouter:IRouter = this.findNextSubrouter();
+
+      if(!subrouter) {
+        // If no subrouter found, call next again to finalize
+        this.next(error);
+      } else {
+        // Process the subrouter and come back to this executor
+        // to process a new subrouter o to finalize
+        subrouter.eventHandle(this._req, this.next.bind(this));
+      }
+    } else {
+      // Finalize
+      setImmediate(this._done, error);
+    }
+  }
+
+  private findNextLayer():IEventLayer {
     let result:IEventLayer = null;
     while(this._stackIndex < this._router.eventStack.length) {
       let layer:IEventLayer = this._router.eventStack[this._stackIndex];
@@ -54,7 +89,7 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
     return result;
   }
 
-  private _findNextSubrouter():IRouter {
+  private findNextSubrouter():IRouter {
     let result:IRouter = null;
     while(this._subrouterIndex < this._router.subrouters.length) {
       let subrouter:IRouter = this._router.subrouters[this._subrouterIndex];
@@ -66,38 +101,6 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
       }
     }
     return result;
-  }
-
-  next(error?: Error): void {
-    if(this._stackIndex < this._router.eventStack.length) {
-      // Process from stack
-      const layer:IEventLayer = this._findNextLayer();
-
-      if(!layer) {
-        // If no layer found, call next again to process subrouters or finalize
-        this.next(error);
-      } else if(error && !layer.isErrorHandler()) {
-        // We process only error handlers if there is an error
-        this.next(error);
-      } else {
-        layer.handle(this._req, this.next.bind(this), error);
-      }
-    } else if(this._subrouterIndex < this._router.subrouters.length) {
-      // Process from subrouters
-      const subrouter:IRouter = this._findNextSubrouter();
-
-      if(!subrouter) {
-        // If no subrouter found, call next again to finalize
-        this.next(error);
-      } else {
-        // Process the subrouter and come back to this executor
-        // to process a new subrouter o to finalize
-        subrouter.eventHandle(this._req, this.next.bind(this));
-      }
-    } else {
-      // Finalize
-      setImmediate(this._done, error);
-    }
   }
 
 }

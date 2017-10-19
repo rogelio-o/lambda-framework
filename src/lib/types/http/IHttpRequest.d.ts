@@ -2,6 +2,7 @@ import { APIGatewayEvent } from "aws-lambda";
 import INext from "./../INext";
 import IHttpResponse from "./IHttpResponse";
 import IHttpRoute from "./IHttpRoute";
+
 /**
  * A incoming request created when the event is APIGatewayEvent.
  */

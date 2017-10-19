@@ -1,37 +1,42 @@
-import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
+import IEventHandler from "./event/IEventHandler";
+import IEventLayer from "./event/IEventLayer";
+import IEventRequest from "./event/IEventRequest";
+import IEventRoutePredicate from "./event/IEventRoutePredicate";
 import IHttpHandler from "./http/IHttpHandler";
-import IHttpRoute from "./http/IHttpRoute";
+import IHttpLayer from "./http/IHttpLayer";
+import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRequest from "./http/IHttpRequest";
 import IHttpResponse from "./http/IHttpResponse";
-import IEventRequest from "./event/IEventRequest";
-import INext from "./INext";
-import IEventHandler from "./event/IEventHandler";
-import IEventRoutePredicate from "./event/IEventRoutePredicate";
+import IHttpRoute from "./http/IHttpRoute";
 import IApp from "./IApp";
-import IHttpLayer from "./http/IHttpLayer";
-import IEventLayer from "./event/IEventLayer";
+import INext from "./INext";
 
+/**
+ * It's the router of the application in which all the event handlers and
+ * all the http path handlers are saved. A router can have subrouters
+ * with more handlers (and it can be in a subpath).
+ */
 export default interface IRouter {
 
-  readonly httpStack: IHttpLayer[]
+  readonly httpStack: IHttpLayer[];
 
-  readonly eventStack: IEventLayer[]
+  readonly eventStack: IEventLayer[];
 
-  readonly subrouters: IRouter[]
+  readonly subrouters: IRouter[];
 
   /**
    * Get the indicated subpath for the router when
    * it is done a subrouter. If it is not a subrouter,
    * the subpath will be null.
    */
-  readonly subpath: string
+  readonly subpath: string;
 
   /**
    * Get the full subpath of the router, it is done
    * by the concadenation of each subpath of each router
    * from the begginig (root router) to the end.
    */
-  readonly fullSubpath: string
+  readonly fullSubpath: string;
 
   /**
    * Map the given param placeholder `name`(s) to the given callback.
@@ -49,7 +54,7 @@ export default interface IRouter {
    * @param  {string}       name
    * @param  {IHttpHandler} handler
    */
-  param(name: string, handler: IHttpPlaceholderHandler): IRouter
+  param(name: string, handler: IHttpPlaceholderHandler): IRouter;
 
   /**
    * Use the given handler, with optional path, defaulting to "/".
@@ -62,7 +67,7 @@ export default interface IRouter {
    * @param  {IHttpHandler[]} handlers
    * @return {IRouter}
    */
-  use(handler: IHttpHandler|IHttpHandler[], path?: string): IRouter
+  use(handler: IHttpHandler|IHttpHandler[], path?: string): IRouter;
 
   /**
    * Mount router in the given path. If no path is given, the default path
@@ -72,7 +77,7 @@ export default interface IRouter {
    * @param  {string}  path
    * @return {IApp}
    */
-  mount(router: IRouter, path?: string): IRouter
+  mount(router: IRouter, path?: string): IRouter;
 
   /**
    * Create a new HTTP route for the given path.
@@ -81,7 +86,7 @@ export default interface IRouter {
    * @param  {string}     method
    * @return {IHttpRoute}
    */
-  route(path: string): IHttpRoute
+  route(path: string): IHttpRoute;
 
   /**
    * Use the given handler for the given event or for the event requests
@@ -91,7 +96,7 @@ export default interface IRouter {
    * @param {IEventHandler} handler
    * @return {IEventRoute}
    */
-  event(event: string|IEventRoutePredicate, handler: IEventHandler): IRouter
+  event(event: string|IEventRoutePredicate, handler: IEventHandler): IRouter;
 
   /**
    * Handle an incoming HTTP request.
@@ -100,13 +105,13 @@ export default interface IRouter {
    * @param {IHttpResponse} res
    * @param {INext}         next
    */
-  httpHandle(req: IHttpRequest, res: IHttpResponse, next: INext): void
+  httpHandle(req: IHttpRequest, res: IHttpResponse, next: INext): void;
 
   /*
   This method transform a router to a subrouter of the
   given subrouter in the given subpath.
    */
-  doSubrouter(subpath: string, parent: IRouter)
+  doSubrouter(subpath: string, parent: IRouter): void;
 
   /**
    * Call the handlers added with the method _param_
@@ -118,7 +123,7 @@ export default interface IRouter {
    * @param {IHttpResponse} res
    * @param {INext}         done
    */
-  httpProcessParams(layerParams: { [name: string]: string }, executedParams: string[], req: IHttpRequest, res: IHttpResponse, done: INext): void
+  httpProcessParams(layerParams: { [name: string]: string }, executedParams: string[], req: IHttpRequest, res: IHttpResponse, done: INext): void;
 
   /**
    * Returns the available methods for the
@@ -127,7 +132,7 @@ export default interface IRouter {
    * @param  {string}        path
    * @return {string[]}
    */
-  getAvailableMethodsForPath(path: string): string[]
+  getAvailableMethodsForPath(path: string): string[];
 
   /**
    * Handle an incoming event.
@@ -135,6 +140,6 @@ export default interface IRouter {
    * @param {IEventRequest} req
    * @param {INext}         next
    */
-  eventHandle(req: IEventRequest, next: INext): void
+  eventHandle(req: IEventRequest, next: INext): void;
 
 }

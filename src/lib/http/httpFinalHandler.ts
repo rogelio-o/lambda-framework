@@ -1,148 +1,164 @@
-import IHttpRequest from './../types/http/IHttpRequest'
-import IHttpResponse from './../types/http/IHttpResponse'
-import IHttpError from './../types/exceptions/IHttpError'
-import HttpError from './../exceptions/HttpError'
-var escapeHtml = require('escape-html')
-var statuses = require('statuses')
+import * as escapeHtml from "escape-html";
+import * as  statuses from "statuses";
+import HttpError from "./../exceptions/HttpError";
+import IHttpRequest from "./../types/http/IHttpRequest";
+import IHttpResponse from "./../types/http/IHttpResponse";
+import INext from "./../types/INext";
 
-const DOUBLE_SPACE_REGEXP = /\x20{2}/g
-const NEWLINE_REGEXP = /\n/g
+const DOUBLE_SPACE_REGEXP = /\x20{2}/g;
+const NEWLINE_REGEXP = /\n/g;
 
-const defer = typeof setImmediate === 'function'
+const defer = typeof setImmediate === "function"
   ? setImmediate
-  : function (fn, err, req, res) { process.nextTick(fn.bind.apply(fn, arguments)) }
+  : (fn, err, req, res) => process.nextTick(fn.bind.apply(fn, arguments));
 
-function getErrorStatusCode (err: IHttpError): number {
-  if (typeof err.statusCode === 'number' && err.statusCode >= 400 && err.statusCode < 600) {
-    return err.statusCode
+function getErrorStatusCode(err: Error): number {
+  if (err instanceof HttpError) {
+    if (typeof err.statusCode === "number" && err.statusCode >= 400 && err.statusCode < 600) {
+      return err.statusCode;
+    } else {
+      return null;
+    }
   } else {
-    return null
+    return null;
   }
 }
 
-function getErrorHeaders(err: IHttpError): {[name: string]: string|Array<string>} {
-  return err.headers
+function getErrorHeaders(err: Error): {[name: string]: string|string[]} {
+  if (err instanceof HttpError) {
+    return err.headers;
+  } else {
+    return {};
+  }
 }
 
 function getResponseStatusCode(res: IHttpResponse): number {
-  let status = res.statusCode
+  let status = res.statusCode;
 
   // default status code to 500 if outside valid range
-  if (typeof status !== 'number' || status < 400 || status > 599) {
-    status = 500
+  if (typeof status !== "number" || status < 400 || status > 599) {
+    status = 500;
   }
 
-  return status
+  return status;
 }
 
-function getErrorMessage (err: Error, status: number, env: string): string {
-  let msg
+function getErrorMessage(err: Error, status: number, env: string): string {
+  let msg;
 
-  if (env !== 'production') {
-    if(err instanceof HttpError) {
-      msg = err.cause ? err.cause.message : err.message
+  if (env !== "production") {
+    if (err instanceof HttpError) {
+      msg = err.cause ? err.cause.message : err.message;
     } else {
-      msg = err.message
+      msg = err.message;
     }
   }
 
-  return msg || statuses[status]
+  return msg || statuses[status];
 }
 
 function createHtmlDocument(message: string): string {
-  var body = escapeHtml(message)
-    .replace(NEWLINE_REGEXP, '<br>')
-    .replace(DOUBLE_SPACE_REGEXP, ' &nbsp;')
+  const body = escapeHtml(message)
+    .replace(NEWLINE_REGEXP, "<br>")
+    .replace(DOUBLE_SPACE_REGEXP, " &nbsp;");
 
-  return '<!DOCTYPE html>\n' +
-    '<html lang="en">\n' +
-    '<head>\n' +
-    '<meta charset="utf-8">\n' +
-    '<title>Error</title>\n' +
-    '</head>\n' +
-    '<body>\n' +
-    '<pre>' + body + '</pre>\n' +
-    '</body>\n' +
-    '</html>\n'
+  return "<!DOCTYPE html>\n" +
+    "<html lang=\"en\">\n" +
+    "<head>\n" +
+    "<meta charset=\"utf-8\">\n" +
+    "<title>Error</title>\n" +
+    "</head>\n" +
+    "<body>\n" +
+    "<pre>" + body + "</pre>\n" +
+    "</body>\n" +
+    "</html>\n";
 }
 
-
-function send(req: IHttpRequest, res: IHttpResponse, status: number, headers: {[name: string]: string}, message: string) {
+function send(req: IHttpRequest, res: IHttpResponse, status: number, headers: {[name: string]: string}, message: string): void {
   // response body
-  let body
-  let contentType
-  if(req.accepts('text/html')) {
-    body = createHtmlDocument(message)
-    contentType = 'text/html; charset=utf-8'
-  } else if(req.accepts('application/json')) {
-    body = {message: message, error: status}
-    contentType = 'application/json; charset=utf-8'
+  let body;
+  let contentType;
+  if (req.accepts("text/html")) {
+    body = createHtmlDocument(message);
+    contentType = "text/html; charset=utf-8";
+  } else if (req.accepts("application/json")) {
+    body = {message, error: status};
+    contentType = "application/json; charset=utf-8";
   } else {
-    body = message
-    contentType = 'text/plain; charset=utf-8'
+    body = message;
+    contentType = "text/plain; charset=utf-8";
   }
 
   // response status
-  res.status(status)
+  res.status(status);
 
   // response headers
-  res.putHeaders(headers)
+  res.putHeaders(headers);
 
   // security headers
-  res.putHeader('Content-Security-Policy', "default-src 'self'")
-  res.putHeader('X-Content-Type-Options', 'nosniff')
+  res.putHeader("Content-Security-Policy", "default-src \"self\"");
+  res.putHeader("X-Content-Type-Options", "nosniff");
 
   // standard headers
-  res.putHeader('Content-Type', contentType)
-  res.putHeader('Content-Length', Buffer.byteLength(body, 'utf8').toString())
-  res.send(body)
+  res.putHeader("Content-Type", contentType);
+  res.putHeader("Content-Length", Buffer.byteLength(body, "utf8").toString());
+  res.send(body);
 }
 
-export default function finalHandler(req: IHttpRequest, res: IHttpResponse, options: {[name: string]: any}) {
-  const opts = options || {}
+/**
+ * The final handler to be executed if no previous handler has stopped
+ * the router execution.
+ * @param  {IHttpRequest}           req     the incoming request which start
+ *                                          the exec.
+ * @param  {IHttpResponse}          res     the outcoming request of the exec.
+ * @param  {[name: string]: any}    options the options of the final handler.
+ * @return {[INext]}
+ */
+export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, options: {[name: string]: any}): INext {
+  const opts = options || {};
 
   // get environment
-  const env = opts.env || process.env.NODE_ENV || 'development'
+  const env = opts.env || process.env.NODE_ENV || "development";
 
   // get error callback
-  const onerror = opts.onerror
+  const onerror = opts.onerror;
 
-  return (err?) => {
-    let headers
-    let msg
-    let status
+  return (err?: Error) => {
+    let headers;
+    let msg;
+    let status;
 
     // unhandled error
     if (err) {
       // respect status code from error
-      status = getErrorStatusCode(err)
+      status = getErrorStatusCode(err);
 
       // respect headers from error
       if (status !== undefined) {
-        headers = getErrorHeaders(err)
+        headers = getErrorHeaders(err);
       }
 
       // fallback to status code on response
       if (status === undefined) {
-        status = getResponseStatusCode(res)
+        status = getResponseStatusCode(res);
       }
 
       // get error message
-      msg = getErrorMessage(err, status, env)
+      msg = getErrorMessage(err, status, env);
     } else {
       // not found
-      status = 404
-      msg = 'Cannot ' + req.method + ' ' + req.path
+      status = 404;
+      msg = "Cannot " + req.method + " " + req.path;
     }
 
     // schedule onerror callback
     if (onerror) {
-      defer(onerror, err, req, res)
+      defer(onerror, err, req, res);
     }
 
     if (!res.isSent) {
       // send response
-      send(req, res, status, headers, msg)
+      send(req, res, status, headers, msg);
     }
-  }
+  };
 }

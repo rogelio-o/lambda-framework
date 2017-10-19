@@ -46,11 +46,11 @@ export default class App implements IApp {
     this._settings[key] = false;
   }
 
-  public setConf(key: string, value: any): void {
+  public set(key: string, value: any): void {
     this._settings[key] = value;
   }
 
-  public getConf(key: string): any {
+  public get(key: string): any {
     return this._settings[key];
   }
 
@@ -60,14 +60,14 @@ export default class App implements IApp {
       const req: IHttpRequest = new HttpRequest(event);
       const res: IHttpResponse = new HttpResponse(this, req, callback);
       const done = httpFinalHandler(req, res, {
-        env: this.getConf(configuration.ENVIRONMENT),
+        env: this.get(configuration.ENVIRONMENT),
         onerror: this.logError.bind(this, req)
       });
       this._router.httpHandle(req, res, done);
     } else {
       const req: IEventRequest = new EventRequest(event);
       const done = eventFinalHandler(req, {
-        env: this.getConf(configuration.ENVIRONMENT),
+        env: this.get(configuration.ENVIRONMENT),
         onerror: this.logError.bind(this, req)
       });
       this._router.eventHandle(req, done);
@@ -108,7 +108,7 @@ export default class App implements IApp {
 
   private logError(req: IHttpRequest|IEventRequest, err: Error): void {
     /* istanbul ignore next */
-    if (this.getConf(configuration.ENVIRONMENT) !== "test") {
+    if (this.get(configuration.ENVIRONMENT) !== "test") {
       if (err) {
         console.error(err instanceof HttpError ? err.cause.message : err.message);
       } else {

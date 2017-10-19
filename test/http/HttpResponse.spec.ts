@@ -126,14 +126,14 @@ describe('HttpResponse', () => {
     Chai.expect(response.isSent).to.be.true
   });
 
-  it('#send should set the outcoming response header ETag to the generated with the function in #app.getConf(Configuration.ETAG_FN)', () => {
-    app.setConf(configuration.ETAG_FN, (buff, encoding) => 'ETAG' + buff.toString(encoding))
+  it('#send should set the outcoming response header ETag to the generated with the function in #app.get(Configuration.ETAG_FN)', () => {
+    app.set(configuration.ETAG_FN, (buff, encoding) => 'ETAG' + buff.toString(encoding))
     response.send('test')
     Chai.expect(succResult.headers['ETag']).to.be.equal('ETAGtest')
   });
 
   it('#send should set the outcoming response status code to 304 if the response is not fresh', () => {
-    app.setConf(configuration.ETAG_FN, (buff, encoding) => 'etagValue')
+    app.set(configuration.ETAG_FN, (buff, encoding) => 'etagValue')
     response.putHeader('Last-Modified', '2017-10-10T10:10:09')
     response.send('test')
     Chai.expect(succResult.statusCode).to.be.equal(304)

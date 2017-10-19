@@ -1,11 +1,14 @@
-import IHttpError from './../types/exceptions/IHttpError'
+import IHttpError from "./../types/exceptions/IHttpError";
 
+/**
+ * An error that happens processing a http request.
+ */
 export default class HttpError extends Error implements IHttpError {
+
+  public headers: {[name: string]: string|string[]};
 
   private _statusCode: number;
   private _parent: Error;
-
-  public headers: {[name: string]: string|Array<string>};
 
   constructor(m: string, statusCode: number, parent?: Error) {
     super(m);
