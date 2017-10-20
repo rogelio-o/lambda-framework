@@ -8,49 +8,37 @@ import * as Chai from 'chai'
  */
 describe('App', () => {
   let app
-  beforeEach(function(done) {
+  beforeEach(() => {
     app = new App()
-
-    done()
   });
 
-  it('#init without settings should init with default configuration', async (done) => {
+  it('#init without settings should init with default configuration', async () => {
     app.init()
     Object.keys(defaultConfiguration)
       .forEach(param => Chai.expect(defaultConfiguration[param]).to.be.equal(app.get(param)))
-
-    done();
   });
 
-  it('#init with settings should init with custom configuration', async (done) => {
+  it('#init with settings should init with custom configuration', async () => {
     const settings = {}
     settings[configuration.DEFAULT_MYME_TYPE] = 'text/html'
 
     app.init(settings)
     Object.keys(settings)
       .forEach(param => Chai.expect(settings[param]).to.be.equal(app.get(param)))
-
-    done();
   });
 
-  it('#enable should set the param as true', async (done) => {
+  it('#enable should set the param as true', async () => {
     app.enable('option1')
     Chai.expect(app.get('option1')).to.be.true
-
-    done();
   });
 
-  it('#disable should set the param as false', async (done) => {
+  it('#disable should set the param as false', async () => {
     app.disable('option1')
     Chai.expect(app.get('option1')).to.be.false
-
-    done();
   });
 
-  it('#set should set the param with the indicated value', async (done) => {
-    app.get('option1', 'value1')
+  it('#set should set the param with the indicated value', async () => {
+    app.set('option1', 'value1')
     Chai.expect(app.get('option1')).to.be.equal('value1')
-
-    done();
   });
 });

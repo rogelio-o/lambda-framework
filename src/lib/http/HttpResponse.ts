@@ -208,8 +208,10 @@ export default class HttpResponse implements IHttpResponse {
   }
 
   public putHeaders(field: object): IHttpResponse {
-    for (const key of Object.keys(field)) {
-      this.putHeader(key, field[key]);
+    if (field) {
+      for (const key of Object.keys(field)) {
+        this.putHeader(key, field[key]);
+      }
     }
 
     return this;

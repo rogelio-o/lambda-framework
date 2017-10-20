@@ -23,9 +23,11 @@ export function setCharset(contentType: string, charset: string): string {
 export function merge(...objs: object[]): any {
   const result = {};
   for (const obj of objs) {
-    const keys = Object.keys(obj);
-    for (const key  of keys) {
-      result[key] = obj[key];
+    if (obj) {
+      const keys = Object.keys(obj);
+      for (const key  of keys) {
+        result[key] = obj[key];
+      }
     }
   }
   return result;

@@ -118,8 +118,9 @@ describe('Router', () => {
     res = new HttpResponse(app, httpReq, (error, success) => {
       callbackErrorResult = error
       callBackSuccessResult = success
-      if(doCallback)
+      if(doCallback) {
         doCallback()
+      }
     })
   })
 

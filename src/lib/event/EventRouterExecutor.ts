@@ -37,7 +37,7 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
     this._req = req;
     this._stackIndex = 0;
     this._subrouterIndex = 0;
-    this._done =  restore(done, req,  "next ");
+    this._done =  restore(done, req,  "next");
 
     req.next = this.next;
   }
