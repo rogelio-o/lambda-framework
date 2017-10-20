@@ -21,7 +21,7 @@ import IRouter from "./types/IRouter";
 import { getEventType } from "./utils/utils";
 
 /**
- * The main object that describe and configure the lambda application.
+ * The main object that describes and configures the lambda application.
  */
 export default class App implements IApp {
 

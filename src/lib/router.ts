@@ -34,7 +34,7 @@ function sendOptionsResponse(res: IHttpResponse, options: string[], next: INext)
 /**
  * The objects that describe the layers to apply over path and events. The
  * routers can be subrouters of other routers. Also, handlers can be set
- * to be run when an param appears in a path of an incoming request.
+ * to be run when an param appears in a path of an incoming HTTP request.
  */
 export default class Router implements IRouter {
 
