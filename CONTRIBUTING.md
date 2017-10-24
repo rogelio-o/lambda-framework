@@ -1,4 +1,5 @@
-# Community Contributing Guide
+#Community Contributing Guide
+
 This document describes a very simple process suitable to contribute in lambda-framework project.
 
 The goal of this document is to create a contribution process that:
