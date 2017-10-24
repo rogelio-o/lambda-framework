@@ -8,7 +8,6 @@ import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRequest from "./http/IHttpRequest";
 import IHttpResponse from "./http/IHttpResponse";
 import IHttpRoute from "./http/IHttpRoute";
-import IApp from "./IApp";
 import INext from "./INext";
 
 /**

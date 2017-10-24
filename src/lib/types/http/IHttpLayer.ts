@@ -1,5 +1,4 @@
 import INext from "./../INext";
-import IHttpHandler from "./IHttpHandler";
 import IHttpRequest from "./IHttpRequest";
 import IHttpResponse from "./IHttpResponse";
 import IHttpRoute from "./IHttpRoute";

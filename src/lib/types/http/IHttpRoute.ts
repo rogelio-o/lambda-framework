@@ -1,4 +1,3 @@
-import { Key } from "path-to-regexp";
 import INext from "./../INext";
 import IHttpHandler from "./IHttpHandler";
 import IHttpLayer from "./IHttpLayer";
