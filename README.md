@@ -20,4 +20,4 @@ TODO
 
 ## Contributions
 
-For more info about contributing you can read [this](CONTRIBUTING).
+For more info about contributing you can read [this](CONTRIBUTING.md).
