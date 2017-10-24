@@ -20,4 +20,4 @@ TODO
 
 ## Contributions
 
-Do you want to contribute? Contact with me [yo@rogelioorts.com](mailto:yo@rogelioorts.com).
+For more info about contributing you can read [this](CONTRIBUTING).
