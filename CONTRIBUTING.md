@@ -1,4 +1,4 @@
-# Community Contributing Guide
+# Community Contributing Guide
 
 This document describes a very simple process suitable to contribute in lambda-framework project.
 
