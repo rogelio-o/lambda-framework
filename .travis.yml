@@ -27,4 +27,3 @@ deploy:
   api_key: $NPM_TOKEN
   on:
     branch: master
-    node: '7' # release only after last build success
