@@ -16,7 +16,9 @@
     "posttest": "npm run lint && nyc check-coverage --statements 70 --branches 70 --functions 70 --lines 70",
     "compile": "tsc",
     "lint": "tslint --config tslint.json --type-check --project tsconfig.json src/{,**/,**/**/,**/**/**/}*.ts",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "release": "npm-version-up",
+    "git-release": "git add package.json && git commit -m \"Release\" && git push"
   },
   "keywords": [
     "serverless",
@@ -34,6 +36,7 @@
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.3",
+    "npm-version-up": "^0.1.5",
     "nyc": "^11.2.1",
     "tslint": "^5.7.0",
     "tslint-microsoft-contrib": "^5.0.1",
