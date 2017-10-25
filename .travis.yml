@@ -11,6 +11,9 @@ language: node_js
 # Specify the node versions to run on
 node_js:
   - "6.11.2"
+# Up NPM version
+before_deploy: npm run release --shrinkwrap
+after_deploy: npm run git-release
 # Report code coverage to coveralls after successful test runs
 after_success:
   - npm run coveralls
@@ -24,3 +27,4 @@ deploy:
   api_key: $NPM_TOKEN
   on:
     branch: master
+    node: '7' # release only after last build success
