@@ -83,11 +83,10 @@ export function getEventType(obj: any): string {
 }
 
 export function mergeParams(event: APIGatewayEvent): {[name: string]: string} {
-  const body = typeof event.body === "object" ? event.body : {};
   const query = event.queryStringParameters || {};
   const stageVariables = event.stageVariables || {};
 
-  return merge(body, query, stageVariables);
+  return merge(query, stageVariables);
 }
 
 export function stringify(value: {}, replacer: (string[]|number[]), spaces: string|number, escape: boolean): string {

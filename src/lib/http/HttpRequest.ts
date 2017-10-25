@@ -12,7 +12,7 @@ import { mergeParams } from "./../utils/utils";
  */
 export default class HttpRequest implements IHttpRequest {
 
-  public body: object|string;
+  public body: { [name: string]: string }|string;
   public basePath: string;
   public originalBasePath: string;
   public next: INext;
@@ -24,6 +24,7 @@ export default class HttpRequest implements IHttpRequest {
   private _context: { [name: string]: any };
 
   constructor(event: APIGatewayEvent) {
+    this.body = event.body; // Default body
     this._event = event;
     this._context = {};
     this.params = mergeParams(event);
