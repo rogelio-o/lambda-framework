@@ -41,8 +41,8 @@ In the case of an objection being raised in a pull request by another committer,
 
 Becoming a contributor to the project should be an easy step. In order to reduce that barrier new contributors should look for issues tagged as:
 
-- `Quick Win`
-- `Help Wanted`
+- `good first issue`
+- `help wanted`
 
 These tags should be applied to issues that are relatively simple to fix but not critical to be handled by the current group of committers. Once you pick such an issue to work on a discussion with a committer should happen on the issue itself and the committer should guide you with the mentoring/onboarding process.
 
