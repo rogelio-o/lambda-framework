@@ -1,6 +1,6 @@
 {
   "name": "lambda-framework",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Framework to create web apps in AWS Lambda",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -18,7 +18,7 @@
     "lint": "tslint --config tslint.json --type-check --project tsconfig.json src/{,**/,**/**/,**/**/**/}*.ts",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "release": "npm-version-up",
-    "git-release": "git add package.json && git commit -m \"Release\" && git push"
+    "git-release": "git checkout master && git add package.json && git commit -m \"Release\" && git push"
   },
   "keywords": [
     "serverless",
