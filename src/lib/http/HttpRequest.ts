@@ -12,7 +12,7 @@ import { mergeParams } from "./../utils/utils";
  */
 export default class HttpRequest implements IHttpRequest {
 
-  public body: { [name: string]: string }|string;
+  public body: { [name: string]: any }|string;
   public basePath: string;
   public originalBasePath: string;
   public next: INext;
