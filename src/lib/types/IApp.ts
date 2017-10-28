@@ -68,10 +68,10 @@ export default interface IApp {
      * functions even if they could respond.
      *
      * @param  {string}              path
-     * @param  {IHttpHandler[]} ...handler
+     * @param  {IHttpHandler[]} handlers
      * @return {IRouter}
      */
-    use(path?: string, ...handler: IHttpHandler[]): IApp;
+    use(handler: IHttpHandler|IHttpHandler[], path?: string): IApp;
 
     /**
      * Mount router in the given path. If no path is given, the default path

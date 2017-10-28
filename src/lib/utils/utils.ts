@@ -1,5 +1,6 @@
 import { APIGatewayEvent } from "aws-lambda";
 import { format, parse } from "content-type";
+import { lookup } from "mime-types";
 
 /**
  * Utils functions shared between multiple classes.
@@ -83,11 +84,10 @@ export function getEventType(obj: any): string {
 }
 
 export function mergeParams(event: APIGatewayEvent): {[name: string]: string} {
-  const body = typeof event.body === "object" ? event.body : {};
   const query = event.queryStringParameters || {};
   const stageVariables = event.stageVariables || {};
 
-  return merge(body, query, stageVariables);
+  return merge(query, stageVariables);
 }
 
 export function stringify(value: {}, replacer: (string[]|number[]), spaces: string|number, escape: boolean): string {
@@ -113,4 +113,10 @@ export function stringify(value: {}, replacer: (string[]|number[]), spaces: stri
   }
 
   return json;
+}
+
+export function normalizeType(type: string): string {
+  return type.indexOf("/") === -1
+    ? lookup(type)
+    : type;
 }

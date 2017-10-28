@@ -26,3 +26,9 @@ export { default as IHttpRequest } from "./lib/types/http/IHttpRequest";
 export { default as IHttpResponse } from "./lib/types/http/IHttpResponse";
 export { default as IHttpRoute } from "./lib/types/http/IHttpRoute";
 export { default as IHttpRouterExecutor } from "./lib/types/http/IHttpRouterExecutor";
+
+export { default as IBodyParser } from "./lib/types/http/IBodyParser";
+export { default as JsonParser } from "./lib/http/bodyParsers/JsonParser";
+export { default as MultipartParser } from "./lib/http/bodyParsers/MultipartParser";
+export { default as UrlEncodedParser } from "./lib/http/bodyParsers/UrlEncodedParser";
+export { default as XmlParser } from "./lib/http/bodyParsers/XmlParser";

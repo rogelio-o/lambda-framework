@@ -2,6 +2,7 @@ import { APIGatewayEvent } from "aws-lambda";
 import INext from "./../INext";
 import IHttpResponse from "./IHttpResponse";
 import IHttpRoute from "./IHttpRoute";
+import IHttpUploadedFile from "./IHttpUploadedFile";
 
 /**
  * A incoming request created when the event is APIGatewayEvent.
@@ -37,6 +38,11 @@ export default interface IHttpRequest {
    * The request body.
    */
   body: object|string;
+
+  /**
+   * The files uplodad in the request.
+   */
+  files: IHttpUploadedFile[];
 
   /**
    * The parsed path of the request.
