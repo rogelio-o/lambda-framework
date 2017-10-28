@@ -23,6 +23,7 @@ describe('HttpRequest', () => {
         header2: 'HEADER VALU 2',
         'X-Forwarded-Proto': 'https',
         'Host': 'localhost',
+        'Content-Type': 'application/json,text/html',
         'Accept': 'application/json,text/html',
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Charset': 'UTF-8, ISO-8859-1',

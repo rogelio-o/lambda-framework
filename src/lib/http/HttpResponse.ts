@@ -3,7 +3,6 @@ import { parse, serialize } from "cookie";
 import { sign } from "cookie-signature";
 import * as encodeUrl from "encodeurl";
 import * as escapeHtml from "escape-html";
-import { lookup } from "mime-types";
 import * as statuses from "statuses";
 import configuration from "./../configuration/configuration";
 import HttpError from "./../exceptions/HttpError";
@@ -13,13 +12,7 @@ import IHttpRequest from "./../types/http/IHttpRequest";
 import IHttpResponse from "./../types/http/IHttpResponse";
 import IApp from "./../types/IApp";
 import INext from "./../types/INext";
-import { merge, setCharset, stringify } from "./../utils/utils";
-
-const normalizeType = (type: string): string => {
-  return type.indexOf("/") === -1
-    ? lookup(type)
-    : type;
-};
+import { merge, normalizeType, setCharset, stringify } from "./../utils/utils";
 
 /**
  * This class represents an HTTP response, with the helpers to be sent.

@@ -4,8 +4,9 @@ import * as fresh from "fresh";
 import IHttpRequest from "./../types/http/IHttpRequest";
 import IHttpResponse from "./../types/http/IHttpResponse";
 import IHttpRoute from "./../types/http/IHttpRoute";
+import IHttpUploadedFile from "./../types/http/IHttpUploadedFile";
 import INext from "./../types/INext";
-import { mergeParams } from "./../utils/utils";
+import { mergeParams, normalizeType } from "./../utils/utils";
 
 /**
  * A incoming request created when the event is APIGatewayEvent.
@@ -13,6 +14,7 @@ import { mergeParams } from "./../utils/utils";
 export default class HttpRequest implements IHttpRequest {
 
   public body: { [name: string]: any }|string;
+  public files: IHttpUploadedFile[];
   public basePath: string;
   public originalBasePath: string;
   public next: INext;
@@ -116,8 +118,24 @@ export default class HttpRequest implements IHttpRequest {
     }
   }
 
-  public is(types: string|string[]): boolean {
-    return typeof this.accepts(types) !== "boolean";
+  public is(contentTypes: string|string[]): boolean {
+    let result = false;
+    const contentTypesArr: string[] = typeof contentTypes === "string" ? [contentTypes] : contentTypes;
+    const contentType = this.header("content-type");
+
+    if (!contentType) {
+      result = true;
+    } else {
+      for (const allowContentType of contentTypesArr) {
+        const normalizedType = normalizeType(allowContentType);
+        if (contentType.includes(normalizedType)) {
+          result = true;
+          break;
+        }
+      }
+    }
+
+    return result;
   }
 
   public fresh(response: IHttpResponse): boolean {

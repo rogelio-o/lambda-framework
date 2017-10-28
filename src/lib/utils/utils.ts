@@ -1,5 +1,6 @@
 import { APIGatewayEvent } from "aws-lambda";
 import { format, parse } from "content-type";
+import { lookup } from "mime-types";
 
 /**
  * Utils functions shared between multiple classes.
@@ -112,4 +113,10 @@ export function stringify(value: {}, replacer: (string[]|number[]), spaces: stri
   }
 
   return json;
+}
+
+export function normalizeType(type: string): string {
+  return type.indexOf("/") === -1
+    ? lookup(type)
+    : type;
 }
