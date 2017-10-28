@@ -104,7 +104,7 @@ const formParse = (initialBody: string, req: IHttpRequest): void => {
 /**
  * A layer that set the request body depending of its type.
  */
-export default class MultipartParser implements IBodyParser {
+export default class MultiPartParser implements IBodyParser {
 
   public create(options?: {[name: string]: any}): IHttpHandler {
     const opts = options || {};
