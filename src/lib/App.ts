@@ -74,7 +74,7 @@ export default class App implements IApp {
     }
   }
 
-  public use(path?: string, ...handler: IHttpHandler[]): IApp {
+  public use(handler: IHttpHandler|IHttpHandler[], path?: string): IApp {
     this._router.use(handler, path);
 
     return this;
