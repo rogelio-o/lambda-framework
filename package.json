@@ -17,7 +17,7 @@
     "compile": "tsc",
     "lint": "tslint --config tslint.json --type-check --project tsconfig.json src/{,**/,**/**/,**/**/**/}*.ts",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "release": "npm-version-up"
+    "release": "npm-version-up && npm prune"
   },
   "keywords": [
     "serverless",
