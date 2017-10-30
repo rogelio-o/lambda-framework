@@ -12,7 +12,7 @@ on Express Framework.
 - [x] Other events requests routing
 - [x] HTTP helpers (redirection, etc)
 - [x] Error handling
-- [x] Extensible with modules files as response and save it from request
+- [x] Extensible with modules
 
 ## How to use it?
 
@@ -20,4 +20,6 @@ TODO
 
 ## Contributions
 
-For more info about contributing you can read [this](CONTRIBUTING.md).
+All contributors will be welcome. You can contributing by implementing/fixing/answering one open [issue](issues), by suggesting new features for the framework,... For more info about contributing, you can read [this](CONTRIBUTING.md).
+
+Make it happen.
