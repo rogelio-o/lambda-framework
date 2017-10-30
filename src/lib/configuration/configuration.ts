@@ -10,7 +10,9 @@ const configuration = {
   COOKIE_SECRET: "cookie_secret",
   JSON_REPLACER: "json_replacer",
   JSON_SPACES: "json_spaces",
-  JSON_ESCAPE: "json_escape"
+  JSON_ESCAPE: "json_escape",
+  TEMPLATE_RENDERER_FILES_BUCKET: "template_renderer_files_bucket",
+  TEMPLATE_RENDERER_FUNCTION: "template_renderer_function"
 };
 
 export default configuration;

@@ -13,6 +13,7 @@ import IHttpResponse from "./../types/http/IHttpResponse";
 import IApp from "./../types/IApp";
 import INext from "./../types/INext";
 import { merge, normalizeType, setCharset, stringify } from "./../utils/utils";
+import AbstractTemplateEngine from "./renderEngine/AbstractRenderEngine";
 
 /**
  * This class represents an HTTP response, with the helpers to be sent.
@@ -350,8 +351,17 @@ export default class HttpResponse implements IHttpResponse {
     }
   }
 
-  public render(view: string, options?: object, callback?: (html: string) => void): void {
-    // TODO
+  public render(view: string, params: {[name: string]: any}, callback?: (html: string) => void): void {
+    const templateEngine: AbstractTemplateEngine = new AbstractTemplateEngine(this._app);
+
+    templateEngine.render(view, params, (html) => {
+      if(callback) {
+        callback(html);
+      } else {
+        this.putHeader("Content-Type", "text/html");
+        this.send(html);
+      }
+    });
   }
 
   public setError(error: IHttpError): IHttpResponse {
