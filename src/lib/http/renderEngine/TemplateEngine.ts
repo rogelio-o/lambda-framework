@@ -28,9 +28,7 @@ export default class TemplateEngine implements ITemplateEngine {
       if (err) {
         callback(err, null);
       } else {
-        this._templateRenderer(template, params, (parsedHtml: string) => {
-          callback(null, parsedHtml);
-        });
+        this._templateRenderer(template, params, callback);
       }
     });
   }

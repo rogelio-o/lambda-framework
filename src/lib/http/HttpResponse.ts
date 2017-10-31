@@ -360,9 +360,8 @@ export default class HttpResponse implements IHttpResponse {
         if (callback) {
           callback(err, html);
         } else {
-          // TODO check error
           if (err) {
-
+            this._request.next(err);
           } else {
             this.putHeader("Content-Type", "text/html");
             this.send(html);
