@@ -7,6 +7,7 @@ import HttpError from "./exceptions/HttpError";
 import httpFinalHandler from "./http/httpFinalHandler";
 import HttpRequest from "./http/HttpRequest";
 import HttpResponse from "./http/HttpResponse";
+import DefaultTemplateLoader from "./http/renderEngine/DefaultTemplateLoader";
 import TemplateEngine from "./http/renderEngine/TemplateEngine";
 import Router from "./Router";
 import IEventHandler from "./types/event/IEventHandler";
@@ -18,6 +19,7 @@ import IHttpRequest from "./types/http/IHttpRequest";
 import IHttpResponse from "./types/http/IHttpResponse";
 import IHttpRoute from "./types/http/IHttpRoute";
 import ITemplateEngine from "./types/http/renderEngine/ITemplateEngine";
+import ITemplateLoader from "./types/http/renderEngine/ITemplateLoader";
 import ITemplateRenderer from "./types/http/renderEngine/ITemplateRenderer";
 import IApp from "./types/IApp";
 import IRouter from "./types/IRouter";
@@ -110,7 +112,8 @@ export default class App implements IApp {
   }
 
   public addTemplateEngine(bucket: string, renderer: ITemplateRenderer, ttl?: number): IApp {
-    this._templateEngine = new TemplateEngine(bucket, renderer, ttl);
+    const templateLoader: ITemplateLoader = new DefaultTemplateLoader(bucket, ttl);
+    this._templateEngine = new TemplateEngine(bucket, renderer, templateLoader);
 
     return this;
   }

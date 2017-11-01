@@ -16,23 +16,15 @@ describe("Template", () => {
   });
 
   describe("load", () => {
-    it("should load from cache the template if has been previously loaded, set the content with the template and mark as loaded.", () => {
+    it("should load the template calling the template loader if it has NOT been previously loaded.", () => {
 
     });
 
-    it("should call the `callback` with an error if an error happens getting the template from the cache.", () => {
+    it("should mark as loaded the state and set the content if has been loaded successfully.", () => {
 
     });
 
-    it("should load from S3 if the cache is not defined, set the content with the template and mark as loaded.", () => {
-
-    });
-
-    it("should load from S3 if the template has not been previously loaded.", () => {
-
-    });
-
-    it("should call the `callback` with an error if an error happens getting the template from S3.", () => {
+    it("should NOT call the template loader if it has been previously loaded.", () => {
 
     });
   });
