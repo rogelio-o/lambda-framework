@@ -1,7 +1,7 @@
 import ITemplate from "./../../types/http/renderEngine/ITemplate";
 import ITemplateLoader from "./../../types/http/renderEngine/ITemplateLoader";
 
-/*
+/**
  * Representation of a template file.
  */
 export default class Template implements ITemplate {

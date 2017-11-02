@@ -4,6 +4,9 @@ import ITemplateLoader from "./../../types/http/renderEngine/ITemplateLoader";
 
 const s3: S3 = new S3();
 
+/**
+ * Loads the template from AWS S3 bucket.
+ */
 export default class DefaultTemplateLoader implements ITemplateLoader {
 
   private _bucket: string;
@@ -16,7 +19,7 @@ export default class DefaultTemplateLoader implements ITemplateLoader {
     }
   }
 
-  load(fileName: string, callback: (err: Error, content: string) => void): void {
+  public load(fileName: string, callback: (err: Error, content: string) => void): void {
     this.getFromCache(fileName, (cacheErr: Error, cacheValue: string) => {
       if (cacheErr) {
         callback(cacheErr, null);
@@ -36,7 +39,7 @@ export default class DefaultTemplateLoader implements ITemplateLoader {
                 callback(null, content);
               }
             }
-          )
+          );
         } else {
           callback(null, cacheValue);
         }
@@ -52,7 +55,7 @@ export default class DefaultTemplateLoader implements ITemplateLoader {
     }
   }
 
-  private setToCache(fileName: string, content: string) : void{
+  private setToCache(fileName: string, content: string): void {
     if (this._cache) {
       this._cache.set(fileName, (err: Error, success: boolean) => {
         if (err || !success) {
