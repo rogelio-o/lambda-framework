@@ -2,17 +2,17 @@ import * as S3 from "aws-sdk/clients/s3";
 import * as NodeCache from "node-cache";
 import ITemplateLoader from "./../../types/http/renderEngine/ITemplateLoader";
 
-const s3: S3 = new S3();
-
 /**
  * Loads the template from AWS S3 bucket.
  */
 export default class DefaultTemplateLoader implements ITemplateLoader {
 
+  private _s3: S3;
   private _bucket: string;
   private _cache: NodeCache;
 
   constructor(bucket: string, ttl: number) {
+    this._s3 = new S3();
     this._bucket = bucket;
     if (ttl) {
         this._cache = new NodeCache({ stdTTL: ttl });
@@ -25,7 +25,7 @@ export default class DefaultTemplateLoader implements ITemplateLoader {
         callback(cacheErr, null);
       } else {
         if (cacheValue === undefined) {
-          s3.getObject(
+          this._s3.getObject(
             {
               Bucket: this._bucket,
               Key: fileName
