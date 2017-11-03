@@ -1,36 +1,45 @@
 import ITemplate from "./../../types/http/renderEngine/ITemplate";
+import ITemplateLoader from "./../../types/http/renderEngine/ITemplateLoader";
 
-const cachedTemplates: {[name: string]: string} = {};
-
+/**
+ * Representation of a template file.
+ */
 export default class Template implements ITemplate {
 
   private _fileName: string;
-  private _bucket: string;
   private _content: string;
   private _loaded: boolean;
+  private _templateLoader: ITemplateLoader;
 
-  constructor(fileName: string, bucket: string) {
+  constructor(fileName: string, templateLoader: ITemplateLoader) {
     this._fileName = fileName;
-    this._bucket = bucket;
     this._loaded = false;
+    this._templateLoader = templateLoader;
   }
 
   get content(): string {
-    if(!this._loaded) {
+    if (!this._loaded) {
       throw new Error("The template " + this._fileName + " has not been loaded.");
     }
     return this._content;
   }
 
-  public load(callback: () => void): void {
-    if(!this._loaded) {
-      if(cachedTemplates[this._fileName]) {
-        this._content = cachedTemplates[this._fileName];
-      } else {
-        // TODO load file from S3
-        cachedTemplates[this._fileName] = this._content;
-        this._loaded = true;
-      }
+  public load(callback: (err?: Error) => void): void {
+    if (!this._loaded) {
+      this._templateLoader.load(
+        this._fileName,
+        (err: Error, content: string) => {
+          if (err) {
+            callback(err);
+          } else {
+            this._content = content;
+            this._loaded = true;
+            callback();
+          }
+        }
+      );
+    } else {
+      callback();
     }
   }
 

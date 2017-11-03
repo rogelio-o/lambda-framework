@@ -334,4 +334,26 @@ describe('HttpResponse', () => {
     Chai.expect(succResult.statusCode).to.be.equal(301)
   });
 
+  describe("render", () => {
+    it("should throw an exception if the `templateEngine` hasn't been set in the `App`.", () => {
+
+    });
+
+    it("should call the method `render` of `templateEngine` if it has been set in the `App`.", () => {
+
+    });
+
+    it("should call the `callback` with the result of `templateEngine.render`.", () => {
+
+    });
+
+    it("should call the `next` handler with the error if the `templateEngine.render` method returns an error and no `callback` is given.", () => {
+
+    });
+
+    it("should response with the html code and the 'text/html' content-type header if the `templateEngine.render` method returns no error and no `callback` is given.", () => {
+
+    });
+  });
+
 });

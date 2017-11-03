@@ -204,7 +204,7 @@ export default interface IHttpResponse {
    * @param {Function} callback A function that will be called when the
    *                            rendering is finished.
    */
-  render(view: string, options?: object, callback?: () => void): void;
+  render(view: string, options?: object, callback?: (err: Error, html: string) => void): void;
 
   /**
    * When a exception happens, the error is set with the exception
