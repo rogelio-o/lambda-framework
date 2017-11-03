@@ -86,7 +86,7 @@ export default class HttpRouterExecutor implements IHttpRouterExecutor {
     this._done =  restore(done, req, "basePath", "originalBasePath", "next", "params");
     this._executedParams = [];
 
-    req.next = this.next;
+    req.next = this.next.bind(this);
     req.originalBasePath = req.basePath || "";
     req.basePath = req.originalBasePath + (router.subpath || "");
   }
