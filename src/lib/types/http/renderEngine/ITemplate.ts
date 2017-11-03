@@ -1,10 +1,10 @@
-/*
-Representation of a template file.
+/**
+ * Representation of a template file.
  */
  export default interface ITemplate {
 
    readonly content: string;
 
-   load(callback: () => void): void;
+   load(callback: (err: Error) => void): void;
 
  }
