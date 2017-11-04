@@ -19,6 +19,10 @@ export default class TemplateEngine implements ITemplateEngine {
     this._templateLoader = templateLoader;
   }
 
+  public get loader(): ITemplateLoader {
+    return this._templateLoader;
+  }
+
   public render(fileName: string, params: {[name: string]: any}, callback: (err: Error, parsedHtml: string) => void): void {
     const template: ITemplate = new Template(fileName, this._templateLoader);
 

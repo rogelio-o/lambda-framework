@@ -17,6 +17,10 @@ export default class Template implements ITemplate {
     this._templateLoader = templateLoader;
   }
 
+  get fileName(): string {
+    return this._fileName;
+  }
+
   get content(): string {
     if (!this._loaded) {
       throw new Error("The template " + this._fileName + " has not been loaded.");

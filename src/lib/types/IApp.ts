@@ -5,6 +5,7 @@ import IHttpHandler from "./http/IHttpHandler";
 import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRoute from "./http/IHttpRoute";
 import ITemplateEngine from "./http/renderEngine/ITemplateEngine";
+import ITemplateLoader from "./http/renderEngine/ITemplateLoader";
 import ITemplateRenderer from "./http/renderEngine/ITemplateRenderer";
 import IRouter from "./IRouter";
 
@@ -19,6 +20,8 @@ export default interface IApp {
    * Returns the created templated engine with the method `addTemplateEngine`.
    */
   readonly templateEngine: ITemplateEngine;
+
+  readonly templateLoader: ITemplateLoader;
 
   /**
    * Initialize the framework with the configuration of `settings`. If

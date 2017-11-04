@@ -43,6 +43,10 @@ export default class App implements IApp {
     return this._templateEngine;
   }
 
+  get templateLoader(): ITemplateLoader {
+    return this._templateEngine ? this._templateEngine.loader : null;
+  }
+
   public init(settings?: object): void {
     this.initDefaultConfiguration(settings);
   }
