@@ -1,12 +1,12 @@
 /**
  * Representation of a template file.
  */
- export default interface ITemplate {
+export default interface ITemplate {
 
-   readonly fileName: string;
+  readonly fileName: string;
 
-   readonly content: string;
+  readonly content: string;
 
-   load(callback: (err: Error) => void): void;
+  load(callback: (err: Error) => void): void;
 
- }
+}
