@@ -1,5 +1,3 @@
-import ITemplateLoader from "./ITemplateLoader";
-
 /**
  * A class that render a template with a template renderer.
  */
