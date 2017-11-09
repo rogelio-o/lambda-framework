@@ -5,8 +5,6 @@ import ITemplateLoader from "./ITemplateLoader";
  */
 export default interface ITemplateEngine {
 
-  readonly loader: ITemplateLoader;
-
   render(fileName: string, params: {[name: string]: any}, callback: (err: Error, parsedHtml: string) => void): void;
 
 }

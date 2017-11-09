@@ -13,12 +13,15 @@ import IHttpResponse from "./../types/http/IHttpResponse";
 import ITemplateEngine from "./../types/http/renderEngine/ITemplateEngine";
 import IApp from "./../types/IApp";
 import INext from "./../types/INext";
+import IRouter from "./../types/IRouter";
 import { merge, normalizeType, setCharset, stringify } from "./../utils/utils";
 
 /**
  * This class represents an HTTP response, with the helpers to be sent.
  */
 export default class HttpResponse implements IHttpResponse {
+
+  public router: IRouter;
 
   private _statusCode: number;
   private _app: IApp;
@@ -352,7 +355,7 @@ export default class HttpResponse implements IHttpResponse {
   }
 
   public render(view: string, params: {[name: string]: any}, callback?: (err: Error, html: string) => void): void {
-    const templateEngine: ITemplateEngine = this._app.templateEngine;
+    const templateEngine: ITemplateEngine = this.router ? this.router.templateEngine : null;
     if (templateEngine == null) {
       throw new Error("The template engine must to be added in `app.addTemplateEngine` if you want to use render.");
     } else {
