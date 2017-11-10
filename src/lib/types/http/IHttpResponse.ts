@@ -1,11 +1,17 @@
 import IHttpError from "./../exceptions/IHttpError";
 import INext from "./../INext";
+import IRouter from "./../IRouter";
 import IHttpHandler from "./IHttpHandler";
 
 /**
  * This class represents an HTTP response, with the helpers to be sent.
  */
 export default interface IHttpResponse {
+
+  /**
+   * The current router.
+   */
+  router: IRouter;
 
   /**
    * The response HTTP status code.

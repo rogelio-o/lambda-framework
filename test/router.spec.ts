@@ -319,4 +319,38 @@ describe('Router', () => {
     });
   });
 
+  describe("#templateEngine", () => {
+    it("returns the templateEngine of a parent router if it has no one.", () => {
+      const subrouter: IRouter = new Router();
+      router.mount(subrouter);
+
+      const subsubrouter: IRouter = new Router();
+      subrouter.mount(subsubrouter);
+
+      router.addTemplateEngine(null);
+
+      Chai.expect(subrouter.templateEngine).to.be.equal(router.templateEngine);
+      Chai.expect(subsubrouter.templateEngine).to.be.equal(router.templateEngine);
+    });
+
+    it("returns the its templateEngine if it has one.", () => {
+      const subrouter: IRouter = new Router();
+      router.mount(subrouter);
+
+      router.addTemplateEngine(null);
+      subrouter.addTemplateEngine(null);
+
+      Chai.expect(subrouter.templateEngine).to.be.not.equal(router.templateEngine);
+      Chai.expect(subrouter.templateEngine).to.be.not.null;
+    });
+
+    it("returns `null` if any parent has one.", () => {
+      const subrouter: IRouter = new Router();
+      router.mount(subrouter);
+
+      Chai.expect(subrouter.templateEngine).to.be.null;
+      Chai.expect(subrouter.templateEngine).to.be.null;
+    });
+  });
+
 });

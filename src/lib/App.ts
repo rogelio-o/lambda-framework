@@ -7,8 +7,6 @@ import HttpError from "./exceptions/HttpError";
 import httpFinalHandler from "./http/httpFinalHandler";
 import HttpRequest from "./http/HttpRequest";
 import HttpResponse from "./http/HttpResponse";
-import DefaultTemplateLoader from "./http/renderEngine/DefaultTemplateLoader";
-import TemplateEngine from "./http/renderEngine/TemplateEngine";
 import Router from "./Router";
 import IEventHandler from "./types/event/IEventHandler";
 import IEventRequest from "./types/event/IEventRequest";
@@ -18,8 +16,6 @@ import IHttpPlaceholderHandler from "./types/http/IHttpPlaceholderHandler";
 import IHttpRequest from "./types/http/IHttpRequest";
 import IHttpResponse from "./types/http/IHttpResponse";
 import IHttpRoute from "./types/http/IHttpRoute";
-import ITemplateEngine from "./types/http/renderEngine/ITemplateEngine";
-import ITemplateLoader from "./types/http/renderEngine/ITemplateLoader";
 import ITemplateRenderer from "./types/http/renderEngine/ITemplateRenderer";
 import IApp from "./types/IApp";
 import IRouter from "./types/IRouter";
@@ -32,19 +28,10 @@ export default class App implements IApp {
 
   private _settings: object;
   private _router: IRouter;
-  private _templateEngine: ITemplateEngine;
 
   constructor() {
     this._settings = {};
     this._router = new Router();
-  }
-
-  get templateEngine(): ITemplateEngine {
-    return this._templateEngine;
-  }
-
-  get templateLoader(): ITemplateLoader {
-    return this._templateEngine ? this._templateEngine.loader : null;
   }
 
   public init(settings?: object): void {
@@ -115,9 +102,8 @@ export default class App implements IApp {
     return this;
   }
 
-  public addTemplateEngine(bucket: string, renderer: ITemplateRenderer, ttl?: number): IApp {
-    const templateLoader: ITemplateLoader = new DefaultTemplateLoader(bucket, ttl);
-    this._templateEngine = new TemplateEngine(bucket, renderer, templateLoader);
+  public addTemplateEngine(renderer: ITemplateRenderer, engineConfiguration?: {[name: string]: any}): IApp {
+    this._router.addTemplateEngine(renderer, engineConfiguration);
 
     return this;
   }

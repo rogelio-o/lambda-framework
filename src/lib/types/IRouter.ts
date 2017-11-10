@@ -8,6 +8,8 @@ import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRequest from "./http/IHttpRequest";
 import IHttpResponse from "./http/IHttpResponse";
 import IHttpRoute from "./http/IHttpRoute";
+import ITemplateEngine from "./http/renderEngine/ITemplateEngine";
+import ITemplateRenderer from "./http/renderEngine/ITemplateRenderer";
 import INext from "./INext";
 
 /**
@@ -16,6 +18,11 @@ import INext from "./INext";
  * with more handlers (and it can be in a subpath).
  */
 export default interface IRouter {
+
+  /**
+   * Returns the used template engine in the current router.
+   */
+  readonly templateEngine: ITemplateEngine;
 
   readonly httpStack: IHttpLayer[];
 
@@ -140,5 +147,16 @@ export default interface IRouter {
    * @param {INext}         next
    */
   eventHandle(req: IEventRequest, next: INext): void;
+
+  /**
+   * Add a render engine to be used in `IHttpResponse.request`.
+   *
+   * @param  {ITemplateRenderer}      renderer              The function to render the template
+   *                                                        file with the params.
+   * @param  {{[name: string]: any}}  engineConfiguration   Conf params that will be passed to template
+   *                                                        renderer in each call.
+   * @return {IRouter}
+   */
+  addTemplateEngine(renderer: ITemplateRenderer, engineConfiguration?: {[name: string]: any}): IRouter;
 
 }

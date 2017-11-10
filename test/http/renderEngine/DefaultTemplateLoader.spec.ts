@@ -3,6 +3,8 @@ import * as Chai from "chai";
 import * as NodeCache from "node-cache";
 import { stub, SinonStub } from "sinon";
 import DefaultTemplateLoader from "./../../../src/lib/http/renderEngine/DefaultTemplateLoader";
+import Template from "./../../../src/lib/http/renderEngine/Template";
+import ITemplate from "./../../../src/lib/types/http/renderEngine/ITemplate";
 import ITemplateLoader from "./../../../src/lib/types/http/renderEngine/ITemplateLoader";
 
 /**
@@ -21,11 +23,13 @@ describe("DefaultTemplateLoader", () => {
   describe("load", () => {
     it("should load from cache the template if has been previously loaded and run the callback with the cached content.", (done) => {
       getCacheStub.callsFake((key: string, callback) => {
-        callback(null, "Cached content");
+        callback(null, new Template("prueba.pug", "Cached content."));
       });
-      loader.load("prueba.pug", (err: Error, content: string) => {
+      loader.load("prueba.pug", (err: Error, template: ITemplate) => {
         Chai.expect(getCacheStub.calledOnce).to.be.true;
         Chai.expect(getObjectStub.calledOnce).to.be.false;
+        Chai.expect(template.fileName).to.be.equal("prueba.pug");
+        Chai.expect(template.content).to.be.equal("Cached content.");
         done();
       });
     });
@@ -35,7 +39,7 @@ describe("DefaultTemplateLoader", () => {
       getCacheStub.callsFake((key: string, callback) => {
         callback(returnedError, null);
       });
-      loader.load("prueba.pug", (err: Error, content: string) => {
+      loader.load("prueba.pug", (err: Error, template: ITemplate) => {
         Chai.expect(err).to.be.equal(returnedError);
         done();
       });
@@ -48,9 +52,10 @@ describe("DefaultTemplateLoader", () => {
           Body: "Test content."
         });
       });
-      loader.load("prueba.pug", (err: Error, content: string) => {
+      loader.load("prueba.pug", (err: Error, template: ITemplate) => {
         Chai.expect(getObjectStub.called).to.be.true;
-        Chai.expect(content).to.be.equal("Test content.");
+        Chai.expect(template.fileName).to.be.equal("prueba.pug");
+        Chai.expect(template.content).to.be.equal("Test content.");
         done();
       });
     });
@@ -64,10 +69,11 @@ describe("DefaultTemplateLoader", () => {
       getCacheStub.callsFake((key: string, callback) => {
         callback(null, undefined);
       });
-      loader.load("prueba.pug", (err: Error, content: string) => {
+      loader.load("prueba.pug", (err: Error, template: ITemplate) => {
         Chai.expect(getCacheStub.called).to.be.true;
         Chai.expect(getObjectStub.called).to.be.true;
-        Chai.expect(content).to.be.equal("Test content.");
+        Chai.expect(template.fileName).to.be.equal("prueba.pug");
+        Chai.expect(template.content).to.be.equal("Test content.");
         done();
       });
     });
@@ -80,7 +86,7 @@ describe("DefaultTemplateLoader", () => {
       getCacheStub.callsFake((key: string, callback) => {
         callback(null, undefined);
       });
-      loader.load("prueba.pug", (err: Error, content: string) => {
+      loader.load("prueba.pug", (err: Error, template: ITemplate) => {
         Chai.expect(err).to.be.equal(returnedError);
         done();
       });

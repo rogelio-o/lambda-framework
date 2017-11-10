@@ -37,3 +37,5 @@ export { default as ITemplateEngine } from "./lib/types/http/renderEngine/ITempl
 export { default as ITemplateLoader } from "./lib/types/http/renderEngine/ITemplateLoader";
 export { default as ITemplateRenderer } from "./lib/types/http/renderEngine/ITemplateRenderer";
 export { default as DefaultTemplateLoader } from "./lib/http/renderEngine/DefaultTemplateLoader";
+export { default as DevTemplateLoader } from "./lib/http/renderEngine/DevTemplateLoader";
+export { default as Template } from "./lib/http/renderEngine/Template";

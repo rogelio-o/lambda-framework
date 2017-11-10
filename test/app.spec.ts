@@ -1,13 +1,16 @@
+import * as Chai from 'chai'
+import { stub } from "sinon";
 import App from '../src/index'
+import Router from "../src/lib/Router";
 import { configuration } from '../src/index'
 import defaultConfiguration from '../src/lib/configuration/defaultConfiguration'
-import * as Chai from 'chai'
 
 /**
  * Test for App.
  */
 describe('App', () => {
-  let app
+  let app;
+
   beforeEach(() => {
     app = new App()
   });
@@ -40,5 +43,14 @@ describe('App', () => {
   it('#set should set the param with the indicated value', async () => {
     app.set('option1', 'value1')
     Chai.expect(app.get('option1')).to.be.equal('value1')
+  });
+
+  describe("#addTemplateEngine", () => {
+    it("delegates the action to the default router.", () => {
+      const addTepmlateEngineStub = stub(Router.prototype, "addTemplateEngine");
+      app.addTemplateEngine(null);
+      Chai.expect(addTepmlateEngineStub.calledOnce).to.be.true;
+      addTepmlateEngineStub.restore();
+    });
   });
 });
