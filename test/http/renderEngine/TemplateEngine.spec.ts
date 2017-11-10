@@ -11,19 +11,20 @@ import ITemplateRenderer from "./../../../src/lib/types/http/renderEngine/ITempl
  * Test for TemplateEngine.
  */
 describe("TemplateEngine", () => {
-  const templateRenderer: SinonStub = stub();
+  const templateRenderer: ITemplateRenderer =  <ITemplateRenderer> <any> stub();
+  const templateRendererFunc = templateRenderer.render = stub();
   const expectedEngineConfig: {[name: string]: any} = {conf1: "value 1"};
-  const templateEngine: ITemplateEngine = new TemplateEngine(<ITemplateRenderer> <any> templateRenderer, expectedEngineConfig);
+  const templateEngine: ITemplateEngine = new TemplateEngine(templateRenderer, expectedEngineConfig);
 
   afterEach(() => {
-    templateRenderer.reset();
+    templateRendererFunc.reset();
   });
 
   describe("render", () => {
     it("should call the `callback` function with an error if there is an error rendering the template.", (done) => {
       const returnedError: Error = new Error("Forced error");
 
-      templateRenderer.callsFake((template: ITemplate, params: {[name: string]: any}, engineConfig: {[name: string]: any}, callback: (err: Error, parsedHtml: string) => void) => {
+      templateRendererFunc.callsFake((template: ITemplate, params: {[name: string]: any}, engineConfig: {[name: string]: any}, callback: (err: Error, parsedHtml: string) => void) => {
         callback(returnedError, null);
       });
 
@@ -38,7 +39,7 @@ describe("TemplateEngine", () => {
       const expectedContent = "PRUEBA";
       const expectedParams = {param1: "value1"};
 
-      templateRenderer.callsFake((fileName: string, params: {[name: string]: any}, engineConfig: {[name: string]: any}, callback: (err: Error, template: ITemplate) => void) => {
+      templateRendererFunc.callsFake((fileName: string, params: {[name: string]: any}, engineConfig: {[name: string]: any}, callback: (err: Error, template: ITemplate) => void) => {
         Chai.expect(fileName).to.be.equal("fileName.pug");
         Chai.expect(params).to.be.equal(expectedParams);
         Chai.expect(engineConfig).to.be.equal(expectedEngineConfig);

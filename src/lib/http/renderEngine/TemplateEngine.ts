@@ -15,7 +15,7 @@ export default class TemplateEngine implements ITemplateEngine {
   }
 
   public render(fileName: string, params: {[name: string]: any}, callback: (err: Error, parsedHtml: string) => void): void {
-    this._templateRenderer(fileName, params, this._engineConfiguration, callback);
+    this._templateRenderer.render(fileName, params, this._engineConfiguration, callback);
   }
 
 }
