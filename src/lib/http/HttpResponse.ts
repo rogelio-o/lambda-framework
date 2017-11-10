@@ -354,7 +354,7 @@ export default class HttpResponse implements IHttpResponse {
     }
   }
 
-  public render(view: string, params: {[name: string]: any}, callback?: (err: Error, html: string) => void): void {
+  public render(view: string, params?: {[name: string]: any}, callback?: (err: Error, html: string) => void): void {
     const templateEngine: ITemplateEngine = this.router ? this.router.templateEngine : null;
     if (templateEngine == null) {
       throw new Error("The template engine must to be added in `app.addTemplateEngine` if you want to use render.");
