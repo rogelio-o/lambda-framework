@@ -4,7 +4,6 @@ import IEventRoutePredicate from "./event/IEventRoutePredicate";
 import IHttpHandler from "./http/IHttpHandler";
 import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRoute from "./http/IHttpRoute";
-import ITemplateEngine from "./http/renderEngine/ITemplateEngine";
 import ITemplateRenderer from "./http/renderEngine/ITemplateRenderer";
 import IRouter from "./IRouter";
 
@@ -14,11 +13,6 @@ import IRouter from "./IRouter";
  * lambda function is called.
  */
 export default interface IApp {
-
-  /**
-   * Returns the created templated engine with the method `addTemplateEngine`.
-   */
-  readonly templateEngine: ITemplateEngine;
 
   /**
    * Initialize the framework with the configuration of `settings`. If
@@ -130,16 +124,12 @@ export default interface IApp {
   /**
    * Add a render engine to be used in `IHttpResponse.request`.
    *
-   * @param  {string}            bucket   The S3 bucket where the template
-   *                                      files are.
-   * @param  {ITemplateRenderer} renderer The function to render the template
-   *                                      file with the params.
-   * @param  {number}            ttl      The time to caching the template
-   *                                      in case that the lambda function
-   *                                      still alive. In debug mode, the
-   *                                      templates are not cached.
-   * @return {IApp}
+   * @param  {ITemplateRenderer}      renderer              The function to render the template
+   *                                                        file with the params.
+   * @param  {{[name: string]: any}}  engineConfiguration   Conf params that will be passed to template
+   *                                                        renderer in each call.
+   * @return {IRouter}
    */
-  addTemplateEngine(bucket: string, renderer: ITemplateRenderer, ttl?: number): IApp;
+  addTemplateEngine(renderer: ITemplateRenderer, engineConfiguration?: {[name: string]: any}): IApp;
 
 }

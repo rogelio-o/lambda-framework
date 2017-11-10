@@ -3,6 +3,7 @@ import EventRouterExecutor from "./event/EventRouterExecutor";
 import HttpLayer from "./http/HttpLayer";
 import HttpRoute from "./http/HttpRoute";
 import HttpRouterExecutor from "./http/HttpRouterExecutor";
+import TemplateEngine from "./http/renderEngine/TemplateEngine";
 import IEventHandler from "./types/event/IEventHandler";
 import IEventLayer from "./types/event/IEventLayer";
 import IEventRequest from "./types/event/IEventRequest";
@@ -15,6 +16,8 @@ import IHttpRequest from "./types/http/IHttpRequest";
 import IHttpResponse from "./types/http/IHttpResponse";
 import IHttpRoute from "./types/http/IHttpRoute";
 import IHttpRouterExecutor from "./types/http/IHttpRouterExecutor";
+import ITemplateEngine from "./types/http/renderEngine/ITemplateEngine";
+import ITemplateRenderer from "./types/http/renderEngine/ITemplateRenderer";
 import INext from "./types/INext";
 import IRouter from "./types/IRouter";
 
@@ -46,6 +49,7 @@ export default class Router implements IRouter {
   private _strict: boolean;
   private _subpath: string;
   private _parent: IRouter;
+  private _templateEngine: ITemplateEngine;
 
   constructor(opts?: {[name: string]: any}) {
     const options = opts || {};
@@ -98,6 +102,16 @@ export default class Router implements IRouter {
       result = result + this._subpath;
 
       return result;
+    }
+  }
+
+  get templateEngine(): ITemplateEngine {
+    if (this._templateEngine) {
+      return this._templateEngine;
+    } else if (this._parent) {
+      return this._parent.templateEngine;
+    } else {
+      return null;
     }
   }
 
@@ -181,6 +195,7 @@ export default class Router implements IRouter {
       }
     } else {
       const routerExecutor: IHttpRouterExecutor = new HttpRouterExecutor(this, req, res, out);
+      res.router = this;
       routerExecutor.next();
     }
   }
@@ -269,6 +284,12 @@ export default class Router implements IRouter {
   public eventHandle(req: IEventRequest, out: INext): void {
     const routerExecutor: IEventRouterExecutor = new EventRouterExecutor(this, req, out);
     routerExecutor.next();
+  }
+
+  public addTemplateEngine(renderer: ITemplateRenderer, engineConfiguration?: {[name: string]: any}): IRouter {
+    this._templateEngine = new TemplateEngine(renderer, engineConfiguration);
+
+    return this;
   }
 
 }

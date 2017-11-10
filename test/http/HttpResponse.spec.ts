@@ -1,10 +1,14 @@
 import * as Chai from 'chai'
+import { stub, SinonStub } from "sinon";
+import Router from './../../src/lib/Router'
+import IRouter from './../../src/lib/types/IRouter'
 import configuration from './../../src/lib/configuration/configuration'
 import HttpRequest from './../../src/lib/http/HttpRequest'
 import IHttpRequest from './../../src/lib/types/http/IHttpRequest'
 import HttpResponse from './../../src/lib/http/HttpResponse'
 import IHttpResponse from './../../src/lib/types/http/IHttpResponse'
 import HttpRoute from './../../src/lib/http/HttpRoute'
+import TemplateEngine from './../../src/lib/http/renderEngine/TemplateEngine'
 import App from './../../src/lib/App'
 import IApp from './../../src/lib/types/IApp'
 import { APIGatewayEvent } from 'aws-lambda'
@@ -335,24 +339,67 @@ describe('HttpResponse', () => {
   });
 
   describe("render", () => {
-    it("should throw an exception if the `templateEngine` hasn't been set in the `App`.", () => {
+    let renderStub: SinonStub;
+    const router: IRouter = new Router();
 
+    beforeEach(() => {
+       renderStub = stub(TemplateEngine.prototype, "render");
+       response.router = router;
+       router.addTemplateEngine(null);
+    });
+
+    afterEach(() => {
+      renderStub.restore();
+      response.router = undefined;
+    });
+
+    it("should throw an exception if the `templateEngine` hasn't been set in the `App`.", () => {
+      response.router = undefined;
+      Chai.expect(() => response.render("fileName")).to.throw("The template engine must to be added in `app.addTemplateEngine` if you want to use render.");
     });
 
     it("should call the method `render` of `templateEngine` if it has been set in the `App`.", () => {
-
+      response.render("fileName");
+      Chai.expect(renderStub.calledOnce).to.be.true;
     });
 
-    it("should call the `callback` with the result of `templateEngine.render`.", () => {
-
+    it("should call the `callback` with the result of `templateEngine.render`.", (done) => {
+      const expectedResult: string = "Result of render.";
+      renderStub.callsFake((view, params, callback) => callback(null, expectedResult));
+      response.render("fileName", {}, (err, result) => {
+        Chai.expect(result).to.be.equal(expectedResult);
+        Chai.expect(err).to.be.null;
+        done();
+      });
     });
 
-    it("should call the `next` handler with the error if the `templateEngine.render` method returns an error and no `callback` is given.", () => {
+    it("should call the `callback` with the error if the `templateEngine.render` method returns an error and a `callback` is given.", (done) => {
+      const expectedError: Error = new Error("Render error.");
+      renderStub.callsFake((view, params, callback) => callback(expectedError, null));
+      response.render("fileName", {}, (err, result) => {
+        Chai.expect(err).to.be.equal(expectedError);
+        Chai.expect(result).to.be.null;
+        done();
+      });
+    });
 
+    it("should call the `next` handler with the error if the `templateEngine.render` method returns an error and no `callback` is given.", (done) => {
+      const expectedError: Error = new Error("Render error.");
+      renderStub.callsFake((view, params, callback) => callback(expectedError, null));
+      request.next = (err) => {
+        Chai.expect(err).to.be.equal(expectedError);
+        request.next = undefined;
+        done();
+      };
+      response.render("fileName");
     });
 
     it("should response with the html code and the 'text/html' content-type header if the `templateEngine.render` method returns no error and no `callback` is given.", () => {
-
+      const expectedResult: string = "Result of render.";
+      renderStub.callsFake((view, params, callback) => callback(null, expectedResult));
+      response.render("fileName");
+      Chai.expect(succResult.headers["Content-Type"]).to.contain("text/html");
+      Chai.expect(succResult.body).to.be.equal(expectedResult);
     });
   });
 
