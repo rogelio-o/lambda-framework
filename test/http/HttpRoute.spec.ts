@@ -78,8 +78,7 @@ describe('HttpRoute', () => {
     route = new HttpRoute(layer)
     layer.route = route
     req = new HttpRequest(Object.assign({}, event))
-    res = new HttpResponse(app, req, (error, success) => {
-    })
+    res = new HttpResponse(app, req, (error, success) => {})
   })
 
 
@@ -135,6 +134,52 @@ describe('HttpRoute', () => {
         Chai.expect(previouslyCalled).to.be.false
         done()
       })
+    });
+  });
+
+  describe("#get", () => {
+    it("should set a handler for the method GET.", (done) => {
+      route.get((req, res, next) => {
+        done();
+      });
+      req.event.httpMethod = "GET";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#post", () => {
+    it("should set a handler for the method POST.", (done) => {
+      route.post((req, res, next) => {
+        done();
+      });
+      req.event.httpMethod = "POST";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#put", () => {
+    it("should set a handler for the method PUT.", (done) => {
+      route.put((req, res, next) => {
+        done();
+      });
+      req.event.httpMethod = "PUT";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#delete", () => {
+    it("should set a handler for the method DELETE.", (done) => {
+      route.delete((req, res, next) => {
+        done();
+      });
+      req.event.httpMethod = "DELETE";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#layer", () => {
+    it("should return the initialized in constructor value for layer.", () => {
+      Chai.expect(route.layer).to.be.equal(layer);
     });
   });
 
