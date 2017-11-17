@@ -20,11 +20,9 @@ function getErrorStatusCode(err: Error): number {
   }
 }
 
-function getErrorHeaders(err: Error): {[name: string]: string|string[]} {
+function getErrorHeaders(err: HttpError): {[name: string]: string|string[]} {
   if (err instanceof HttpError) {
     return err.headers;
-  } else {
-    return {};
   }
 }
 
@@ -125,7 +123,7 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
 
       // respect headers from error
       if (status !== null) {
-        headers = getErrorHeaders(err);
+        headers = getErrorHeaders(<HttpError> <any> err);
       }
 
       // fallback to status code on response

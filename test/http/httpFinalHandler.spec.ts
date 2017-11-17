@@ -175,16 +175,4 @@ describe('httpFinalHandler', () => {
     Chai.expect(callBackSuccessResult.statusCode).to.be.equals(500);
   });
 
-  it("should set empty headers if the error is not a HttpError.", () => {
-    const handler = httpFinalHandler(req, res, {})
-    const error = new Error("HTTP error.");
-    handler(error)
-    Chai.expect(callBackSuccessResult.headers).to.be.deep.equal({
-      'Content-Security-Policy': 'default-src "self"',
-      'X-Content-Type-Options': 'nosniff',
-      'Content-Type': 'application/json; charset=utf-8',
-      'Content-Length': '37' }
-    );
-  });
-
 });
