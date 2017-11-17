@@ -152,4 +152,27 @@ describe('httpFinalHandler', () => {
     Chai.expect(callBackSuccessResult.body).to.be.equals('Cannot GET /blog/1')
   });
 
+  it("should set status code from res if it is higher than 400, lower than 600 and the error is not of type HttpError.", () => {
+    const handler = httpFinalHandler(req, res, {})
+    res.status(404);
+    const error = new Error("No HTTP error.");
+    handler(error)
+    Chai.expect(callBackSuccessResult.statusCode).to.be.equals(404);
+  });
+
+  it("should set status code 500 if the res status code is lower than 400 or higher than 600 and the error is not of type HttpError.", () => {
+    const handler = httpFinalHandler(req, res, {})
+    res.status(300);
+    const error = new Error("No HTTP error.");
+    handler(error)
+    Chai.expect(callBackSuccessResult.statusCode).to.be.equals(500);
+  });
+
+  it("should set status code 500 if the status code of HttpError is not set.", () => {
+    const handler = httpFinalHandler(req, res, {})
+    const error = new HttpError("HTTP error.", null);
+    handler(error)
+    Chai.expect(callBackSuccessResult.statusCode).to.be.equals(500);
+  });
+
 });

@@ -124,12 +124,12 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
       status = getErrorStatusCode(err);
 
       // respect headers from error
-      if (status !== undefined) {
+      if (status !== null) {
         headers = getErrorHeaders(err);
       }
 
       // fallback to status code on response
-      if (status === undefined) {
+      if (status === null) {
         status = getResponseStatusCode(res);
       }
 
