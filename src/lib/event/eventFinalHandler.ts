@@ -18,7 +18,7 @@ export default function eventFinalHandler(req: IEventRequest, options: {[name: s
   return (err?: Error) => {
     // schedule onerror callback
     if (onerror) {
-      setImmediate(onerror, err, req);
+      setImmediate(() => onerror(err, req));
     }
   };
 }

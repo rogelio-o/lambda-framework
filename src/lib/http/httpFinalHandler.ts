@@ -143,7 +143,7 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
 
     // schedule onerror callback
     if (onerror) {
-      setImmediate(onerror, err, req, res);
+      setImmediate(() => onerror(err, req, res));
     }
 
     if (!res.isSent) {
