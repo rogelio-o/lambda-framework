@@ -8,10 +8,6 @@ import INext from "./../types/INext";
 const DOUBLE_SPACE_REGEXP = /\x20{2}/g;
 const NEWLINE_REGEXP = /\n/g;
 
-const defer = typeof setImmediate === "function"
-  ? setImmediate
-  : (fn, err, req, res) => process.nextTick(fn.bind.apply(fn, arguments));
-
 function getErrorStatusCode(err: Error): number {
   if (err instanceof HttpError) {
     if (typeof err.statusCode === "number" && err.statusCode >= 400 && err.statusCode < 600) {
@@ -147,7 +143,7 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
 
     // schedule onerror callback
     if (onerror) {
-      defer(onerror, err, req, res);
+      setImmediate(onerror, err, req, res);
     }
 
     if (!res.isSent) {
