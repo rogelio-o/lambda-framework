@@ -1,10 +1,6 @@
 import IEventRequest from "./../types/event/IEventRequest";
 import INext from "./../types/INext";
 
-const defer = typeof setImmediate === "function"
-  ? setImmediate
-  : (fn, err, req) => process.nextTick(fn.bind.apply(fn, arguments));
-
 /**
  * The final handler to be executed if no previous handler has stopped
  * the router execution.
@@ -22,7 +18,7 @@ export default function eventFinalHandler(req: IEventRequest, options: {[name: s
   return (err?: Error) => {
     // schedule onerror callback
     if (onerror) {
-      defer(onerror, err, req);
+      setImmediate(onerror, err, req);
     }
   };
 }
