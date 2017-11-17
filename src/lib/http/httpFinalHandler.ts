@@ -123,7 +123,7 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
 
       // respect headers from error
       if (status !== null) {
-        headers = getErrorHeaders(<HttpError> <any> err);
+        headers = getErrorHeaders(err as HttpError);
       }
 
       // fallback to status code on response
