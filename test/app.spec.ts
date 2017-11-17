@@ -45,8 +45,69 @@ describe('App', () => {
     Chai.expect(app.get('option1')).to.be.equal('value1')
   });
 
+  describe("#handle", () => {
+    it("should call the router httpHandle if the event type is APIGatewayEvent.", () => {
+      const httpHandleStub = stub(Router.prototype, "httpHandle");
+      app.handle({httpMethod: "GET", headers: []});
+      Chai.expect(httpHandleStub.calledOnce).to.be.true;
+      httpHandleStub.restore();
+    });
+
+    it("should call the router eventHandle if the event type is NOT APIGatewayEvent.", () => {
+      const eventHandleStub = stub(Router.prototype, "eventHandle");
+      app.handle({eventParam: "1"});
+      Chai.expect(eventHandleStub.calledOnce).to.be.true;
+      eventHandleStub.restore();
+    });
+  });
+
+  describe("#use", () => {
+    it("should delegate the action to the default router.", () => {
+      const useStub = stub(Router.prototype, "use");
+      app.use(null);
+      Chai.expect(useStub.calledOnce).to.be.true;
+      useStub.restore();
+    });
+  });
+
+  describe("#mount", () => {
+    it("should delegate the action to the default router.", () => {
+      const mountStub = stub(Router.prototype, "mount");
+      app.mount(null);
+      Chai.expect(mountStub.calledOnce).to.be.true;
+      mountStub.restore();
+    });
+  });
+
+  describe("#param", () => {
+    it("should delegate the action to the default router.", () => {
+      const paramStub = stub(Router.prototype, "param");
+      app.param(null);
+      Chai.expect(paramStub.calledOnce).to.be.true;
+      paramStub.restore();
+    });
+  });
+
+  describe("#route", () => {
+    it("should delegate the action to the default router.", () => {
+      const routeStub = stub(Router.prototype, "route");
+      app.route(null);
+      Chai.expect(routeStub.calledOnce).to.be.true;
+      routeStub.restore();
+    });
+  });
+
+  describe("#event", () => {
+    it("should delegate the action to the default router.", () => {
+      const eventStub = stub(Router.prototype, "event");
+      app.event(null);
+      Chai.expect(eventStub.calledOnce).to.be.true;
+      eventStub.restore();
+    });
+  });
+
   describe("#addTemplateEngine", () => {
-    it("delegates the action to the default router.", () => {
+    it("should delegate the action to the default router.", () => {
       const addTepmlateEngineStub = stub(Router.prototype, "addTemplateEngine");
       app.addTemplateEngine(null);
       Chai.expect(addTepmlateEngineStub.calledOnce).to.be.true;
