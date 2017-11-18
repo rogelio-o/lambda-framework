@@ -23,12 +23,11 @@ describe("utils", () => {
     const testObject = {
       name: "Roger",
       surname: "Garcia & <Garcia>",
-      birthday: new Date(1980, 10, 10),
       wight: 72.6
     };
 
     it("should transform an object into a JSON string.", () => {
-      Chai.expect(stringify(testObject)).to.be.equals("{\"name\":\"Roger\",\"surname\":\"Garcia & <Garcia>\",\"birthday\":\"1980-11-09T23:00:00.000Z\",\"wight\":72.6}");
+      Chai.expect(stringify(testObject)).to.be.equals("{\"name\":\"Roger\",\"surname\":\"Garcia & <Garcia>\",\"wight\":72.6}");
     });
 
     it("should add only the properties in the `replacer` array if it is given.", () => {
@@ -52,7 +51,6 @@ describe("utils", () => {
       Chai.expect(stringify(testObject, null, "    ")).to.be.equals("{"
       + "\n    \"name\": \"Roger\","
       + "\n    \"surname\": \"Garcia & <Garcia>\","
-      + "\n    \"birthday\": \"1980-11-09T23:00:00.000Z\","
       + "\n    \"wight\": 72.6"
       + "\n}");
     });
@@ -61,13 +59,12 @@ describe("utils", () => {
       Chai.expect(stringify(testObject, null, 2)).to.be.equals("{"
       + "\n  \"name\": \"Roger\","
       + "\n  \"surname\": \"Garcia & <Garcia>\","
-      + "\n  \"birthday\": \"1980-11-09T23:00:00.000Z\","
       + "\n  \"wight\": 72.6"
       + "\n}");
     });
 
     it("should escape <, >, and & characters if escape is true.", () => {
-      Chai.expect(stringify(testObject, null, null, true)).to.be.equals("{\"name\":\"Roger\",\"surname\":\"Garcia \\u0026 \\u003cGarcia\\u003e\",\"birthday\":\"1980-11-09T23:00:00.000Z\",\"wight\":72.6}");
+      Chai.expect(stringify(testObject, null, null, true)).to.be.equals("{\"name\":\"Roger\",\"surname\":\"Garcia \\u0026 \\u003cGarcia\\u003e\",\"wight\":72.6}");
     });
   });
 });
