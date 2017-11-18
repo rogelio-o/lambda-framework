@@ -276,8 +276,8 @@ describe('EventRequest', () => {
     });
 
     it('should return "CloudFormationCustomResourceUpdateEvent" if the event is of this type.', () => {
-      const req = new EventRequest(cloudFormationCustomResourceCreateEvent)
-      Chai.expect(req.eventType).to.be.equal('CloudFormationCustomResourceCreateEvent')
+      const req = new EventRequest(cloudFormationCustomResourceUpdateEvent)
+      Chai.expect(req.eventType).to.be.equal('CloudFormationCustomResourceUpdateEvent')
     });
 
     it('should return "CloudFormationCustomResourceDeleteEvent" if the event is of this type.', () => {
@@ -303,6 +303,13 @@ describe('EventRequest', () => {
     it('should return null if the event is of unknown type.', () => {
       const req = new EventRequest(unknownEvent)
       Chai.expect(req.eventType).to.be.null
+    });
+
+    describe("#context", () => {
+      it("should return an empty initialized object where variables can be shared between layers.", () => {
+        const req = new EventRequest(customAuthorizerEvent);
+        Chai.expect(req.context).to.be.deep.equal({});
+      });
     });
   });
 
