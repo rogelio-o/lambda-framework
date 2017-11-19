@@ -9,11 +9,7 @@ import IHttpRoute from "./../types/http/IHttpRoute";
 import INext from "./../types/INext";
 import IRouter from "./../types/IRouter";
 
-function decode_param(val: any): any {
-  if (typeof val !== "string" || val.length === 0) {
-    return val;
-  }
-
+function decode_param(val: string): any {
   try {
     return decodeURIComponent(val);
   } catch (err) {
@@ -44,17 +40,17 @@ export default class HttpLayer implements IHttpLayer {
   private _regexpFastStar: boolean;
   private _regexpFastSlash: boolean;
 
-  constructor(router: IRouter, path: string, options: {}, handler?: IHttpHandler, regexOptions?: RegExpOptions) {
+  constructor(router: IRouter, path: string, options: {[name: string]: any}, handler?: IHttpHandler, regexOptions?: RegExpOptions) {
     this._router = router;
     this._path = path;
     this._options = options;
     this._handler = handler;
 
-    const opts = regexOptions || {};
+    const regexOpts = regexOptions || {};
+    const opts = options || {};
     if (path) {
       this._keys = [];
-      this._regexp = pathToRegexp(path, this._keys, opts);
-
+      this._regexp = pathToRegexp(path, this._keys, regexOpts);
       this._regexpFastStar = path === "*";
       this._regexpFastSlash = path === "/" && opts.end === false;
     }

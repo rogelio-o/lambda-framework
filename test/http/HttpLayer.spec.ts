@@ -1,4 +1,5 @@
 import * as Chai from 'chai'
+import { stub, SinonStub } from "sinon";
 import HttpLayer from './../../src/lib/http/HttpLayer'
 import IHttpLayer from './../../src/lib/types/http/IHttpLayer'
 import HttpRoute from './../../src/lib/http/HttpRoute'
@@ -11,6 +12,7 @@ import HttpResponse from './../../src/lib/http/HttpResponse'
 import IHttpResponse from './../../src/lib/types/http/IHttpResponse'
 import IRouter from './../../src/lib/types/IRouter'
 import Router from './../../src/lib/Router'
+import HttpError from './../../src/lib/exceptions/HttpError'
 
 const event = {
   body: 'BODY',
@@ -71,6 +73,8 @@ describe('HttpLayer', () => {
   let layer: IHttpLayer
   const app: IApp = new App
   const router: IRouter = new Router
+  const subrouter: IRouter = new Router
+  router.mount(subrouter, '/blog');
   let req: IHttpRequest
   let res: IHttpResponse
   let callbackErrorResult, callBackSuccessResult
@@ -97,6 +101,16 @@ describe('HttpLayer', () => {
       const layer = new HttpLayer(router, null, {})
       Chai.expect(layer.match('/blog')).to.be.true
     });
+
+    it('should return true if the path is the router subpath plus the layer path.', () => {
+      layer = new HttpLayer(subrouter, '/:id', {})
+      Chai.expect(layer.match('/blog/1')).to.be.true
+    });
+
+    it("should return false if the path doesn't match with the router subpath.", () => {
+      layer = new HttpLayer(subrouter, '/:id', {})
+      Chai.expect(layer.match('/projects/1')).to.be.false
+    });
   });
 
   describe('#parsePathParameters', () => {
@@ -107,6 +121,25 @@ describe('HttpLayer', () => {
     it('should return an empty object if the layer path has no parameters.', () => {
       const layer: IHttpLayer = new HttpLayer(router, '/blog', {})
       Chai.expect(layer.parsePathParameters('/blog')).to.be.empty
+    });
+
+    it("should return the path as 0 variable if the layer path is *", () => {
+      const layer: IHttpLayer = new HttpLayer(router, "*", {});
+      Chai.expect(layer.parsePathParameters("/blog")).to.be.deep.equal({0: "/blog"});
+    });
+
+    it("should return an empty object if the layer path is / and the layer end option is false.", () => {
+      const layer: IHttpLayer = new HttpLayer(router, "/", {end: false});
+      Chai.expect(layer.parsePathParameters("/blog")).to.be.empty;
+    });
+
+    it("should return an empty object if the layer path is not in the router subpath.", () => {
+      const layer: IHttpLayer = new HttpLayer(subrouter, "/:id", {});
+      Chai.expect(layer.parsePathParameters("/projects/1")).to.be.empty;
+    });
+
+    it("should throw a HTTP error if there is an URI error decoding a param.", () => {
+      Chai.expect(() => layer.parsePathParameters("/blog/%E0%A4%A")).to.throw(HttpError, "Failed to decode param \"%E0%A4%A\"");
     });
   });
 
