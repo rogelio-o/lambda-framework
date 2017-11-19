@@ -25,40 +25,11 @@ function restore(fn: INext, req: IHttpRequest, ...params: string[]): INext {
 
 // merge params with parent params
 function mergeParams(params: { [name: string]: any }, parent: { [name: string]: any }): { [name: string]: any } {
-  if (typeof parent !== "object" || !parent) {
+  if (!parent) {
     return params;
   }
 
-  // make copy of parent for base
   const obj = mixin({}, parent);
-
-  // simple non-numeric merging
-  if (!(0 in params) || !(0 in parent)) {
-    return mixin(obj, params);
-  }
-
-  let i = 0;
-  let o = 0;
-
-  // determine numeric gaps
-  while (i in params) {
-    i += 1;
-  }
-
-  while (o in parent) {
-    o += 1;
-  }
-
-  // offset numeric indices in params before merge
-  for (i -= 1; i >= 0; i -= 1) {
-    params[i + o] = params[i];
-
-    // create holes for the merge when necessary
-    if (i < o) {
-      delete params[i];
-    }
-  }
-
   return mixin(obj, params);
 }
 

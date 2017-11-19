@@ -225,6 +225,23 @@ describe('HttpRouterExecutor', () => {
       routerExecutor.next()
     });
 
+    it('should set the request params to the params of the layer only if the initial request params is null before call the layer handler.', (done) => {
+      let previouslyCalled: boolean = false;
+
+      router.route("/blog/:id").get((req, res, next) => {
+        previouslyCalled = true;
+        Chai.expect(req.params).to.deep.include({id: "1"});
+        next();
+      });
+
+      req.params = null;
+      const routerExecutor: IHttpRouterExecutor = new HttpRouterExecutor(router, req, res, () => {
+        Chai.expect(previouslyCalled).to.be.true;
+        done();
+      });
+      routerExecutor.next();
+    });
+
     it('should "process the layer params" with the router before call the layer handler.', (done) => {
       let previouslyCalled: boolean = false
 
