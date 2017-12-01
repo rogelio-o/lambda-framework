@@ -1,11 +1,11 @@
 import * as accepts from "accepts";
-import { APIGatewayEvent } from "aws-lambda";
 import * as fresh from "fresh";
 import IHttpRequest from "./../types/http/IHttpRequest";
 import IHttpResponse from "./../types/http/IHttpResponse";
 import IHttpRoute from "./../types/http/IHttpRoute";
 import IHttpUploadedFile from "./../types/http/IHttpUploadedFile";
 import INext from "./../types/INext";
+import IRawEvent from "./../types/IRawEvent";
 import { mergeParams, normalizeType } from "./../utils/utils";
 
 /**
@@ -21,11 +21,11 @@ export default class HttpRequest implements IHttpRequest {
   public params: { [name: string]: string };
   public route: IHttpRoute;
 
-  private _event: APIGatewayEvent;
+  private _event: IRawEvent;
   private _headers: { [name: string]: string };
   private _context: { [name: string]: any };
 
-  constructor(event: APIGatewayEvent) {
+  constructor(event: IRawEvent) {
     this.body = event.body; // Default body
     this._event = event;
     this._context = {};
@@ -56,7 +56,7 @@ export default class HttpRequest implements IHttpRequest {
 
       return ips[ips.length - 1];
     } else {
-      return this._event.requestContext.identity.sourceIp.replace("\:d+$", "");
+      return this._event.ip;
     }
   }
 
@@ -77,8 +77,8 @@ export default class HttpRequest implements IHttpRequest {
     return val.toLowerCase() === "xmlhttprequest";
   }
 
-  get event(): APIGatewayEvent {
-    return this._event;
+  get event(): any {
+    return this._event.original;
   }
 
   get context(): { [name: string]: any } {

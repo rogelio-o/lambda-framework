@@ -1,4 +1,3 @@
-import { Callback } from "aws-lambda";
 import { parse, serialize } from "cookie";
 import { sign } from "cookie-signature";
 import * as encodeUrl from "encodeurl";
@@ -13,6 +12,7 @@ import IHttpResponse from "./../types/http/IHttpResponse";
 import ITemplateEngine from "./../types/http/renderEngine/ITemplateEngine";
 import IApp from "./../types/IApp";
 import INext from "./../types/INext";
+import IRawCallback from "./../types/IRawCallback";
 import IRouter from "./../types/IRouter";
 import { merge, normalizeType, setCharset, stringify } from "./../utils/utils";
 
@@ -26,12 +26,12 @@ export default class HttpResponse implements IHttpResponse {
   private _statusCode: number;
   private _app: IApp;
   private _request: IHttpRequest;
-  private _callback: Callback;
+  private _callback: IRawCallback;
   private _headers: { [name: string]: string|string[] };
   private _error: IHttpError;
   private _isSent: boolean;
 
-  constructor(app: IApp, request: IHttpRequest, callback: Callback) {
+  constructor(app: IApp, request: IHttpRequest, callback: IRawCallback) {
     this._app = app;
     this._request = request;
     this._callback = callback;
@@ -392,9 +392,13 @@ export default class HttpResponse implements IHttpResponse {
       }
     }
 
-    const error = this._error ? this._error.cause : null;
+    const error: Error = this._error ? this._error.cause : null;
     this._isSent = true;
-    this._callback(error, {statusCode, headers, body: resultBody});
+    if(error) {
+      this._callback.sendError(error);
+    } else {
+      this._callback.send(statusCode, headers, resultBody);
+    }
   }
 
 }

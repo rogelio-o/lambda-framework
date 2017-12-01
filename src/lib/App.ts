@@ -1,4 +1,3 @@
-import { Callback, Context } from "aws-lambda";
 import configuration from "./configuration/configuration";
 import defaultConfiguration from "./configuration/defaultConfiguration";
 import eventFinalHandler from "./event/eventFinalHandler";
@@ -19,7 +18,8 @@ import IHttpRoute from "./types/http/IHttpRoute";
 import ITemplateRenderer from "./types/http/renderEngine/ITemplateRenderer";
 import IApp from "./types/IApp";
 import IRouter from "./types/IRouter";
-import { getEventType } from "./utils/utils";
+import IRawCallback from "./types/IRawCallback";
+import IRawEvent from "./types/IRawEvent";
 
 /**
  * The main object that describes and configures the lambda application.
@@ -54,9 +54,8 @@ export default class App implements IApp {
     return this._settings[key];
   }
 
-  public handle(event: any, context: Context, callback?: Callback): void {
-    const eventType = getEventType(event);
-    if (eventType === "APIGatewayEvent") {
+  public handle(event: IRawEvent, callback: IRawCallback): void {
+    if(event.isHttp) {
       const req: IHttpRequest = new HttpRequest(event);
       const res: IHttpResponse = new HttpResponse(this, req, callback);
       const done = httpFinalHandler(req, res, {
