@@ -1,21 +1,11 @@
 import * as Chai from "chai";
 import { spy, SinonSpy } from "sinon";
+import httpEvent from "./../../utils/httpEvent";
 import JsonParser from "./../../../src/lib/http/bodyParsers/JsonParser";
 import HttpRequest from "./../../../src/lib/http/HttpRequest";
 import IHttpHandler from "./../../../src/lib/types/http/IHttpHandler";
 import IHttpRequest from "./../../../src/lib/types/http/IHttpRequest";
 import IHttpResponse from "./../../../src/lib/types/http/IHttpResponse";
-
-const mainEvent: any = {
-  body: "{\"param1\": \"value1\"}",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  httpMethod: "POST",
-  isBase64Encoded: true,
-  path: "/blog",
-  resource: "API"
-};
 
 /**
  * Test for JsonParser.
@@ -27,8 +17,11 @@ describe("JsonParser", () => {
   const handler: IHttpHandler = (new JsonParser()).create();
 
   beforeEach(() => {
-    event = Object.assign({}, mainEvent);
-    event.headers = Object.assign({}, mainEvent.headers);
+    event = Object.assign({}, httpEvent);
+    event.httpMethod = "POST";
+    event.headers = Object.assign({}, httpEvent.headers);
+    event.headers["Content-Type"] = "application/json";
+    event.body = "{\"param1\": \"value1\"}";
     next = spy();
   });
 

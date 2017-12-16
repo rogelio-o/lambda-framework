@@ -11,58 +11,8 @@ import HttpResponse from './../../src/lib/http/HttpResponse'
 import IHttpResponse from './../../src/lib/types/http/IHttpResponse'
 import IRouter from './../../src/lib/types/IRouter'
 import Router from './../../src/lib/Router'
-
-const event = {
-  body: 'BODY',
-  headers: {
-    header1: 'HEADER VALUE 1',
-    header2: 'HEADER VALU 2',
-    'X-Forwarded-Proto': 'https',
-    'Host': 'localhost',
-    'Accept': 'application/json',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Charset': 'UTF-8, ISO-8859-1',
-    'Accept-Language': 'es,en',
-    'If-None-Match': 'etagValue',
-    'If-Modified-Since': '2017-10-10T10:10:10'
-  },
-  httpMethod: 'GET',
-  isBase64Encoded: true,
-  path: '/blog/1',
-  pathParameters: {
-    param1: 'Param 1'
-  },
-  queryStringParameters: {
-    query1: 'Query 1'
-  },
-  stageVariables: {
-    stage1: 'Stage 1'
-  },
-  requestContext: {
-    accountId: 'A1',
-    apiId: 'API1',
-    httpMethod: 'GET',
-    identity: {
-      accessKey: 'ABCD',
-      accountId: 'AAA',
-      apiKey: 'BBB',
-      caller: 'caller',
-      cognitoAuthenticationProvider: 'facebook',
-      cognitoAuthenticationType: 'authtype',
-      cognitoIdentityId: 'IID',
-      cognitoIdentityPoolId: 'PID',
-      sourceIp: '197.0.0.0',
-      user: 'user',
-      userAgent: 'Chrome',
-      userArn: 'ARN'
-    },
-    stage: 'test',
-    requestId: 'RQID',
-    resourceId: 'RSID',
-    resourcePath: '/blog/1'
-  },
-  resource: 'API'
-}
+import DefaultCallback from "./../utils/DefaultCallback";
+import httpEvent from "./../utils/httpEvent";
 
 /**
  * Test for HttpRoute.
@@ -72,14 +22,15 @@ describe('HttpRoute', () => {
   const router: IRouter = new Router
   let layer: IHttpLayer, route: IHttpRoute
   let req: IHttpRequest, res: IHttpResponse
+  let callback: DefaultCallback;
 
   beforeEach(() => {
+    callback = new DefaultCallback();
     layer = new HttpLayer(router, '/blog/:id', {})
     route = new HttpRoute(layer)
     layer.route = route
-    req = new HttpRequest(Object.assign({}, event))
-    res = new HttpResponse(app, req, (error, success) => {
-    })
+    req = new HttpRequest(Object.assign({}, httpEvent))
+    res = new HttpResponse(app, req, callback);
   })
 
 

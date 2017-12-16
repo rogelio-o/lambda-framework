@@ -17,9 +17,9 @@ import IHttpResponse from "./types/http/IHttpResponse";
 import IHttpRoute from "./types/http/IHttpRoute";
 import ITemplateRenderer from "./types/http/renderEngine/ITemplateRenderer";
 import IApp from "./types/IApp";
-import IRouter from "./types/IRouter";
 import IRawCallback from "./types/IRawCallback";
 import IRawEvent from "./types/IRawEvent";
+import IRouter from "./types/IRouter";
 
 /**
  * The main object that describes and configures the lambda application.
@@ -55,7 +55,7 @@ export default class App implements IApp {
   }
 
   public handle(event: IRawEvent, callback: IRawCallback): void {
-    if(event.isHttp) {
+    if (event.isHttp) {
       const req: IHttpRequest = new HttpRequest(event);
       const res: IHttpResponse = new HttpResponse(this, req, callback);
       const done = httpFinalHandler(req, res, {

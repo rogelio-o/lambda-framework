@@ -9,97 +9,9 @@ import HttpResponse from './../src/lib/http/HttpResponse'
 import IHttpResponse from './../src/lib/types/http/IHttpResponse'
 import App from './../src/lib/App'
 import IApp from './../src/lib/types/IApp'
-
-const httpEvent = {
-  body: 'BODY',
-  headers: {
-    header1: 'HEADER VALUE 1',
-    header2: 'HEADER VALU 2',
-    'X-Forwarded-Proto': 'https',
-    'Host': 'localhost',
-    'Accept': 'application/json',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Charset': 'UTF-8, ISO-8859-1',
-    'Accept-Language': 'es,en',
-    'If-None-Match': 'etagValue',
-    'If-Modified-Since': '2017-10-10T10:10:10'
-  },
-  httpMethod: 'GET',
-  isBase64Encoded: true,
-  path: '/blog/1',
-  pathParameters: {
-    param1: 'Param 1'
-  },
-  queryStringParameters: {
-    query1: 'Query 1'
-  },
-  stageVariables: {
-    stage1: 'Stage 1'
-  },
-  requestContext: {
-    accountId: 'A1',
-    apiId: 'API1',
-    httpMethod: 'GET',
-    identity: {
-      accessKey: 'ABCD',
-      accountId: 'AAA',
-      apiKey: 'BBB',
-      caller: 'caller',
-      cognitoAuthenticationProvider: 'facebook',
-      cognitoAuthenticationType: 'authtype',
-      cognitoIdentityId: 'IID',
-      cognitoIdentityPoolId: 'PID',
-      sourceIp: '197.0.0.0',
-      user: 'user',
-      userAgent: 'Chrome',
-      userArn: 'ARN'
-    },
-    stage: 'test',
-    requestId: 'RQID',
-    resourceId: 'RSID',
-    resourcePath: '/blog/1'
-  },
-  resource: 'API'
-}
-
-const s3Event = {
-  "Records": [
-    {
-      "eventVersion": "2.0",
-      "eventTime": "1970-01-01T00:00:00.000Z",
-      "requestParameters": {
-        "sourceIPAddress": "127.0.0.1"
-      },
-      "s3": {
-        "configurationId": "testConfigRule",
-        "object": {
-          "eTag": "0123456789abcdef0123456789abcdef",
-          "sequencer": "0A1B2C3D4E5F678901",
-          "key": "test/key",
-          "size": 1024
-        },
-        "bucket": {
-          "arn": "arn:aws:s3:::example-bucket",
-          "name": "example-bucket",
-          "ownerIdentity": {
-            "principalId": "EXAMPLE"
-          }
-        },
-        "s3SchemaVersion": "1.0"
-      },
-      "responseElements": {
-        "x-amz-id-2": "EXAMPLE123/5678abcdefghijklambdaisawesome/mnopqrstuvwxyzABCDEFGH",
-        "x-amz-request-id": "EXAMPLE123456789"
-      },
-      "awsRegion": "us-east-1",
-      "eventName": "ObjectCreated:Put",
-      "userIdentity": {
-        "principalId": "EXAMPLE"
-      },
-      "eventSource": "aws:s3"
-    }
-  ]
-}
+import httpEvent from "./utils/httpEvent";
+import otherEvent from "./utils/otherEvent";
+import DefaultCallback from "./utils/DefaultCallback";
 
 /**
  * Test for Router.
@@ -108,20 +20,14 @@ describe('Router', () => {
   const app: IApp = new App
   let router: IRouter, eventReq: IEventRequest
   let httpReq: IHttpRequest, res: IHttpResponse
-  let callbackErrorResult, callBackSuccessResult, doCallback: Function
+  let callback: DefaultCallback;
 
   beforeEach(() => {
-    doCallback = undefined
+    callback = new DefaultCallback();
     router = new Router
-    eventReq = new EventRequest(s3Event)
+    eventReq = new EventRequest(otherEvent)
     httpReq = new HttpRequest(httpEvent)
-    res = new HttpResponse(app, httpReq, (error, success) => {
-      callbackErrorResult = error
-      callBackSuccessResult = success
-      if(doCallback) {
-        doCallback()
-      }
-    })
+    res = new HttpResponse(app, httpReq, callback)
   })
 
   describe('#fullSubpath', () => {
@@ -164,10 +70,10 @@ describe('Router', () => {
       router.route('/blog/:id').get((req, res) => {})
       router.route('/blog/:id').post((req, res) => {})
 
-      doCallback = () => {
-        Chai.expect(callBackSuccessResult.headers['Allow']).to.be.equals('GET,POST')
+      callback.setCallback(() => {
+        Chai.expect(callback.successResult.headers['Allow']).to.be.equals('GET,POST')
         done()
-      }
+      });
 
       router.httpHandle(req, res, () => {})
     });

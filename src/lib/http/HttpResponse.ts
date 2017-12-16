@@ -394,7 +394,7 @@ export default class HttpResponse implements IHttpResponse {
 
     const error: Error = this._error ? this._error.cause : null;
     this._isSent = true;
-    if(error) {
+    if (error) {
       this._callback.sendError(error);
     } else {
       this._callback.send(statusCode, headers, resultBody);
