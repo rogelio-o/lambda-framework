@@ -8,10 +8,6 @@ import INext from "./../types/INext";
 const DOUBLE_SPACE_REGEXP = /\x20{2}/g;
 const NEWLINE_REGEXP = /\n/g;
 
-const defer = typeof setImmediate === "function"
-  ? setImmediate
-  : (fn, err, req, res) => process.nextTick(fn.bind.apply(fn, arguments));
-
 function getErrorStatusCode(err: Error): number {
   if (err instanceof HttpError) {
     if (typeof err.statusCode === "number" && err.statusCode >= 400 && err.statusCode < 600) {
@@ -24,11 +20,9 @@ function getErrorStatusCode(err: Error): number {
   }
 }
 
-function getErrorHeaders(err: Error): {[name: string]: string|string[]} {
+function getErrorHeaders(err: HttpError): {[name: string]: string|string[]} {
   if (err instanceof HttpError) {
     return err.headers;
-  } else {
-    return {};
   }
 }
 
@@ -128,12 +122,12 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
       status = getErrorStatusCode(err);
 
       // respect headers from error
-      if (status !== undefined) {
-        headers = getErrorHeaders(err);
+      if (status !== null) {
+        headers = getErrorHeaders(err as HttpError);
       }
 
       // fallback to status code on response
-      if (status === undefined) {
+      if (status === null) {
         status = getResponseStatusCode(res);
       }
 
@@ -147,7 +141,7 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
 
     // schedule onerror callback
     if (onerror) {
-      defer(onerror, err, req, res);
+      setImmediate(() => onerror(err, req, res));
     }
 
     if (!res.isSent) {

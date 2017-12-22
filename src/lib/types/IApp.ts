@@ -1,10 +1,11 @@
-import { Callback, Context } from "aws-lambda";
 import IEventHandler from "./event/IEventHandler";
 import IEventRoutePredicate from "./event/IEventRoutePredicate";
 import IHttpHandler from "./http/IHttpHandler";
 import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRoute from "./http/IHttpRoute";
 import ITemplateRenderer from "./http/renderEngine/ITemplateRenderer";
+import IRawCallback from "./IRawCallback";
+import IRawEvent from "./IRawEvent";
 import IRouter from "./IRouter";
 
 /**
@@ -53,13 +54,12 @@ export default interface IApp {
   get(key: string): any;
 
   /**
-   * Handle an incoming lambda funciton.
+   * Handle an incoming lambda function.
    *
    * @param {any}      event
-   * @param {Context}  context
    * @param {Callback} callback
    */
-  handle(event: any, context: Context, callback?: Callback): void;
+  handle(event: IRawEvent, callback: IRawCallback): void;
 
   /**
    * Use the given handler, with optional path, defaulting to "/".

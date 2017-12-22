@@ -1,5 +1,7 @@
 import * as Chai from "chai";
-import { spy, SinonSpy } from "sinon";
+import { spy, SinonSpy, stub, SinonStub } from "sinon";
+import * as qs from "qs";
+import * as querystring from "querystring";
 import UrlEncodedParser from "./../../../src/lib/http/bodyParsers/UrlEncodedParser";
 import HttpRequest from "./../../../src/lib/http/HttpRequest";
 import IHttpHandler from "./../../../src/lib/types/http/IHttpHandler";
@@ -24,7 +26,7 @@ describe("UrlEncodedParser", () => {
   const res: IHttpResponse = <IHttpResponse> <any> {};
   let next: SinonSpy;
   let event: any;
-  const handler: IHttpHandler = (new UrlEncodedParser()).create();
+  const handler: IHttpHandler = (new UrlEncodedParser()).create({parameterLimit: 2});
 
   beforeEach(() => {
     event = Object.assign({}, mainEvent);
@@ -70,5 +72,42 @@ describe("UrlEncodedParser", () => {
 
     Chai.expect(next.called).to.be.true;
     Chai.expect(req.body).to.be.equal(event.body);
+  });
+
+  it("should throw an exception if there are more parameters than the indicated by the limit.", () => {
+    event.body = mainEvent.body + "&param3=value3";
+
+    const req: IHttpRequest = new HttpRequest(event);
+    handler(req, res, next);
+
+    Chai.expect(next.called).to.be.true;
+    Chai.expect(next.args[0][0].message).to.be.equal("Too many parameters.");
+  });
+
+  it("should throw an exception if the configured parameter limit is not a number.", () => {
+    Chai.expect(() => (new UrlEncodedParser()).create({parameterLimit: "aa"})).throw("Option parameterLimit must be a positive number.");
+  });
+
+  it("should throw an exception if the configured parameter limit is a number lower than 1.", () => {
+    Chai.expect(() => (new UrlEncodedParser()).create({parameterLimit: 0})).throw("Option parameterLimit must be a positive number.");
+  });
+
+  it("should use `qs` library if the options extended is true or by default.", () => {
+    const stubQS = stub(qs, "parse");
+
+    const req: IHttpRequest = new HttpRequest(event);
+    handler(req, res, next);
+
+    Chai.expect(stubQS.called).to.be.true;
+  });
+
+  it("should use `querystring` library if it is NOT extended.", () => {
+    const handler: IHttpHandler = (new UrlEncodedParser()).create({extended: false});
+    const stubQS = stub(querystring, "parse");
+
+    const req: IHttpRequest = new HttpRequest(event);
+    handler(req, res, next);
+
+    Chai.expect(stubQS.called).to.be.true;
   });
 });

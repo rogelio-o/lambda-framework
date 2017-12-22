@@ -4,7 +4,9 @@ import IHttpRequest from './../../src/lib/types/http/IHttpRequest'
 import HttpResponse from './../../src/lib/http/HttpResponse'
 import HttpRoute from './../../src/lib/http/HttpRoute'
 import App from './../../src/lib/App'
-import { APIGatewayEvent } from 'aws-lambda'
+import IRawEvent from "./../../src/lib/types/IRawEvent";
+import DefaultCallback from "./../utils/DefaultCallback";
+import httpEvent from "./../utils/httpEvent";
 
 /**
  * Test for HttpRequest.
@@ -12,62 +14,11 @@ import { APIGatewayEvent } from 'aws-lambda'
 describe('HttpRequest', () => {
   let request: IHttpRequest
   let nextResult
-  let event: APIGatewayEvent
+  let event: IRawEvent;
   const app = new App()
   beforeEach(function(done) {
     nextResult = undefined
-    event = {
-      body: 'BODY',
-      headers: {
-        header1: 'HEADER VALUE 1',
-        header2: 'HEADER VALU 2',
-        'X-Forwarded-Proto': 'https',
-        'Host': 'localhost',
-        'Content-Type': 'application/json,text/html',
-        'Accept': 'application/json,text/html',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Charset': 'UTF-8, ISO-8859-1',
-        'Accept-Language': 'es,en',
-        'If-None-Match': 'etagValue',
-        'If-Modified-Since': '2017-10-10T10:10:10'
-      },
-      httpMethod: 'GET',
-      isBase64Encoded: true,
-      path: '/blog/1',
-      pathParameters: {
-        param1: 'Param 1'
-      },
-      queryStringParameters: {
-        query1: 'Query 1'
-      },
-      stageVariables: {
-        stage1: 'Stage 1'
-      },
-      requestContext: {
-        accountId: 'A1',
-        apiId: 'API1',
-        httpMethod: 'GET',
-        identity: {
-          accessKey: 'ABCD',
-          accountId: 'AAA',
-          apiKey: 'BBB',
-          caller: 'caller',
-          cognitoAuthenticationProvider: 'facebook',
-          cognitoAuthenticationType: 'authtype',
-          cognitoIdentityId: 'IID',
-          cognitoIdentityPoolId: 'PID',
-          sourceIp: '197.0.0.0',
-          user: 'user',
-          userAgent: 'Chrome',
-          userArn: 'ARN'
-        },
-        stage: 'test',
-        requestId: 'RQID',
-        resourceId: 'RSID',
-        resourcePath: '/blog/1'
-      },
-      resource: 'API'
-    }
+    event = Object.assign({}, httpEvent);
     request = new HttpRequest(event)
 
     done()
@@ -210,7 +161,7 @@ describe('HttpRequest', () => {
   });
 
   it('#fresh should return true if the request is "fresh"', () => {
-    const callback = function() {}
+    const callback: DefaultCallback = new DefaultCallback();
     const response = new HttpResponse(app, request, callback)
     response.status(200)
     response.putHeader('ETag', 'etagValue')
@@ -219,14 +170,14 @@ describe('HttpRequest', () => {
   });
 
   it('#fresh should return false if the request is not "fresh"', () => {
-    const callback = function() {}
+    const callback: DefaultCallback = new DefaultCallback();
     const response = new HttpResponse(app, request, callback)
     response.status(200)
     Chai.expect(request.fresh(response)).to.be.false
   });
 
   it('#stale should return true if the request is "stale"', () => {
-    const callback = function() {}
+    const callback: DefaultCallback = new DefaultCallback();
     const response = new HttpResponse(app, request, callback)
     response.status(200)
     response.putHeader('ETag', 'etagValue')
@@ -235,7 +186,7 @@ describe('HttpRequest', () => {
   });
 
   it('#stale should return false if the request is not "stale"', () => {
-    const callback = function() {}
+    const callback: DefaultCallback = new DefaultCallback();
     const response = new HttpResponse(app, request, callback)
     response.status(200)
     Chai.expect(request.stale(response)).to.be.true

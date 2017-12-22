@@ -1,4 +1,3 @@
-import { APIGatewayEvent } from "aws-lambda";
 import INext from "./../INext";
 import IHttpResponse from "./IHttpResponse";
 import IHttpRoute from "./IHttpRoute";
@@ -22,17 +21,17 @@ export default interface IHttpRequest {
   /**
    * The protocol of the incomig request. Can be http or https.
    */
-  protocol: string;
+  readonly protocol: string;
 
   /**
    * If the protocol of the incoming request is secure (https).
    */
-  secure: boolean;
+  readonly secure: boolean;
 
   /**
    * The remote address from the trusted proxy.
    */
-  ip: string;
+  readonly ip: string;
 
   /**
    * The request body.
@@ -47,27 +46,27 @@ export default interface IHttpRequest {
   /**
    * The parsed path of the request.
    */
-  path: string;
+  readonly path: string;
 
   /**
    * The incoming request HTTP method (GET, POST, PUT, DELETE,...)
    */
-  method: string;
+  readonly method: string;
 
   /**
    * The "Host" header field.
    */
-  hostname: string;
+  readonly hostname: string;
 
   /**
    * Check if the request was an _XMLHttpRequest_.
    */
-  xhr: boolean;
+  readonly xhr: boolean;
 
   /**
    * The incoming request headers.
    */
-  headers: { [name: string]: string };
+  readonly headers: { [name: string]: string };
 
   /**
    * All the params of the incoming request (query, path variables and body).
@@ -87,7 +86,7 @@ export default interface IHttpRequest {
   /**
    * Original event.
    */
-  event: APIGatewayEvent;
+  readonly event: any;
 
   /**
    * Context to save thins and use it

@@ -20,7 +20,7 @@ const parserHelper = (func: (body: string, req: IHttpRequest) => void, allowCont
       if (!allowContentTypes || req.is(allowContentTypes)) {
         const contentType = req.header("content-type");
         try {
-          func(req.event.body, req);
+          func(req.body as string, req);
 
           req.context._previouslyBodyParsed = true;
         } catch (e) {

@@ -10,12 +10,10 @@ import INext from "./../types/INext";
 export default class EventLayer implements IEventLayer {
 
   private _event: string|IEventRoutePredicate;
-  private _options: {};
   private _handler: IEventHandler;
 
-  constructor(event: string|IEventRoutePredicate, options: {}, handler: IEventHandler) {
+  constructor(event: string|IEventRoutePredicate, handler: IEventHandler) {
     this._event = event;
-    this._options = options;
     this._handler = handler;
   }
 

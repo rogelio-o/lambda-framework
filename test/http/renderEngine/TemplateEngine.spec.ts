@@ -1,6 +1,5 @@
 import * as Chai from "chai";
 import { SinonStub, stub } from "sinon";
-import DefaultTemplateLoader from "./../../../src/lib/http/renderEngine/DefaultTemplateLoader";
 import Template from "./../../../src/lib/http/renderEngine/Template";
 import TemplateEngine from "./../../../src/lib/http/renderEngine/TemplateEngine";
 import ITemplate from "./../../../src/lib/types/http/renderEngine/ITemplate";
