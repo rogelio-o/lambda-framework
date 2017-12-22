@@ -24,7 +24,9 @@ const parameterCount = (body: string, limit: number): number => {
   return count;
 };
 
-const extendedParser = (body: string, parameterLimit: number, arrayLimit: number): {[name: string]: string} => {
+type IParser = (body: string, parameterLimit: number, arrayLimit: number) => {[name: string]: string|string[]};
+
+const extendedParser: IParser = (body: string, parameterLimit: number, arrayLimit: number): {[name: string]: string|string[]} => {
   return qs.parse(body, {
     allowPrototypes: true,
     arrayLimit,
@@ -33,11 +35,11 @@ const extendedParser = (body: string, parameterLimit: number, arrayLimit: number
   });
 };
 
-const simpleParser = (body: string, parameterLimit: number, arrayLimit: number): {[name: string]: string} => {
+const simpleParser: IParser = (body: string, parameterLimit: number, arrayLimit: number): {[name: string]: string|string[]} => {
   return querystring.parse(body, undefined, undefined, {maxKeys: parameterLimit});
 };
 
-const abstractParser = (options: {[name: string]: any}, parser: (body: string, parameterLimit: number, arrayLimit: number) => {[name: string]: string}): (body: string) => {[name: string]: string} => {
+const abstractParser = (options: {[name: string]: any}, parser: IParser): (body: string) => {[name: string]: string|string[]} => {
   let parameterLimit = options.parameterLimit !== undefined
     ? options.parameterLimit
     : 1000;
@@ -50,7 +52,7 @@ const abstractParser = (options: {[name: string]: any}, parser: (body: string, p
     parameterLimit = Number.MAX_SAFE_INTEGER - 1;
   }
 
-  return (body: string): {[name: string]: string} => {
+  return (body: string): {[name: string]: string|string[]} => {
     const paramCount = parameterCount(body, parameterLimit + 1);
 
     if (paramCount === undefined) {
@@ -76,10 +78,10 @@ export default class UrlEncodedParser implements IBodyParser {
     const contentType = opts.type || "application/x-www-form-urlencoded";
 
     // create the appropriate query parser
-    const queryParser: (body: string, parameterLimit: number, arrayLimit: number) => {[name: string]: string} = extended
+    const queryParser: (body: string, parameterLimit: number, arrayLimit: number) => {[name: string]: string|string[]} = extended
       ? extendedParser
       : simpleParser;
-    const parser: (body: string) => {[name: string]: string} = abstractParser(options, queryParser);
+    const parser: (body: string) => {[name: string]: string|string[]} = abstractParser(options, queryParser);
 
     return parserHelper(
       (initialBody: string, req: IHttpRequest): void => {

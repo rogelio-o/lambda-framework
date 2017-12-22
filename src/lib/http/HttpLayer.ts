@@ -31,7 +31,6 @@ export default class HttpLayer implements IHttpLayer {
 
   private _router: IRouter;
   private _path: string;
-  private _options: {};
   private _handler: IHttpHandler;
 
   private _regexp: RegExp;
@@ -43,7 +42,6 @@ export default class HttpLayer implements IHttpLayer {
   constructor(router: IRouter, path: string, options: {[name: string]: any}, handler?: IHttpHandler, regexOptions?: RegExpOptions) {
     this._router = router;
     this._path = path;
-    this._options = options;
     this._handler = handler;
 
     const regexOpts = regexOptions || {};

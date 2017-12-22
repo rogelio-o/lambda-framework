@@ -1,6 +1,6 @@
 import IEventRequest from "./../types/event/IEventRequest";
 import INext from "./../types/INext";
-import { getEventType } from "./../utils/utils";
+import IRawEvent from "./../types/IRawEvent";
 
 /**
  * It represents an incoming event.
@@ -9,10 +9,10 @@ export default class EventRequest implements IEventRequest {
 
   public next: INext;
 
-  private _event: any;
+  private _event: IRawEvent;
   private _context: { [name: string]: any };
 
-  constructor(event: any) {
+  constructor(event: IRawEvent) {
     this._event = event;
     this._context = {};
   }
@@ -22,7 +22,7 @@ export default class EventRequest implements IEventRequest {
   }
 
   get eventType(): string {
-    return getEventType(this._event);
+    return this._event.type;
   }
 
   get context(): { [name: string]: any } {

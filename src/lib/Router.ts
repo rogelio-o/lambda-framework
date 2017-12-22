@@ -174,9 +174,6 @@ export default class Router implements IRouter {
   public event(event: string|IEventRoutePredicate, handler: IEventHandler): IRouter {
     const layer = new EventLayer(
       event,
-      {
-        end: true
-      },
       handler
     );
 

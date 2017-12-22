@@ -13,8 +13,10 @@ import HttpRoute from './../../src/lib/http/HttpRoute'
 import TemplateEngine from './../../src/lib/http/renderEngine/TemplateEngine'
 import App from './../../src/lib/App'
 import IApp from './../../src/lib/types/IApp'
-import { APIGatewayEvent } from 'aws-lambda'
 import { stringify } from './../../src/lib/utils/utils'
+import IRawEvent from "./../../src/lib/types/IRawEvent";
+import DefaultCallback from "./../utils/DefaultCallback";
+import httpEvent from "./../utils/httpEvent";
 
 /**
  * Test for HttpResponse.
@@ -22,70 +24,16 @@ import { stringify } from './../../src/lib/utils/utils'
 describe('HttpResponse', () => {
   let request: IHttpRequest
   let response: IHttpResponse
-  let event: APIGatewayEvent
-  let errResult
-  let succResult
-  let app: IApp
+  let event: IRawEvent;
+  let app: IApp;
+  let callback: DefaultCallback;
+
   beforeEach(function(done) {
     app = new App()
-    errResult = undefined
-    succResult = undefined
-    event = {
-      body: 'BODY',
-      headers: {
-        header1: 'HEADER VALUE 1',
-        header2: 'HEADER VALU 2',
-        'X-Forwarded-Proto': 'https',
-        'Host': 'localhost',
-        'Accept': 'application/json,text/html',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Charset': 'UTF-8, ISO-8859-1',
-        'Accept-Language': 'es,en',
-        'If-None-Match': 'etagValue',
-        'If-Modified-Since': '2017-10-10T10:10:10'
-      },
-      httpMethod: 'GET',
-      isBase64Encoded: true,
-      path: '/blog/1',
-      pathParameters: {
-        param1: 'Param 1'
-      },
-      queryStringParameters: {
-        query1: 'Query 1'
-      },
-      stageVariables: {
-        stage1: 'Stage 1'
-      },
-      requestContext: {
-        accountId: 'A1',
-        apiId: 'API1',
-        httpMethod: 'GET',
-        identity: {
-          accessKey: 'ABCD',
-          accountId: 'AAA',
-          apiKey: 'BBB',
-          caller: 'caller',
-          cognitoAuthenticationProvider: 'facebook',
-          cognitoAuthenticationType: 'authtype',
-          cognitoIdentityId: 'IID',
-          cognitoIdentityPoolId: 'PID',
-          sourceIp: '197.0.0.0',
-          user: 'user',
-          userAgent: 'Chrome',
-          userArn: 'ARN'
-        },
-        stage: 'test',
-        requestId: 'RQID',
-        resourceId: 'RSID',
-        resourcePath: '/blog/1'
-      },
-      resource: 'API'
-    }
+    event = Object.assign({}, httpEvent);
     request = new HttpRequest(event)
-    response = new HttpResponse(app, request, (err, succ) => {
-      errResult = err;
-      succResult = succ
-    });
+    callback = new DefaultCallback();
+    response = new HttpResponse(app, request, callback);
 
     done()
   });
@@ -93,7 +41,7 @@ describe('HttpResponse', () => {
   it('#status should set the outcoming response status code', () => {
     response.status(302)
     response.send('')
-    Chai.expect(succResult.statusCode).to.be.equal(302)
+    Chai.expect(callback.successResult.statusCode).to.be.equal(302)
   });
 
   it('#statusCode should returns the outcoming response status code previously set', () => {
@@ -104,78 +52,78 @@ describe('HttpResponse', () => {
   describe("#send", () => {
     it('should set the outcoming response body to the given string with "html" content type header and the right content length header', () => {
       response.send('ABC')
-      Chai.expect(succResult.headers['Content-Type']).to.be.equal('text/html; charset=utf-8')
-      Chai.expect(succResult.headers['Content-Length']).to.be.equal('3')
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.equal('text/html; charset=utf-8')
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.equal('3')
       Chai.expect(response.isSent).to.be.true
     });
 
     it('should set the outcoming response body to the given number with no content type header and the right content length header', () => {
       response.send(false)
-      Chai.expect(succResult.headers['Content-Type']).to.be.undefined
-      Chai.expect(succResult.headers['Content-Length']).to.be.equal('5')
-      Chai.expect(succResult.body).to.be.equal('false')
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.equal('5')
+      Chai.expect(callback.successResult.body).to.be.equal('false')
       Chai.expect(response.isSent).to.be.true
     });
 
     it('should set the outcoming response body to the given boolean with no content type header and the right content length header', () => {
       response.send(1)
-      Chai.expect(succResult.headers['Content-Type']).to.be.undefined
-      Chai.expect(succResult.headers['Content-Length']).to.be.equal('1')
-      Chai.expect(succResult.body).to.be.equal('1')
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.equal('1')
+      Chai.expect(callback.successResult.body).to.be.equal('1')
       Chai.expect(response.isSent).to.be.true
     });
 
     it('should set the outcoming response body to the given Buffer with "bin" content type header and the right content length header', () => {
       response.send(new Buffer('test'))
-      Chai.expect(succResult.headers['Content-Type']).to.be.equal('bin')
-      Chai.expect(succResult.headers['Content-Length']).to.be.equal('4')
-      Chai.expect(succResult.body).to.be.equal('test')
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.equal('bin')
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.equal('4')
+      Chai.expect(callback.successResult.body).to.be.equal('test')
       Chai.expect(response.isSent).to.be.true
     });
 
     it('should set the outcoming response header ETag to the generated with the function in #app.get(Configuration.ETAG_FN)', () => {
       app.set(configuration.ETAG_FN, (buff, encoding) => 'ETAG' + buff.toString(encoding))
       response.send('test')
-      Chai.expect(succResult.headers['ETag']).to.be.equal('ETAGtest')
+      Chai.expect(callback.successResult.headers['ETag']).to.be.equal('ETAGtest')
     });
 
     it('should set the outcoming response status code to 304 if the response is not fresh', () => {
       app.set(configuration.ETAG_FN, (buff, encoding) => 'etagValue')
       response.putHeader('Last-Modified', '2017-10-10T10:10:09')
       response.send('test')
-      Chai.expect(succResult.statusCode).to.be.equal(304)
+      Chai.expect(callback.successResult.statusCode).to.be.equal(304)
     });
 
     it('should not set the outcoming response irrelevant headers (Content-Type, Content-Length and Transfer-Encoding) and the body if the response status code is 204', () => {
       response.status(204)
       response.send('')
-      Chai.expect(succResult.headers['Content-Type']).to.be.undefined
-      Chai.expect(succResult.headers['Content-Length']).to.be.undefined
-      Chai.expect(succResult.headers['Transfer-Encoding']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Transfer-Encoding']).to.be.undefined
     });
 
     it('should not set the outcoming response irrelevant headers (Content-Type, Content-Length and Transfer-Encoding) and the body if the response status code is 304', () => {
       response.status(304)
       response.send('')
-      Chai.expect(succResult.headers['Content-Type']).to.be.undefined
-      Chai.expect(succResult.headers['Content-Length']).to.be.undefined
-      Chai.expect(succResult.headers['Transfer-Encoding']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.undefined
+      Chai.expect(callback.successResult.headers['Transfer-Encoding']).to.be.undefined
     });
 
     it('should set the outcoming response body to null if the request method is HEAD', () => {
       event.httpMethod = 'HEAD'
       response.send('test')
-      Chai.expect(succResult.body).to.be.undefined
+      Chai.expect(callback.successResult.body).to.be.undefined
     });
 
     it("should set content type to bin if the sent body is a buffer and there is no previous set content type into the response.", () => {
       response.send(new Buffer(1));
-      Chai.expect(succResult.headers["Content-Type"]).to.be.equal("bin");
+      Chai.expect(callback.successResult.headers["Content-Type"]).to.be.equal("bin");
     });
 
     it("should no set the conent-length header.", () => {
       response.send(undefined);
-      Chai.expect(succResult.headers["Content-Length"]).to.be.undefined;
+      Chai.expect(callback.successResult.headers["Content-Length"]).to.be.undefined;
     });
 
     it("should generate a etag and put it into the response header if there is a generator function configurated in the app.", () => {
@@ -184,14 +132,14 @@ describe('HttpResponse', () => {
       });
 
       response.send("test");
-      Chai.expect(succResult.headers["ETag"]).to.be.equal("test-undefined");
+      Chai.expect(callback.successResult.headers["ETag"]).to.be.equal("test-undefined");
     });
 
     it("should pass the error param to the callback function if an error is set.", () => {
       const err = new HttpError("Test error.", 500);
       response.setError(err);
       response.send("");
-      Chai.expect(errResult).to.be.equal(err);
+      Chai.expect(callback.errorResult).to.be.equal(err);
     });
 
     it("should pass the error param with the cause to the callback function if an error is set and it has a cause.", () => {
@@ -199,41 +147,41 @@ describe('HttpResponse', () => {
       const err = new HttpError("Test error.", 500, cause);
       response.setError(err);
       response.send("");
-      Chai.expect(errResult).to.be.equal(cause);
+      Chai.expect(callback.errorResult).to.be.equal(cause);
     });
   });
 
   describe("#json", () => {
     it('should set the outcoming response header Content-Type to "application/json"', () => {
       response.json({})
-      Chai.expect(succResult.headers['Content-Type']).to.be.equal('application/json; charset=utf-8')
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.equal('application/json; charset=utf-8')
     });
 
     it("should keep the previous set content type if exists.", () => {
       response.contentType("text/plain");
       response.json({})
-      Chai.expect(succResult.headers["Content-Type"]).to.be.equal("text/plain; charset=utf-8")
+      Chai.expect(callback.successResult.headers["Content-Type"]).to.be.equal("text/plain; charset=utf-8")
     });
 
     it('should set the outcoming response header Content-Length to the right length', () => {
       const body = {test: 'test1'}
       const parsedBody = stringify(body, undefined, undefined, undefined)
       response.json(body)
-      Chai.expect(succResult.headers['Content-Length']).to.be.equal(parsedBody.length.toString())
-      Chai.expect(succResult.body).to.be.equal(parsedBody)
+      Chai.expect(callback.successResult.headers['Content-Length']).to.be.equal(parsedBody.length.toString())
+      Chai.expect(callback.successResult.body).to.be.equal(parsedBody)
     });
   });
 
   describe("#sendStatus", () => {
     it('should set the outcoming response header Content-Length to "txt", the body to the status code body and the satus code to the given status code', () => {
       response.sendStatus(404)
-      Chai.expect(succResult.headers['Content-Type']).to.be.equal('text/plain; charset=utf-8')
-      Chai.expect(succResult.body).to.be.equal('Not Found')
+      Chai.expect(callback.successResult.headers['Content-Type']).to.be.equal('text/plain; charset=utf-8')
+      Chai.expect(callback.successResult.body).to.be.equal('Not Found')
     });
 
     it("should set the status code as response body if there is no message for it.", () => {
       response.sendStatus(1)
-      Chai.expect(succResult.body).to.be.equal("1");
+      Chai.expect(callback.successResult.body).to.be.equal("1");
     });
   });
 
@@ -241,14 +189,14 @@ describe('HttpResponse', () => {
     const contentType = 'application/xml'
     response.contentType(contentType)
     response.send('test')
-    Chai.expect(succResult.headers['Content-Type']).to.be.equal('application/xml; charset=utf-8')
+    Chai.expect(callback.successResult.headers['Content-Type']).to.be.equal('application/xml; charset=utf-8')
   });
 
   it('#contentType should set content type to the given one and transform it to a full mime type if it does not have /', () => {
     const contentType = 'xml'
     response.contentType(contentType)
     response.send('test')
-    Chai.expect(succResult.headers['Content-Type']).to.be.equal('application/xml; charset=utf-8')
+    Chai.expect(callback.successResult.headers['Content-Type']).to.be.equal('application/xml; charset=utf-8')
   });
 
   it('#format should execute the first function which key (mime type) is accepted by the incoming request', () => {
@@ -316,7 +264,7 @@ describe('HttpResponse', () => {
   it('#putHeader should set the header `field` to `value`', () => {
     response.putHeader('field', 'value');
     response.send('test');
-    Chai.expect(succResult.headers['field']).to.be.equal('value')
+    Chai.expect(callback.successResult.headers['field']).to.be.equal('value')
   });
 
   it('#putHeaders should set each header of `obj`', () => {
@@ -325,8 +273,8 @@ describe('HttpResponse', () => {
       'field2': 'value2'
     });
     response.send('test');
-    Chai.expect(succResult.headers['field1']).to.be.equal('value1')
-    Chai.expect(succResult.headers['field2']).to.be.equal('value2')
+    Chai.expect(callback.successResult.headers['field1']).to.be.equal('value1')
+    Chai.expect(callback.successResult.headers['field2']).to.be.equal('value2')
   });
 
   it('#header should return a previously set header', () => {
@@ -437,52 +385,52 @@ describe('HttpResponse', () => {
     it("should set the header Location to the Referrer URL if it exists and the given URL is \"back\".", () => {
       request.headers["referrer"] = "/previous-url";
       response.redirect("back");
-      Chai.expect(succResult.headers["Location"]).to.be.equal("/previous-url");
+      Chai.expect(callback.successResult.headers["Location"]).to.be.equal("/previous-url");
     });
 
     it("should set the header Location to / if the Referrer URL does not exist and the given URL is \"back\".", () => {
       response.redirect("back");
-      Chai.expect(succResult.headers["Location"]).to.be.equal("/");
+      Chai.expect(callback.successResult.headers["Location"]).to.be.equal("/");
     });
   });
 
   describe("#redirect", () => {
     it('should set the header Location to the given URL and the status code to 302', () => {
       response.redirect('/test');
-      Chai.expect(succResult.headers['Location']).to.be.equal('/test')
-      Chai.expect(succResult.statusCode).to.be.equal(302)
+      Chai.expect(callback.successResult.headers['Location']).to.be.equal('/test')
+      Chai.expect(callback.successResult.statusCode).to.be.equal(302)
     });
 
     it('should set the header Location to the given URL and the status code to the given one', () => {
       response.redirect('/test', 301);
-      Chai.expect(succResult.headers['Location']).to.be.equal('/test')
-      Chai.expect(succResult.statusCode).to.be.equal(301)
+      Chai.expect(callback.successResult.headers['Location']).to.be.equal('/test')
+      Chai.expect(callback.successResult.statusCode).to.be.equal(301)
     });
 
     it("should set the body to HTML text if the request accepts text/html.", () => {
       request.headers["accept"] = "text/html";
       response.redirect("/test");
-      Chai.expect(succResult.body).to.be.equal("<p>Found. Redirecting to <a href=\"/test\">/test</a></p>");
+      Chai.expect(callback.successResult.body).to.be.equal("<p>Found. Redirecting to <a href=\"/test\">/test</a></p>");
     });
 
     it("should set the body to plain text if the request accepts text/plain.", () => {
       request.headers["accept"] = "text/plain";
       response.redirect("/test");
-      Chai.expect(succResult.body).to.be.equal("Found. Redirecting to /test.");
+      Chai.expect(callback.successResult.body).to.be.equal("Found. Redirecting to /test.");
     });
 
     it("should set the body to empty string if the request doesn't accepts neither text/html nor text/plain.", () => {
       request.headers["accept"] = "application/json";
       response.redirect("/test");
-      Chai.expect(succResult.body).to.be.equal("");
+      Chai.expect(callback.successResult.body).to.be.equal("");
     });
 
     it("should set the body to empty string, 200 status code, and no Location header if the request HTTP method is HEAD.", () => {
-      request.event.httpMethod = "HEAD";
+      event.httpMethod = "HEAD";
       response.redirect("/test");
-      Chai.expect(succResult.body).to.be.undefined;
-      Chai.expect(succResult.headers["Location"]).to.be.equal("/test");
-      Chai.expect(succResult.statusCode).to.be.equal(302);
+      Chai.expect(callback.successResult.body).to.be.undefined;
+      Chai.expect(callback.successResult.headers["Location"]).to.be.equal("/test");
+      Chai.expect(callback.successResult.statusCode).to.be.equal(302);
     });
   });
 
@@ -546,8 +494,8 @@ describe('HttpResponse', () => {
       const expectedResult: string = "Result of render.";
       renderStub.callsFake((view, params, callback) => callback(null, expectedResult));
       response.render("fileName");
-      Chai.expect(succResult.headers["Content-Type"]).to.contain("text/html");
-      Chai.expect(succResult.body).to.be.equal(expectedResult);
+      Chai.expect(callback.successResult.headers["Content-Type"]).to.contain("text/html");
+      Chai.expect(callback.successResult.body).to.be.equal(expectedResult);
     });
   });
 

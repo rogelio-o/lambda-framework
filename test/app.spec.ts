@@ -4,12 +4,15 @@ import App from '../src/index'
 import Router from "../src/lib/Router";
 import { configuration } from '../src/index'
 import defaultConfiguration from '../src/lib/configuration/defaultConfiguration'
+import DefaultCallback from './utils/DefaultCallback';
+import httpEvent from './utils/httpEvent';
+import otherEvent from './utils/otherEvent';
 
 /**
  * Test for App.
  */
 describe('App', () => {
-  let app;
+  let app: App;
 
   beforeEach(() => {
     app = new App()
@@ -46,16 +49,16 @@ describe('App', () => {
   });
 
   describe("#handle", () => {
-    it("should call the router httpHandle if the event type is APIGatewayEvent.", () => {
+    it("should call the router httpHandle if the event type is HTTP.", () => {
       const httpHandleStub = stub(Router.prototype, "httpHandle");
-      app.handle({httpMethod: "GET", headers: []});
+      app.handle(httpEvent, new DefaultCallback());
       Chai.expect(httpHandleStub.calledOnce).to.be.true;
       httpHandleStub.restore();
     });
 
-    it("should call the router eventHandle if the event type is NOT APIGatewayEvent.", () => {
+    it("should call the router eventHandle if the event type is NOT HTTP.", () => {
       const eventHandleStub = stub(Router.prototype, "eventHandle");
-      app.handle({eventParam: "1"});
+      app.handle(otherEvent, new DefaultCallback());
       Chai.expect(eventHandleStub.calledOnce).to.be.true;
       eventHandleStub.restore();
     });
@@ -82,7 +85,7 @@ describe('App', () => {
   describe("#param", () => {
     it("should delegate the action to the default router.", () => {
       const paramStub = stub(Router.prototype, "param");
-      app.param(null);
+      app.param(null, null);
       Chai.expect(paramStub.calledOnce).to.be.true;
       paramStub.restore();
     });
@@ -100,7 +103,7 @@ describe('App', () => {
   describe("#event", () => {
     it("should delegate the action to the default router.", () => {
       const eventStub = stub(Router.prototype, "event");
-      app.event(null);
+      app.event(null, null);
       Chai.expect(eventStub.calledOnce).to.be.true;
       eventStub.restore();
     });
