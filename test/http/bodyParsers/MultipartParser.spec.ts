@@ -20,6 +20,10 @@ const mainEvent: any = {
       + "Other-Header: Other\n"
       + "\n"
       + "file text default\n"
+      + "------WebKitFormBoundaryvef1fLxmoUdYZWXp\n"
+      + "Content-Disposition: form-data; name=\"file2\"; filename=\"B.txt\"\n"
+      + "\n"
+      + "file text default 2\n"
       + "------WebKitFormBoundaryvef1fLxmoUdYZWXp--",
   headers: {
     "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryvef1fLxmoUdYZWXp"
@@ -67,6 +71,9 @@ describe("MultipartParser", () => {
       "content-type": "text/plain",
       "content-length": "17",
       "other-header": "Other"
+    }));
+    expectedFiles.push(new HttpUploadedFile(null, null, "B.txt", "file text default 2", {
+      "content-disposition": "form-data"
     }));
 
     Chai.expect(next.called).to.be.true;

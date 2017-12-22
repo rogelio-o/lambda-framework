@@ -70,9 +70,7 @@ export default class HttpResponse implements IHttpResponse {
       case "boolean":
       case "number":
       case "object":
-        if (chunk === null) {
-          chunk = "";
-        } else if (Buffer.isBuffer(chunk)) {
+        if (Buffer.isBuffer(chunk)) {
           if (!this.header("Content-Type")) {
             this.putHeader("Content-Type", "bin");
           }
@@ -81,7 +79,6 @@ export default class HttpResponse implements IHttpResponse {
         }
         break;
       default:
-        break;
     }
 
     // write strings in utf-8
@@ -90,9 +87,7 @@ export default class HttpResponse implements IHttpResponse {
       type = this.header("Content-Type");
 
       // reflect this in content-type
-      if (typeof type === "string") {
-        this.putHeader("Content-Type", setCharset(type, "utf-8"));
-      }
+      this.putHeader("Content-Type", setCharset(type, "utf-8"));
     }
 
     // populate Content-Length
@@ -256,7 +251,7 @@ export default class HttpResponse implements IHttpResponse {
     const signed = opts.signed;
 
     if (signed && !secret) {
-      throw new Error("cookieParser(\"secret\") required for signed cookies");
+      throw new Error("app.set(\"cookie_secret\", \"SECRET\") required for signed cookies.");
     }
 
     let val = typeof value === "object"
@@ -330,7 +325,7 @@ export default class HttpResponse implements IHttpResponse {
 
     this.format({
       text: () => {
-        body = statuses[status] + ". Redirecting to " + address;
+        body = statuses[status] + ". Redirecting to " + address + ".";
       },
 
       html: () => {
@@ -392,7 +387,7 @@ export default class HttpResponse implements IHttpResponse {
       }
     }
 
-    const error: Error = this._error ? this._error.cause : null;
+    const error: Error = this._error && this._error.cause ? this._error.cause : this._error;
     this._isSent = true;
     if (error) {
       this._callback.sendError(error);

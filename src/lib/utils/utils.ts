@@ -41,11 +41,11 @@ export function mergeParams(event: IRawEvent): {[name: string]: string} {
   return merge(query, stageVariables);
 }
 
-export function stringify(value: {}, replacer: (string[]|number[]), spaces: string|number, escape: boolean): string {
+export function stringify(value: {}, replacer?: any[]|((key: string, v: any) => any), spaces?: string|number, escape?: boolean): string {
   // v8 checks arguments.length for optimizing simple call
   // https://bugs.chromium.org/p/v8/issues/detail?id=4730
   let json = replacer || spaces
-    ? JSON.stringify(value, replacer, spaces)
+    ? JSON.stringify(value, replacer as any, spaces)
     : JSON.stringify(value);
 
   if (escape) {

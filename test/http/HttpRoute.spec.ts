@@ -9,6 +9,7 @@ import HttpRequest from './../../src/lib/http/HttpRequest'
 import IHttpRequest from './../../src/lib/types/http/IHttpRequest'
 import HttpResponse from './../../src/lib/http/HttpResponse'
 import IHttpResponse from './../../src/lib/types/http/IHttpResponse'
+import IRawEvent from './../../src/lib/types/IRawEvent'
 import IRouter from './../../src/lib/types/IRouter'
 import Router from './../../src/lib/Router'
 import DefaultCallback from "./../utils/DefaultCallback";
@@ -22,14 +23,16 @@ describe('HttpRoute', () => {
   const router: IRouter = new Router
   let layer: IHttpLayer, route: IHttpRoute
   let req: IHttpRequest, res: IHttpResponse
+  let event: IRawEvent;
   let callback: DefaultCallback;
 
   beforeEach(() => {
+    event = Object.assign({}, httpEvent);
     callback = new DefaultCallback();
     layer = new HttpLayer(router, '/blog/:id', {})
     route = new HttpRoute(layer)
     layer.route = route
-    req = new HttpRequest(Object.assign({}, httpEvent))
+    req = new HttpRequest(event)
     res = new HttpResponse(app, req, callback);
   })
 
@@ -86,6 +89,52 @@ describe('HttpRoute', () => {
         Chai.expect(previouslyCalled).to.be.false
         done()
       })
+    });
+  });
+
+  describe("#get", () => {
+    it("should set a handler for the method GET.", (done) => {
+      route.get((req, res, next) => {
+        done();
+      });
+      event.httpMethod = "GET";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#post", () => {
+    it("should set a handler for the method POST.", (done) => {
+      route.post((req, res, next) => {
+        done();
+      });
+      event.httpMethod = "POST";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#put", () => {
+    it("should set a handler for the method PUT.", (done) => {
+      route.put((req, res, next) => {
+        done();
+      });
+      event.httpMethod = "PUT";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#delete", () => {
+    it("should set a handler for the method DELETE.", (done) => {
+      route.delete((req, res, next) => {
+        done();
+      });
+      event.httpMethod = "DELETE";
+      route.dispatch(req, res, null);
+    });
+  });
+
+  describe("#layer", () => {
+    it("should return the initialized in constructor value for layer.", () => {
+      Chai.expect(route.layer).to.be.equal(layer);
     });
   });
 
