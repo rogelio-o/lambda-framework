@@ -4,7 +4,7 @@
  * MIT Licensed
  */
 
-export { default } from "./lib/App";
+export { default as App } from "./lib/App";
 export { default as configuration } from "./lib/configuration/configuration";
 
 export { default as IApp } from "./lib/types/IApp";
