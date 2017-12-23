@@ -15,7 +15,7 @@
     "test": "nyc --reporter=html --reporter=text mocha --recursive dist/test/",
     "posttest": "npm run lint && nyc check-coverage --statements 90 --branches 90 --functions 90 --lines 90",
     "compile": "tsc",
-    "lint": "tslint --config tslint.json --type-check --project tsconfig.json src/{,**/,**/**/,**/**/**/}*.ts",
+    "lint": "tslint --config tslint.json --project tsconfig.json src/{,**/,**/**/,**/**/**/}*.ts",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "prepublish": "npm-auto-version"
   },
