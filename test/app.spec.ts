@@ -1,6 +1,6 @@
 import * as Chai from 'chai'
 import { stub } from "sinon";
-import App from '../src/index'
+import { App } from '../src/index'
 import Router from "../src/lib/Router";
 import { configuration } from '../src/index'
 import defaultConfiguration from '../src/lib/configuration/defaultConfiguration'
