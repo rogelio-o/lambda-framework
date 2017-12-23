@@ -38,3 +38,7 @@ export { default as ITemplateLoader } from "./lib/types/http/renderEngine/ITempl
 export { default as ITemplateRenderer } from "./lib/types/http/renderEngine/ITemplateRenderer";
 export { default as DevTemplateLoader } from "./lib/http/renderEngine/DevTemplateLoader";
 export { default as Template } from "./lib/http/renderEngine/Template";
+
+export { default as IRawEvent } from "./lib/types/IRawEvent";
+export { default as IRawCallback } from "./lib/types/IRawCallback";
+export { default as RawEvent } from "./lib/RawEvent";
