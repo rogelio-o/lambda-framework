@@ -1,7 +1,7 @@
 {
   "name": "lambda-framework",
   "version": "1.0.19",
-  "description": "Framework to create web apps in AWS Lambda",
+  "description": "Framework to create web apps with any provider. This is the core, you can use it with an official provider implementation or you can implement your own provider.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "repository": {
@@ -21,7 +21,7 @@
   },
   "keywords": [
     "serverless",
-    "AWS",
+    "framework",
     "lambda"
   ],
   "author": "Rogelio Orts",
