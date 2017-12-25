@@ -31,7 +31,7 @@ describe("HttpLayer", () => {
   const callback: DefaultCallback = new DefaultCallback();
 
   beforeEach(() => {
-    req = new HttpRequest(Object.assign({}, httpEvent));
+    req = new HttpRequest(app, Object.assign({}, httpEvent));
     res = new HttpResponse(app, req, callback);
     layer = new HttpLayer(router, "/blog/:id", {});
   });

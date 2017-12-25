@@ -1,4 +1,4 @@
-import { parse, serialize } from "cookie";
+import { serialize } from "cookie";
 import { sign } from "cookie-signature";
 import * as encodeUrl from "encodeurl";
 import * as escapeHtml from "escape-html";
@@ -6,6 +6,7 @@ import * as statuses from "statuses";
 import configuration from "./../configuration/configuration";
 import HttpError from "./../exceptions/HttpError";
 import IHttpError from "./../types/exceptions/IHttpError";
+import ICookie from "./../types/http/ICookie";
 import IHttpHandler from "./../types/http/IHttpHandler";
 import IHttpRequest from "./../types/http/IHttpRequest";
 import IHttpResponse from "./../types/http/IHttpResponse";
@@ -15,6 +16,7 @@ import INext from "./../types/INext";
 import IRawCallback from "./../types/IRawCallback";
 import IRouter from "./../types/IRouter";
 import { merge, normalizeType, setCharset, stringify } from "./../utils/utils";
+import Cookie from "./Cookie";
 
 /**
  * This class represents an HTTP response, with the helpers to be sent.
@@ -30,6 +32,7 @@ export default class HttpResponse implements IHttpResponse {
   private _headers: { [name: string]: string|string[] };
   private _error: IHttpError;
   private _isSent: boolean;
+  private _cookies: { [name: string]: ICookie };
 
   constructor(app: IApp, request: IHttpRequest, callback: IRawCallback) {
     this._app = app;
@@ -37,6 +40,7 @@ export default class HttpResponse implements IHttpResponse {
     this._callback = callback;
     this._headers = {};
     this._isSent = false;
+    this._cookies = {};
   }
 
   get statusCode(): number {
@@ -245,40 +249,43 @@ export default class HttpResponse implements IHttpResponse {
     return this;
   }
 
-  public addCookie(name: string, value: string|object, options?: object): IHttpResponse {
-    const opts = merge({}, options);
+  public addCookie(cookie: ICookie): IHttpResponse {
+    const opts: {[name: string]: any} = {};
     const secret = this._app.get(configuration.COOKIE_SECRET);
-    const signed = opts.signed;
+    const signed = cookie.signed;
 
     if (signed && !secret) {
       throw new Error("app.set(\"cookie_secret\", \"SECRET\") required for signed cookies.");
     }
 
-    let val = typeof value === "object"
-      ? "j:" + JSON.stringify(value)
-      : String(value);
+    let val = typeof cookie.value === "object"
+      ? "j:" + JSON.stringify(cookie.value)
+      : String(cookie.value);
 
     if (signed) {
       val = "s:" + sign(val, secret);
+      opts.signed = true;
     }
 
-    if ("maxAge" in opts) {
-      opts.expires = new Date(Date.now() + opts.maxAge);
-      opts.maxAge /= 1000;
+    if (cookie.expires) {
+      opts.expires = cookie.expires;
     }
 
-    if (opts.path == null) {
+    if (cookie.path == null) {
       opts.path = "/";
+    } else {
+      opts.path = cookie.path;
     }
 
-    this.appendHeader("Set-Cookie", serialize(name, String(val), opts));
+    this._cookies[cookie.name] = cookie;
+    this.appendHeader("Set-Cookie", serialize(cookie.name, String(val), opts));
 
     return this;
   }
 
-  public addCookies(obj: object, options?: object): IHttpResponse {
-    for (const key of Object.keys(obj)) {
-      this.addCookie(key, obj[key], options);
+  public addCookies(cookies: ICookie[]): IHttpResponse {
+    for (const cookie of cookies) {
+      this.addCookie(cookie);
     }
 
     return this;
@@ -287,19 +294,14 @@ export default class HttpResponse implements IHttpResponse {
   public clearCookie(name: string, options?: object): IHttpResponse {
     const opts = merge({ expires: new Date(1), path: "/" }, options);
 
-    this.addCookie(name, "", opts);
+    const cookie: ICookie = new Cookie(name, "", opts.expires, opts.path);
+    this.addCookie(cookie);
 
     return this;
   }
 
-  public cookie(name: string): string {
-    const cookiesHeader = this.header("Set-Cookie");
-
-    const cookies = parse(Array.isArray(cookiesHeader) ?
-      cookiesHeader.join("; ") : cookiesHeader
-    );
-
-    return cookies[name];
+  public cookie(name: string): ICookie {
+    return this._cookies[name];
   }
 
   public location(url: string): IHttpResponse {

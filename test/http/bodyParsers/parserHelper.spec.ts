@@ -1,11 +1,13 @@
 /* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
 import { SinonSpy, spy } from "sinon";
+import App from "./../../../src/lib/App";
 import parserHelper from "./../../../src/lib/http/bodyParsers/parserHelper";
 import HttpRequest from "./../../../src/lib/http/HttpRequest";
 import IHttpHandler from "./../../../src/lib/types/http/IHttpHandler";
 import IHttpRequest from "./../../../src/lib/types/http/IHttpRequest";
 import IHttpResponse from "./../../../src/lib/types/http/IHttpResponse";
+import IApp from "./../../../src/lib/types/IApp";
 
 const mainEvent: any = {
   body: "body",
@@ -22,6 +24,7 @@ const mainEvent: any = {
  * Test for parserHelper.
  */
 describe("parserHelper", () => {
+  const app: IApp = new App();
   const body: { [name: string]: any } = {
     param1: "value1"
   };
@@ -40,7 +43,7 @@ describe("parserHelper", () => {
       return body;
     });
 
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const handler: IHttpHandler = parserHelper(parser);
 
@@ -54,7 +57,7 @@ describe("parserHelper", () => {
 
   it("should call 'next' WITHOUT an error if the body does not exist.", () => {
     event.body = undefined;
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const parser: SinonSpy = spy();
 
@@ -67,7 +70,7 @@ describe("parserHelper", () => {
   });
 
   it("should call 'next' with a 400 error if the body can not be parsed and header contentType is NOT undefined.", () => {
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const handler: IHttpHandler = parserHelper(() => {
       throw new Error();
@@ -81,7 +84,7 @@ describe("parserHelper", () => {
 
   it("should call 'next' WITHOUT an error if the body can not be parsed and header contentType is undefined.", () => {
     event.headers["Content-Type"] = undefined;
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const handler: IHttpHandler = parserHelper(() => {
       throw new Error();
@@ -93,7 +96,7 @@ describe("parserHelper", () => {
   });
 
   it("should execute the parser function and set the request body with the returned value if the header contentType is the given one in params.", () => {
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const parser: SinonSpy = spy();
 
@@ -104,7 +107,7 @@ describe("parserHelper", () => {
   });
 
   it("should execute the parser function and set the request body with the returned value if no contentType is given in params.", () => {
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const parser: SinonSpy = spy();
 
@@ -116,7 +119,7 @@ describe("parserHelper", () => {
 
   it("should execute the parser function and set the request body with the returned value if the header contentType is undefined.", () => {
     event.headers["Content-Type"] = undefined;
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const parser: SinonSpy = spy();
 
@@ -127,7 +130,7 @@ describe("parserHelper", () => {
   });
 
   it("should call 'next' WITHOUT execute the parser function otherwise.", () => {
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     const parser: SinonSpy = spy();
 

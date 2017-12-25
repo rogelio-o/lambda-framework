@@ -3,6 +3,7 @@ import * as Chai from "chai";
 import App from "./../../src/lib/App";
 import HttpRequest from "./../../src/lib/http/HttpRequest";
 import HttpResponse from "./../../src/lib/http/HttpResponse";
+import ICookie from "./../../src/lib/types/http/ICookie";
 import IHttpRequest from "./../../src/lib/types/http/IHttpRequest";
 import IRawEvent from "./../../src/lib/types/IRawEvent";
 import DefaultCallback from "./../utils/DefaultCallback";
@@ -17,7 +18,7 @@ describe("HttpRequest", () => {
   const app = new App();
   beforeEach((done) => {
     event = Object.assign({}, httpEvent);
-    request = new HttpRequest(event);
+    request = new HttpRequest(app, event);
 
     done();
   });
@@ -188,6 +189,24 @@ describe("HttpRequest", () => {
     const response = new HttpResponse(app, request, callback);
     response.status(200);
     Chai.expect(request.stale(response)).to.be.true;
+  });
+
+  describe("#cookies", () => {
+    it("returns an object with all the cookies of the `Cookie` header.", () => {
+      const cookies: { [name: string]: ICookie } = request.cookies;
+
+      Chai.expect(cookies.cookie1.name).to.be.equal("cookie1");
+      Chai.expect(cookies.cookie1.value).to.be.equal("value1");
+      Chai.expect(cookies.cookie2.name).to.be.equal("cookie2");
+      Chai.expect(cookies.cookie2.value).to.be.equal("value2");
+    });
+  });
+
+  describe("#cookie", () => {
+    it("returns the cookie of the `Cookie` header with the given name.", () => {
+      Chai.expect(request.cookie("cookie1").name).to.be.equal("cookie1");
+      Chai.expect(request.cookie("cookie1").value).to.be.equal("value1");
+    });
   });
 
 });

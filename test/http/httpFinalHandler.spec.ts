@@ -26,7 +26,7 @@ describe("httpFinalHandler", () => {
     callback = new DefaultCallback();
     event = Object.assign({}, httpEvent);
     event.headers.Accept = "application/json";
-    req = new HttpRequest(Object.assign({}, event));
+    req = new HttpRequest(app, Object.assign({}, event));
     res = new HttpResponse(app, req, callback);
   });
 
@@ -81,7 +81,7 @@ describe("httpFinalHandler", () => {
   it("should send a HTML response and HTML as content type if the request accepts HTML.", () => {
     event.headers = Object.assign({}, event.headers);
     event.headers.Accept = "application/json,text/html";
-    req = new HttpRequest(event);
+    req = new HttpRequest(app, event);
 
     const handler = httpFinalHandler(req, res, {});
     handler();
@@ -97,7 +97,7 @@ describe("httpFinalHandler", () => {
   it("should send a PLAIN response and PLAIN as content type if the request does not accept JSON neither HTML.", () => {
     event.headers = Object.assign({}, event.headers);
     event.headers.Accept = "application/pdf";
-    req = new HttpRequest(event);
+    req = new HttpRequest(app, event);
 
     const handler = httpFinalHandler(req, res, {});
     handler();

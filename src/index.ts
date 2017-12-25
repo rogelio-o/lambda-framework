@@ -26,6 +26,8 @@ export { default as IHttpRequest } from "./lib/types/http/IHttpRequest";
 export { default as IHttpResponse } from "./lib/types/http/IHttpResponse";
 export { default as IHttpRoute } from "./lib/types/http/IHttpRoute";
 export { default as IHttpRouterExecutor } from "./lib/types/http/IHttpRouterExecutor";
+export { default as ICookie } from "./lib/types/http/ICookie";
+export { default as Cookie } from "./lib/http/Cookie";
 
 export { default as IBodyParser } from "./lib/types/http/IBodyParser";
 export { default as JsonParser } from "./lib/http/bodyParsers/JsonParser";
