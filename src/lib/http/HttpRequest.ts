@@ -1,12 +1,16 @@
 import * as accepts from "accepts";
 import * as fresh from "fresh";
+import configuration from "./../configuration/configuration";
+import ICookie from "./../types/http/ICookie";
 import IHttpRequest from "./../types/http/IHttpRequest";
 import IHttpResponse from "./../types/http/IHttpResponse";
 import IHttpRoute from "./../types/http/IHttpRoute";
 import IHttpUploadedFile from "./../types/http/IHttpUploadedFile";
+import IApp from "./../types/IApp";
 import INext from "./../types/INext";
 import IRawEvent from "./../types/IRawEvent";
-import { mergeParams, normalizeType } from "./../utils/utils";
+import { getCookiesFromHeader, mergeParams, normalizeType } from "./../utils/utils";
+import Cookie from "./Cookie";
 
 /**
  * A incoming request created when the event is APIGatewayEvent.
@@ -24,8 +28,9 @@ export default class HttpRequest implements IHttpRequest {
   private _event: IRawEvent;
   private _headers: { [name: string]: string };
   private _context: { [name: string]: any };
+  private _cookies: { [name: string]: ICookie };
 
-  constructor(event: IRawEvent) {
+  constructor(app: IApp, event: IRawEvent) {
     this.body = event.body; // Default body
     this._event = event;
     this._context = {};
@@ -35,6 +40,8 @@ export default class HttpRequest implements IHttpRequest {
     for (const key of Object.keys(this._event.headers)) {
       this._headers[key.toLowerCase()] = this._event.headers[key];
     }
+
+    this._cookies = getCookiesFromHeader(this._headers.Cookie, app.get(configuration.COOKIE_SECRET));
   }
 
   get headers(): { [name: string]: string } {
@@ -83,6 +90,10 @@ export default class HttpRequest implements IHttpRequest {
 
   get context(): { [name: string]: any } {
     return this._context;
+  }
+
+  get cookies(): { [name: string]: ICookie } {
+    return this._cookies;
   }
 
   public header(key: string): string {
@@ -160,6 +171,10 @@ export default class HttpRequest implements IHttpRequest {
 
   public stale(response: IHttpResponse): boolean {
     return !this.fresh(response);
+  }
+
+  public cookie(name: string): ICookie {
+    return this._cookies[name];
   }
 
 }

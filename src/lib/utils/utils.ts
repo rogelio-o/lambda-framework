@@ -1,5 +1,9 @@
-import { format, parse } from "content-type";
+import { format, parse as parseContentType } from "content-type";
+import { parse as parseCookie } from "cookie";
+import { unsign } from "cookie-signature";
 import { lookup } from "mime-types";
+import Cookie from "./../http/Cookie";
+import ICookie from "./../types/http/ICookie";
 import IRawEvent from "./../types/IRawEvent";
 
 /**
@@ -12,7 +16,7 @@ export function setCharset(contentType: string, charset: string): string {
   }
 
   // parse type
-  const parsed = parse(contentType);
+  const parsed = parseContentType(contentType);
 
   // set charset
   parsed.parameters.charset = charset;
@@ -70,4 +74,34 @@ export function normalizeType(type: string): string {
   return type.indexOf("/") === -1
     ? lookup(type)
     : type;
+}
+
+const parseCookieValue = (rawValue: string, secret: string): string | { [name: string]: any } => {
+  let result: string | { [name: string]: any } = rawValue;
+
+  if (result.startsWith("s:")) {
+    result = unsign(result.substr(2), secret) as string;
+  }
+
+  if (result.startsWith("j:")) {
+    result = JSON.parse(result.substr(2));
+  }
+
+  return result;
+};
+
+export function getCookiesFromHeader(header: string, secret: string): { [name: string]: ICookie } {
+  const result: { [name: string]: ICookie } = {};
+
+  if (header) {
+    const cookiesAsObject: { [name: string]: string } = parseCookie(header);
+
+    for (const cookieName of Object.keys(cookiesAsObject)) {
+      const cookieValue: string | { [name: string]: any } = parseCookieValue(cookiesAsObject[cookieName], secret);
+
+      result[cookieName] = new Cookie(cookieName, cookieValue);
+    }
+  }
+
+  return result;
 }

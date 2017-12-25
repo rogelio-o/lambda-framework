@@ -1,4 +1,4 @@
-import { parse, serialize } from "cookie";
+import { serialize } from "cookie";
 import { sign } from "cookie-signature";
 import * as encodeUrl from "encodeurl";
 import * as escapeHtml from "escape-html";
