@@ -267,13 +267,14 @@ export default class HttpResponse implements IHttpResponse {
       opts.signed = true;
     }
 
-    if ("maxAge" in opts) {
-      opts.expires = new Date(Date.now() + opts.maxAge);
-      opts.maxAge /= 1000;
+    if (cookie.expires) {
+      opts.expires = cookie.expires;
     }
 
-    if (opts.path == null) {
+    if (cookie.path == null) {
       opts.path = "/";
+    } else {
+      opts.path = cookie.path;
     }
 
     this._cookies[cookie.name] = cookie;

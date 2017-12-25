@@ -19,7 +19,8 @@ httpEvent.headers = {
   "Accept-Charset": "UTF-8, ISO-8859-1",
   "Accept-Language": "es,en",
   "If-None-Match": "etagValue",
-  "If-Modified-Since": "2017-10-10T10:10:10"
+  "If-Modified-Since": "2017-10-10T10:10:10",
+  "Cookie": "cookie1=value1; cookie2=value2"
 };
 httpEvent.queryParams = {
   query1: "Query 1"

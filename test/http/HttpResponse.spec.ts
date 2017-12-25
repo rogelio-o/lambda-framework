@@ -5,10 +5,12 @@ import { SinonStub, stub } from "sinon";
 import App from "./../../src/lib/App";
 import configuration from "./../../src/lib/configuration/configuration";
 import HttpError from "./../../src/lib/exceptions/HttpError";
+import Cookie from "./../../src/lib/http/Cookie";
 import HttpRequest from "./../../src/lib/http/HttpRequest";
 import HttpResponse from "./../../src/lib/http/HttpResponse";
 import TemplateEngine from "./../../src/lib/http/renderEngine/TemplateEngine";
 import Router from "./../../src/lib/Router";
+import ICookie from "./../../src/lib/types/http/ICookie";
 import IHttpRequest from "./../../src/lib/types/http/IHttpRequest";
 import IHttpResponse from "./../../src/lib/types/http/IHttpResponse";
 import IApp from "./../../src/lib/types/IApp";
@@ -31,7 +33,7 @@ describe("HttpResponse", () => {
   beforeEach((done) => {
     app = new App();
     event = Object.assign({}, httpEvent);
-    request = new HttpRequest(event);
+    request = new HttpRequest(app, event);
     callback = new DefaultCallback();
     response = new HttpResponse(app, request, callback);
 
@@ -322,28 +324,32 @@ describe("HttpResponse", () => {
   });
 
   describe("#addCookie", () => {
-    it("should add the `name` cookie with the `value` and the `options`", () => {
-      response.addCookie("cookie", "cookieValue", {path: "/test"});
+    it("should add the cookie to the right header.", () => {
+      const cookie: ICookie = new Cookie("cookie", "cookieValue", null, "/test");
+      response.addCookie(cookie);
       Chai.expect(response.header("Set-Cookie")).to.be.equal("cookie=cookieValue; Path=/test");
     });
 
     it("should throw an error if the option `signed` is true and the app has no `secret`.", () => {
+      const cookie: ICookie = new Cookie("cookie", "cookieValue", null, "/", true);
       app.set(configuration.COOKIE_SECRET, null);
-      Chai.expect(() => response.addCookie("cookie", "cookieValue", {signed: true})).to.throw("app.set(\"cookie_secret\", \"SECRET\") required for signed cookies.");
+      Chai.expect(() => response.addCookie(cookie)).to.throw("app.set(\"cookie_secret\", \"SECRET\") required for signed cookies.");
     });
 
     it("should stringify the value of the cookie if is an object.", () => {
-      response.addCookie("cookie", {key: "value"});
+      const cookie: ICookie = new Cookie("cookie", {key: "value"});
+      response.addCookie(cookie);
       Chai.expect(response.header("Set-Cookie")).to.be.equal("cookie=" + encodeURIComponent("j:{\"key\":\"value\"}") + "; Path=/");
     });
 
     it("should sign the value with the secret if the option `signed` is true.", () => {
+      const cookie: ICookie = new Cookie("cookie", "cookieValue", null, "/", true);
       app.set(configuration.COOKIE_SECRET, "SUPER_SECRET");
-      response.addCookie("cookie", "cookieValue", {signed: true});
+      response.addCookie(cookie);
       Chai.expect(response.header("Set-Cookie")).to.be.equal("cookie=" + encodeURIComponent("s:" + sign("cookieValue", app.get(configuration.COOKIE_SECRET))) + "; Path=/");
     });
 
-    it("should add `expires` and `maxAge` into the cookie if `maxAge` is given in options.", () => {
+    it("should add `expires` into the cookie header value if `expires` is given in cookie constructor.", () => {
       const oldDate = Date;
       global.Date = new Proxy(Date, {
         construct: (target, args) => {
@@ -351,24 +357,27 @@ describe("HttpResponse", () => {
         }
       });
 
-      response.addCookie("cookie", "cookieValue", {maxAge: 5000}); // 5 seconds
-      const expires = new Date(Date.now() + 5000);
-      Chai.expect(response.header("Set-Cookie")).to.be.equal("cookie=cookieValue; Max-Age=5; Path=/; Expires=" + expires.toUTCString());
+      const expirationDate: Date = new Date();
+      expirationDate.setSeconds(expirationDate.getSeconds() + 5);
+      const cookie: ICookie = new Cookie("cookie", "cookieValue", expirationDate);
+
+      response.addCookie(cookie);
+
+      Chai.expect(response.header("Set-Cookie")).to.be.equal("cookie=cookieValue; Path=/; Expires=" + expirationDate.toUTCString());
 
       global.Date = oldDate;
     });
   });
 
-  it("#addCookies should add all the cookies of `obj` with the `options`", () => {
-    response.addCookies(
-      {
-        cookie1: "cookieValue1",
-        cookie2: "cookieValue2"
-      },
-      {path: "/test"}
-    );
-    Chai.expect(response.header("Set-Cookie")).to.contain("cookie1=cookieValue1; Path=/test");
-    Chai.expect(response.header("Set-Cookie")).to.contain("cookie2=cookieValue2; Path=/test");
+  it("#addCookies should add all the cookies of the cookies array with their options.", () => {
+    const cookies: ICookie[] = [];
+    cookies.push(new Cookie("cookie1", "cookieValue1", null, "/test"));
+    cookies.push(new Cookie("cookie2", "cookieValue2", null, "/test2"));
+
+    response.addCookies(cookies);
+
+    Chai.expect(response.header("Set-Cookie")[0]).to.be.equal("cookie1=cookieValue1; Path=/test");
+    Chai.expect(response.header("Set-Cookie")[1]).to.be.equal("cookie2=cookieValue2; Path=/test2");
   });
 
   it("#clearCookie should add the cookie `field` with the `options` and the expires to 1 and the path to /", () => {
@@ -376,15 +385,16 @@ describe("HttpResponse", () => {
     Chai.expect(response.header("Set-Cookie")).to.be.equal("cookie=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
   });
 
-  it("#cookie should return the cookie `name`", () => {
-    response.addCookies(
-      {
-        cookie1: "cookieValue1",
-        cookie2: "cookieValue2"
-      },
-      {path: "/test"}
-    );
-    Chai.expect(response.cookie("cookie1")).to.be.equal("cookieValue1");
+  it("#cookie should return the cookie object if it has been previously added.", () => {
+    const cookies: ICookie[] = [];
+    cookies.push(new Cookie("cookie1", "cookieValue1", null, "/test"));
+    cookies.push(new Cookie("cookie2", "cookieValue2", null, "/test2"));
+
+    response.addCookies(cookies);
+    Chai.expect(response.cookie("cookie1").value).to.be.equal("cookieValue1");
+    Chai.expect(response.cookie("cookie1").path).to.be.equal("/test");
+    Chai.expect(response.cookie("cookie2").value).to.be.equal("cookieValue2");
+    Chai.expect(response.cookie("cookie2").path).to.be.equal("/test2");
   });
 
   describe("location", () => {

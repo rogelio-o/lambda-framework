@@ -29,7 +29,7 @@ describe("Router", () => {
     callback = new DefaultCallback();
     router = new Router();
     eventReq = new EventRequest(otherEvent);
-    httpReq = new HttpRequest(httpEvent);
+    httpReq = new HttpRequest(app, httpEvent);
     res = new HttpResponse(app, httpReq, callback);
   });
 
@@ -68,7 +68,7 @@ describe("Router", () => {
     it("should response with the available HTTP methods for the request path in the Allow header if the request method is OPTIONS.", (done) => {
       const newEvent = Object.assign({}, httpEvent);
       newEvent.httpMethod = "OPTIONS";
-      const req = new HttpRequest(newEvent);
+      const req = new HttpRequest(app, newEvent);
 
       router.route("/blog/:id").get((request, response) => console.log("OK"));
       router.route("/blog/:id").post((request, response) => console.log("OK"));
@@ -84,7 +84,7 @@ describe("Router", () => {
     it("should call #out if the request method is OPTIONS and there is no available HTTP methods for the request path.", (done) => {
       const newEvent = Object.assign({}, httpEvent);
       newEvent.httpMethod = "OPTIONS";
-      const req = new HttpRequest(newEvent);
+      const req = new HttpRequest(app, newEvent);
 
       router.httpHandle(req, res, () => {
         done();
@@ -95,7 +95,7 @@ describe("Router", () => {
   describe("#httpProcessParams", () => {
     const newEvent = Object.assign({}, httpEvent);
     newEvent.path = "/blog/:id1/:id2";
-    const req = new HttpRequest(newEvent);
+    const req = new HttpRequest(app, newEvent);
 
     let previouslyCalled1: boolean;
     let previouslyCalled2: boolean;

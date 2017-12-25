@@ -10,7 +10,6 @@ import IApp from "./../types/IApp";
 import INext from "./../types/INext";
 import IRawEvent from "./../types/IRawEvent";
 import { getCookiesFromHeader, mergeParams, normalizeType } from "./../utils/utils";
-import Cookie from "./Cookie";
 
 /**
  * A incoming request created when the event is APIGatewayEvent.
@@ -41,7 +40,7 @@ export default class HttpRequest implements IHttpRequest {
       this._headers[key.toLowerCase()] = this._event.headers[key];
     }
 
-    this._cookies = getCookiesFromHeader(this._headers.Cookie, app.get(configuration.COOKIE_SECRET));
+    this._cookies = getCookiesFromHeader(this._headers.cookie, app.get(configuration.COOKIE_SECRET));
   }
 
   get headers(): { [name: string]: string } {
