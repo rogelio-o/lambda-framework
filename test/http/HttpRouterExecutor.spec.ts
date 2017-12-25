@@ -25,7 +25,7 @@ describe("HttpRouterExecutor", () => {
 
   beforeEach(() => {
     callback = new DefaultCallback();
-    req = new HttpRequest(Object.assign({}, httpEvent));
+    req = new HttpRequest(app, Object.assign({}, httpEvent));
     res = new HttpResponse(app, req, callback);
     router = new Router();
   });

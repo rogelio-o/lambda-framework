@@ -1,6 +1,8 @@
 /* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
-import { setCharset, stringify } from "../../src/lib/utils/utils";
+import { sign } from "cookie-signature";
+import ICookie from "../../src/lib/types/http/ICookie";
+import { getCookiesFromHeader, setCharset, stringify } from "../../src/lib/utils/utils";
 
 /**
  * Test for utils.
@@ -66,6 +68,48 @@ describe("utils", () => {
 
     it("should escape <, >, and & characters if escape is true.", () => {
       Chai.expect(stringify(testObject, null, null, true)).to.be.equals("{\"name\":\"Roger\",\"surname\":\"Garcia \\u0026 \\u003cGarcia\\u003e\",\"wight\":72.6}");
+    });
+  });
+
+  describe("#getCookiesFromHeader", () => {
+    it("returns an empty object if the `Cookie` header is undefined.", () => {
+      Chai.expect(getCookiesFromHeader(undefined, "SECRET")).to.be.empty;
+    });
+
+    it("returns an array with each cookie in the `Cookie` header.", () => {
+      const cookies: { [name: string]: ICookie } = getCookiesFromHeader("cookie1=value1; cookie2=value2", "SECRET");
+
+      Chai.expect(cookies.cookie1.name).to.be.equal("cookie1");
+      Chai.expect(cookies.cookie1.value).to.be.equal("value1");
+      Chai.expect(cookies.cookie2.name).to.be.equal("cookie2");
+      Chai.expect(cookies.cookie2.value).to.be.equal("value2");
+    });
+
+    it("unsigns the value of the signed cookies.", () => {
+      const signedValue = "s:" + sign("value", "SECRET");
+
+      const cookies: { [name: string]: ICookie } = getCookiesFromHeader("cookie=" + signedValue, "SECRET");
+
+      Chai.expect(cookies.cookie.value).to.be.equal("value");
+    });
+
+    it("parses the value of JSON cookies.", () => {
+      const value = {ke1: "value1"};
+      const parsedValue = "j:" + JSON.stringify(value);
+
+      const cookies: { [name: string]: ICookie } = getCookiesFromHeader("cookie=" + parsedValue, "SECRET");
+
+      Chai.expect(cookies.cookie.value).to.be.deep.equal(value);
+    });
+
+    it("unsigns and then parses the value of signed JSON cookies.", () => {
+      const value = {ke1: "value1"};
+      const parsedValue = "j:" + JSON.stringify(value);
+      const signedValue = "s:" + sign(parsedValue, "SECRET");
+
+      const cookies: { [name: string]: ICookie } = getCookiesFromHeader("cookie=" + signedValue, "SECRET");
+
+      Chai.expect(cookies.cookie.value).to.be.deep.equal(value);
     });
   });
 });

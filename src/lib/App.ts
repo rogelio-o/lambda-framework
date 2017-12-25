@@ -56,7 +56,7 @@ export default class App implements IApp {
 
   public handle(event: IRawEvent, callback: IRawCallback): void {
     if (event.isHttp) {
-      const req: IHttpRequest = new HttpRequest(event);
+      const req: IHttpRequest = new HttpRequest(this, event);
       const res: IHttpResponse = new HttpResponse(this, req, callback);
       const done = httpFinalHandler(req, res, {
         env: this.get(configuration.ENVIRONMENT),

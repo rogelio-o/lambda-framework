@@ -35,7 +35,7 @@ describe("HttpRoute", () => {
     layer = new HttpLayer(router, "/blog/:id", {});
     route = new HttpRoute(layer);
     layer.route = route;
-    req = new HttpRequest(event);
+    req = new HttpRequest(app, event);
     res = new HttpResponse(app, req, callback);
   });
 
