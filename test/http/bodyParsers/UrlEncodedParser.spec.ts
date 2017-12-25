@@ -1,7 +1,8 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
-import { spy, SinonSpy, stub, SinonStub } from "sinon";
 import * as qs from "qs";
 import * as querystring from "querystring";
+import { SinonSpy, SinonStub, spy, stub } from "sinon";
 import UrlEncodedParser from "./../../../src/lib/http/bodyParsers/UrlEncodedParser";
 import HttpRequest from "./../../../src/lib/http/HttpRequest";
 import IHttpHandler from "./../../../src/lib/types/http/IHttpHandler";
@@ -23,7 +24,7 @@ const mainEvent: any = {
  * Test for UrlEncodedParser.
  */
 describe("UrlEncodedParser", () => {
-  const res: IHttpResponse = <IHttpResponse> <any> {};
+  const res: IHttpResponse = {} as IHttpResponse;
   let next: SinonSpy;
   let event: any;
   const handler: IHttpHandler = (new UrlEncodedParser()).create({parameterLimit: 2});
@@ -102,11 +103,11 @@ describe("UrlEncodedParser", () => {
   });
 
   it("should use `querystring` library if it is NOT extended.", () => {
-    const handler: IHttpHandler = (new UrlEncodedParser()).create({extended: false});
+    const newHandler: IHttpHandler = (new UrlEncodedParser()).create({extended: false});
     const stubQS = stub(querystring, "parse");
 
     const req: IHttpRequest = new HttpRequest(event);
-    handler(req, res, next);
+    newHandler(req, res, next);
 
     Chai.expect(stubQS.called).to.be.true;
   });

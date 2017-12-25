@@ -1,17 +1,18 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
-import { spy, SinonSpy } from "sinon";
-import httpEvent from "./../../utils/httpEvent";
+import { SinonSpy, spy } from "sinon";
 import JsonParser from "./../../../src/lib/http/bodyParsers/JsonParser";
 import HttpRequest from "./../../../src/lib/http/HttpRequest";
 import IHttpHandler from "./../../../src/lib/types/http/IHttpHandler";
 import IHttpRequest from "./../../../src/lib/types/http/IHttpRequest";
 import IHttpResponse from "./../../../src/lib/types/http/IHttpResponse";
+import httpEvent from "./../../utils/httpEvent";
 
 /**
  * Test for JsonParser.
  */
 describe("JsonParser", () => {
-  const res: IHttpResponse = <IHttpResponse> <any> {};
+  const res: IHttpResponse = {} as IHttpResponse;
   let next: SinonSpy;
   let event: any;
   const handler: IHttpHandler = (new JsonParser()).create();

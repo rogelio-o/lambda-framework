@@ -1,5 +1,8 @@
 import IRawCallback from "./../../src/lib/types/IRawCallback";
 
+/**
+ * A callback for testing purposes.
+ */
 export default class DefaultCallback implements IRawCallback {
 
   private _errorResult: Error;
@@ -16,18 +19,18 @@ export default class DefaultCallback implements IRawCallback {
     return this._successResult;
   }
 
-  sendError(error: Error): void {
+  public sendError(error: Error): void {
     this._errorResult = error;
   }
 
-  send(statusCode: number, headers: {[name: string]: string|string[]}, body: object|Buffer): void {
+  public send(statusCode: number, headers: {[name: string]: string|string[]}, body: object|Buffer): void {
     this._successResult = {statusCode, headers, body};
-    if(this._callback) {
-      this._callback()
+    if (this._callback) {
+      this._callback();
     }
   }
 
-  setCallback(callback: () => void) {
+  public setCallback(callback: () => void): void {
     this._callback = callback;
   }
 

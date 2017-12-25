@@ -1,3 +1,4 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
 import Template from "./../../../src/lib/http/renderEngine/Template";
 import ITemplate from "./../../../src/lib/types/http/renderEngine/ITemplate";

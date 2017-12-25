@@ -1,13 +1,16 @@
 import RawEvent from "./../../src/lib/RawEvent";
 import IRawEvent from "./../../src/lib/types/IRawEvent";
 
+/**
+ * HTTP event.
+ */
 const httpEvent: IRawEvent = new RawEvent();
 httpEvent.type = "APIGatewayEvent";
 httpEvent.original = {};
 httpEvent.isHttp = true;
 httpEvent.headers = {
-  header1: "HEADER VALUE 1",
-  header2: "HEADER VALU 2",
+  "header1": "HEADER VALUE 1",
+  "header2": "HEADER VALU 2",
   "X-Forwarded-Proto": "https",
   "Host": "localhost",
   "Content-Type": "application/json,text/html",

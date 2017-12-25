@@ -8,7 +8,6 @@ const FILE_NAME: string = "fileName.txt";
 const CONTENT: string = "Amazin content.";
 const HEADERS: {[name: string]: string} = {header1: "value 1"};
 
-
 /**
  * Test for HttpUploadedFile.
  */

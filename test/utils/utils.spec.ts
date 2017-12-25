@@ -1,3 +1,4 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
 import { setCharset, stringify } from "../../src/lib/utils/utils";
 
@@ -38,7 +39,7 @@ describe("utils", () => {
       const replacer = (key, value) => {
         if (key && key !== "name") {
           return undefined;
-        } else if(key === "name") {
+        } else if (key === "name") {
           return "test";
         } else {
           return value;
