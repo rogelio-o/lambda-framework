@@ -1,4 +1,5 @@
 import INext from "./../INext";
+import ICookie from "./ICookie";
 import IHttpResponse from "./IHttpResponse";
 import IHttpRoute from "./IHttpRoute";
 import IHttpUploadedFile from "./IHttpUploadedFile";
@@ -95,6 +96,13 @@ export default interface IHttpRequest {
   readonly context: { [name: string]: any };
 
   /**
+   * Returns the all the cookies retrieving their values and
+   * options from the HTTP request header. The key will be the name of
+   * the cookie and the value the object representing the cookie.
+   */
+  readonly cookies: {[name: string]: ICookie};
+
+  /**
    * Return request header.
    *
    * @param  {string} key Header key.
@@ -179,5 +187,14 @@ export default interface IHttpRequest {
    * the Last-Modified and/or the ETag headers for the resource has changed.
    */
   stale(response: IHttpResponse): boolean;
+
+  /**
+   * Returns the cookie with the given `name` retrieving the value and
+   * options from the HTTP request header.
+   *
+   * @param  {string}  name
+   * @return {ICookie}
+   */
+  cookie(name: string): ICookie;
 
 }

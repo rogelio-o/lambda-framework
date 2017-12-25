@@ -1,3 +1,4 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
 import { SinonStub, stub } from "sinon";
 import Template from "./../../../src/lib/http/renderEngine/Template";
@@ -10,7 +11,7 @@ import ITemplateRenderer from "./../../../src/lib/types/http/renderEngine/ITempl
  * Test for TemplateEngine.
  */
 describe("TemplateEngine", () => {
-  const templateRenderer: ITemplateRenderer =  <ITemplateRenderer> <any> stub();
+  const templateRenderer: ITemplateRenderer =  stub() as any as ITemplateRenderer;
   const templateRendererFunc = templateRenderer.render = stub();
   const expectedEngineConfig: {[name: string]: any} = {conf1: "value 1"};
   const templateEngine: ITemplateEngine = new TemplateEngine(templateRenderer, expectedEngineConfig);
@@ -35,7 +36,6 @@ describe("TemplateEngine", () => {
     });
 
     it("should call the `templateRenderer` function with the `fileName`, the `params`, the `engineConfig`, and the `callback` if the template has been successfully loaded.", (done) => {
-      const expectedContent = "PRUEBA";
       const expectedParams = {param1: "value1"};
 
       templateRendererFunc.callsFake((fileName: string, params: {[name: string]: any}, engineConfig: {[name: string]: any}, callback: (err: Error, template: ITemplate) => void) => {

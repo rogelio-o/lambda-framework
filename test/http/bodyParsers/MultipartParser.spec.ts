@@ -1,12 +1,15 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
-import { spy, SinonSpy } from "sinon";
+import { SinonSpy, spy } from "sinon";
+import App from "./../../../src/lib/App";
 import MultipartParser from "./../../../src/lib/http/bodyParsers/MultipartParser";
-import HttpUploadedFile from "./../../../src/lib/http/HttpUploadedFile";
 import HttpRequest from "./../../../src/lib/http/HttpRequest";
+import HttpUploadedFile from "./../../../src/lib/http/HttpUploadedFile";
 import IHttpHandler from "./../../../src/lib/types/http/IHttpHandler";
 import IHttpRequest from "./../../../src/lib/types/http/IHttpRequest";
 import IHttpResponse from "./../../../src/lib/types/http/IHttpResponse";
 import IHttpUploadedFile from "./../../../src/lib/types/http/IHttpUploadedFile";
+import IApp from "./../../../src/lib/types/IApp";
 
 const mainEvent: any = {
   body: "------WebKitFormBoundaryvef1fLxmoUdYZWXp\n"
@@ -38,7 +41,8 @@ const mainEvent: any = {
  * Test for MultipartParser.
  */
 describe("MultipartParser", () => {
-  const res: IHttpResponse = <IHttpResponse> <any> {};
+  const app: IApp = new App();
+  const res: IHttpResponse = {} as IHttpResponse;
   let next: SinonSpy;
   let event: any;
   const handler: IHttpHandler = (new MultipartParser()).create();
@@ -52,7 +56,7 @@ describe("MultipartParser", () => {
   it("should call 'next' WITHOUT an  error if the body can not be parsed and header contentType is undefined.", () => {
     event.body = "errorBody";
     event.headers["Content-Type"] = undefined;
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     handler(req, res, next);
 
@@ -61,7 +65,7 @@ describe("MultipartParser", () => {
   });
 
   it("should set the body with the parsed body as an object if header contentType is 'multipart/form-data'.", () => {
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     handler(req, res, next);
 
@@ -83,7 +87,7 @@ describe("MultipartParser", () => {
 
   it("should NOT set the body if header contentType is 'text/html'.", () => {
     event.headers["Content-Type"] = "text/html";
-    const req: IHttpRequest = new HttpRequest(event);
+    const req: IHttpRequest = new HttpRequest(app, event);
 
     handler(req, res, next);
 

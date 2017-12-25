@@ -29,14 +29,14 @@
          * Common Bugs and Correctness. The following rules should be turned on because they find
          * common bug patterns in the code or enforce type safety.
          */
-        "chai-vague-errors": true,
+        "chai-vague-errors": false,
         "forin": true,
         "jquery-deferred-must-complete": true,
         "label-position": true,
         "mocha-avoid-only": true,
         "no-any": false,
         "no-arg": true,
-        "no-backbone-get-set-outside-model": true,
+        "no-backbone-get-set-outside-model": false,
         "no-bitwise": true,
         "no-conditional-assignment": true,
         "no-console": [true, "debug", "info", /*"log",*/ "time", "timeEnd", "trace"],

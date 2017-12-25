@@ -1,7 +1,8 @@
-import * as Chai from "chai"
-import otherEvent from "./../utils/otherEvent";
+/* tslint:disable:no-unused-expression */
+import * as Chai from "chai";
+import EventRequest from "./../../src/lib/event/EventRequest";
 import RawEvent from "./../../src/lib/RawEvent";
-import EventRequest from "./../../src/lib/event/EventRequest"
+import otherEvent from "./../utils/otherEvent";
 
 /**
  * Test for EventRequest.
@@ -10,8 +11,8 @@ describe("EventRequest", () => {
 
   describe("#eventType", () => {
     it("should return the type of the raw event.", () => {
-      const req = new EventRequest(otherEvent)
-      Chai.expect(req.eventType).to.be.equal("S3CreateEvent")
+      const req = new EventRequest(otherEvent);
+      Chai.expect(req.eventType).to.be.equal("S3CreateEvent");
     });
 
     describe("#context", () => {

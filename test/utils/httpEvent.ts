@@ -1,13 +1,16 @@
 import RawEvent from "./../../src/lib/RawEvent";
 import IRawEvent from "./../../src/lib/types/IRawEvent";
 
+/**
+ * HTTP event.
+ */
 const httpEvent: IRawEvent = new RawEvent();
 httpEvent.type = "APIGatewayEvent";
 httpEvent.original = {};
 httpEvent.isHttp = true;
 httpEvent.headers = {
-  header1: "HEADER VALUE 1",
-  header2: "HEADER VALU 2",
+  "header1": "HEADER VALUE 1",
+  "header2": "HEADER VALU 2",
   "X-Forwarded-Proto": "https",
   "Host": "localhost",
   "Content-Type": "application/json,text/html",
@@ -16,7 +19,8 @@ httpEvent.headers = {
   "Accept-Charset": "UTF-8, ISO-8859-1",
   "Accept-Language": "es,en",
   "If-None-Match": "etagValue",
-  "If-Modified-Since": "2017-10-10T10:10:10"
+  "If-Modified-Since": "2017-10-10T10:10:10",
+  "Cookie": "cookie1=value1; cookie2=value2"
 };
 httpEvent.queryParams = {
   query1: "Query 1"

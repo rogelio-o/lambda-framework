@@ -1,6 +1,7 @@
 import IHttpError from "./../exceptions/IHttpError";
 import INext from "./../INext";
 import IRouter from "./../IRouter";
+import ICookie from "./ICookie";
 import IHttpHandler from "./IHttpHandler";
 
 /**
@@ -146,32 +147,28 @@ export default interface IHttpResponse {
   clearCookie(name: string, options?: object): IHttpResponse;
 
   /**
-   * Set cookie `name` to `value`, with the given `options`.
+   * Add the given cookie to response header.
    *
-   * @param  {string}        name
-   * @param  {string|object} value
-   * @param  {object}        options
+   * @param  {ICookie}        cookie
    * @return {IHttpResponse}
    */
-  addCookie(name: string, value: string|object, options?: object): IHttpResponse;
+  addCookie(cookie: ICookie): IHttpResponse;
 
   /**
-   * Set each cookie indicated by the key of `object` to the value indicated
-   * by the value of the key.
+   * Add the given cookies to response header.
    *
-   * @param  {object}        name
-   * @param  {object}        options
+   * @param  {ICookie[]}        cookies
    * @return {IHttpResponse}
    */
-  addCookies(name: object, options?: object): IHttpResponse;
+  addCookies(cookies: ICookie[]): IHttpResponse;
 
   /**
-   * Get the value of the cookie `name`.
+   * Get the cookie with the given `name`.
    *
    * @param  {string} name
-   * @return {string}
+   * @return {ICookie}
    */
-  cookie(name: string): string;
+  cookie(name: string): ICookie;
 
   /**
    * Set the location header to `url`.

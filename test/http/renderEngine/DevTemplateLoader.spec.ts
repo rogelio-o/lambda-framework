@@ -1,3 +1,4 @@
+/* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
 import * as mock from "mock-fs";
 import DevTemplateLoader from "./../../../src/lib/http/renderEngine/DevTemplateLoader";
@@ -14,7 +15,7 @@ describe("DevTemplateLoader", () => {
     mock({
       "/base/path": {
         "prueba.pug": new Buffer("Test content.", "utf8")
-      },
+      }
     });
   });
 
