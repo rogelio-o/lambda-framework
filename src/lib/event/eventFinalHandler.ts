@@ -23,7 +23,7 @@ export default function eventFinalHandler(req: IEventRequest, callback: IRawCall
     }
 
     if (callback) {
-      callback.finalize();
+      callback.finalize(err);
     }
   };
 }
