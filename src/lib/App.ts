@@ -65,7 +65,7 @@ export default class App implements IApp {
       this._router.httpHandle(req, res, done);
     } else {
       const req: IEventRequest = new EventRequest(event);
-      const done = eventFinalHandler(req, {
+      const done = eventFinalHandler(req, callback, {
         env: this.get(configuration.ENVIRONMENT),
         onerror: this.logError.bind(this, req)
       });

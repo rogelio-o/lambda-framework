@@ -1,5 +1,6 @@
 import IEventRequest from "./../types/event/IEventRequest";
 import INext from "./../types/INext";
+import IRawCallback from "./../types/IRawCallback";
 
 /**
  * The final handler to be executed if no previous handler has stopped
@@ -9,7 +10,7 @@ import INext from "./../types/INext";
  * @param  {[name: string]: any}    options the options of the final handler.
  * @return {[INext]}
  */
-export default function eventFinalHandler(req: IEventRequest, options: {[name: string]: any}): INext {
+export default function eventFinalHandler(req: IEventRequest, callback: IRawCallback, options: {[name: string]: any}): INext {
   const opts = options || {};
 
   // get error callback
@@ -19,6 +20,10 @@ export default function eventFinalHandler(req: IEventRequest, options: {[name: s
     // schedule onerror callback
     if (onerror) {
       setImmediate(() => onerror(err, req));
+    }
+
+    if (callback) {
+      callback.finalize();
     }
   };
 }

@@ -7,4 +7,6 @@ export default interface IRawCallback {
 
   send(statusCode: number, headers: {[name: string]: string|string[]}, body: object|Buffer): void;
 
+  finalize(): void;
+
 }

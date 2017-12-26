@@ -11,12 +11,18 @@ export default class DefaultCallback implements IRawCallback {
 
   private _callback: () => void;
 
+  private _isFinalized: boolean;
+
   get errorResult(): Error {
     return this._errorResult;
   }
 
   get successResult(): {[name: string]: any} {
     return this._successResult;
+  }
+
+  get isFinalized(): boolean {
+    return this._isFinalized;
   }
 
   public sendError(error: Error): void {
@@ -32,6 +38,10 @@ export default class DefaultCallback implements IRawCallback {
 
   public setCallback(callback: () => void): void {
     this._callback = callback;
+  }
+
+  public finalize(): void {
+    this._isFinalized = true;
   }
 
 }
