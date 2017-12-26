@@ -1,6 +1,8 @@
 /* tslint:disable:no-unused-expression */
+import * as Chai from "chai";
 import eventFinalHandler from "./../../src/lib/event/eventFinalHandler";
 import EventRequest from "./../../src/lib/event/EventRequest";
+import DefaultCallback from "./../utils/DefaultCallback";
 import otherEvent from "./../utils/otherEvent";
 
 /**
@@ -19,7 +21,7 @@ describe("eventFinalHandler", () => {
         done();
       }
     };
-    const handler = eventFinalHandler(req, options);
+    const handler = eventFinalHandler(req, null, options);
     handler(new Error());
   });
 
@@ -29,13 +31,21 @@ describe("eventFinalHandler", () => {
         done();
       }
     };
-    const handler = eventFinalHandler(req, options);
+    const handler = eventFinalHandler(req, null, options);
     handler();
   });
 
   it("should do nothing without errors if no #onerror handler is given.", () => {
-    const handler = eventFinalHandler(req, null);
+    const handler = eventFinalHandler(req, null, null);
     handler();
+  });
+
+  it("should calls the finalize method of raw callback if it exists.", () => {
+    const rawCallback: DefaultCallback = new DefaultCallback();
+    const handler = eventFinalHandler(req, rawCallback, null);
+    handler();
+
+    Chai.expect(rawCallback.isFinalized).to.be.true;
   });
 
 });
