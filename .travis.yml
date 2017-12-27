@@ -10,7 +10,7 @@ sudo: false
 language: node_js
 # Specify the node versions to run on
 node_js:
-  - "6.11.2"
+  - "6.11.5"
 # Report code coverage to coveralls after successful test runs
 after_success:
   - npm run coveralls
