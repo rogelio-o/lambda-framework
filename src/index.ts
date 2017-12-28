@@ -10,6 +10,7 @@ export { default as configuration } from "./lib/configuration/configuration";
 export { default as IApp } from "./lib/types/IApp";
 export { default as INext } from "./lib/types/INext";
 export { default as IRouter } from "./lib/types/IRouter";
+export { default as Router } from "./lib/Router";
 
 export { default as IEventHandler } from "./lib/types/event/IEventHandler";
 export { default as IEventLayer } from "./lib/types/event/IEventLayer";
