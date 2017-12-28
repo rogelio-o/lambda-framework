@@ -81,7 +81,7 @@ export default class UrlEncodedParser implements IBodyParser {
     const queryParser: (body: string, parameterLimit: number, arrayLimit: number) => {[name: string]: string|string[]} = extended
       ? extendedParser
       : simpleParser;
-    const parser: (body: string) => {[name: string]: string|string[]} = abstractParser(options, queryParser);
+    const parser: (body: string) => {[name: string]: string|string[]} = abstractParser(opts, queryParser);
 
     return parserHelper(
       (initialBody: string, req: IHttpRequest): void => {
