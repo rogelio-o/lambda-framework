@@ -62,8 +62,7 @@ import { AWSHandler } from "lambda-framework-aws";
 const app: IApp = new App();
 ...
 const handler: AWSHandler = new AWSHandler(app);
-const handle = handler.handle;
-export { handle };
+export const handle = handler.handle.bind(handler);
 ```
 
 ### Event handling
