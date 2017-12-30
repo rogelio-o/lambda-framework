@@ -11,6 +11,8 @@ export default interface IEventRequest {
 
     next: INext;
 
+    processed: boolean;
+
     /**
      * Context to save thins and use it
      * in other handlers.

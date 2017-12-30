@@ -8,11 +8,13 @@ import IRawEvent from "./../types/IRawEvent";
 export default class EventRequest implements IEventRequest {
 
   public next: INext;
+  public processed: boolean;
 
   private _event: IRawEvent;
   private _context: { [name: string]: any };
 
   constructor(event: IRawEvent) {
+    this.processed = false;
     this._event = event;
     this._context = {};
   }

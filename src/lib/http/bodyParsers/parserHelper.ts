@@ -4,6 +4,10 @@ import IHttpRequest from "./../../types/http/IHttpRequest";
 import IHttpResponse from "./../../types/http/IHttpResponse";
 import INext from "./../../types/INext";
 
+const canBeParsed = (body: string | { [name: string]: any }) => {
+  return body && typeof body === "string";
+};
+
 /**
  * Abtraction of the parser conditions and fallback mechanism.
  *
@@ -16,7 +20,8 @@ const parserHelper = (func: (body: string, req: IHttpRequest) => void, allowCont
   return (req: IHttpRequest, res: IHttpResponse, next: INext) => {
     let error;
 
-    if (req.body && !req.context._previouslyBodyParsed) {
+    if (canBeParsed(req.body) && !req.context._previouslyBodyParsed) {
+      const initialBody = req.body;
       if (!allowContentTypes || req.is(allowContentTypes)) {
         const contentType = req.header("content-type");
         try {
@@ -24,7 +29,7 @@ const parserHelper = (func: (body: string, req: IHttpRequest) => void, allowCont
 
           req.context._previouslyBodyParsed = true;
         } catch (e) {
-          console.log("400 " + req.method + " " + req.path + ": Body can not be parsed: " + req.body, e);
+          console.log("400 " + req.method + " " + req.path + ": Body can not be parsed: " + JSON.stringify(initialBody), e);
           if (e instanceof HttpError) {
             error = e;
           } else if (contentType) {

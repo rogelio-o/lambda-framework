@@ -54,6 +54,7 @@ export default class EventRouterExecutor implements IEventRouterExecutor {
         // We process only error handlers if there is an error
         this.next(error);
       } else {
+        this._req.processed = true;
         layer.handle(this._req, this.next.bind(this), error);
       }
     } else if (this._subrouterIndex < this._router.subrouters.length) {
