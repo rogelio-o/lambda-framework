@@ -24,6 +24,7 @@ lightweight. You can use the projects you need in your web application.
 - [DustJS template engine implementation](https://github.com/rogelio-o/lambda-framework-dustjs)
 - [Website](https://github.com/rogelio-o/lambda-framework-website)
 - [Website Resources](https://github.com/rogelio-o/lambda-framework-website-resources)
+- [Examples](https://github.com/rogelio-o/lambda-framework-examples)
 
 ## Features
 
