@@ -65,7 +65,7 @@ const handler: AWSHandler = new AWSHandler(app);
 export const handle = handler.handle.bind(handler);
 ```
 
-### Event handling
+### Event handling
 
 A handler can be related with an event type or with a event that fulfil a
 predicate. When the event happens, the handler is executed.
@@ -131,7 +131,7 @@ subrouter.route("/:id")
 app.mount(subrouter, "/blog");
 ```
 
-#### param
+#### param
 
 Handlers can be related also with the apparition of a param in a request.
 For example, each time the `user` param appears, a handler loading the user
@@ -144,7 +144,7 @@ app.param("user", (req: IHttpRequest, res: IHttpResponse, next: INext, placehold
 });
 ```
 
-### HTTP body parsers
+### HTTP body parsers
 
 There is a few body parsers that can be used. The body parsers have
 to be added as a handler to the path in which you want to use it.
@@ -163,7 +163,7 @@ const reviver = (key: string, value: string): any => {
 app.use(new JsonParser().create(reviver));
 ```
 
-#### UrlEncoded
+#### UrlEncoded
 
 ```typescript
 const options: {[name: string]: any} = {};
@@ -182,7 +182,7 @@ options.type = "multipart/form-data"; // By default
 app.use(new MultipartParser().create(options));
 ```
 
-### Others HTTP features
+### Others HTTP features
 
 #### Response body
 
@@ -286,7 +286,7 @@ response.redirect("back");
 response.redirect("/new-location", 301);
 ```
 
-### Templating
+### Templating
 
 There is a render method for rendering HTML templates. The methods can have the
 following parameters:
