@@ -54,6 +54,7 @@ app.handle(event, callback);
 
 You don't need to care about passing the event to the App handler, you can use the [AWS Lambda implementation](https://github.com/rogelio-o/lambda-framework-aws) or another provider
 implementation. These will manage the creation of the raw event and passing it to the handler.
+
 ```typescript
 import { App, IApp } from "lambda-framework";
 import { AWSHandler } from "lambda-framework-aws";
