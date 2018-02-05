@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import configuration from "./configuration/configuration";
 import defaultConfiguration from "./configuration/defaultConfiguration";
 import eventFinalHandler from "./event/eventFinalHandler";
@@ -29,13 +30,15 @@ export default class App implements IApp {
   private _settings: object;
   private _router: IRouter;
 
-  constructor() {
+  constructor(settings?: object) {
     this._settings = {};
     this._router = new Router();
-  }
 
-  public init(settings?: object): void {
-    this.initDefaultConfiguration(settings);
+    this.initEnvConfiguration();
+    this.initParamsConfiguration(settings);
+    this.initEnvFileConfiguration();
+    this.initDefaultFileConfiguration();
+    this.initDefaultConfiguration();
   }
 
   public enable(key: string): void {
@@ -107,8 +110,51 @@ export default class App implements IApp {
     return this;
   }
 
-  private initDefaultConfiguration(settings: object): void {
-    this._settings = settings ? settings : defaultConfiguration;
+  private initEnvConfiguration(): void {
+    const settings = {};
+
+    for (const key of Object.keys(process.env)) {
+      settings[key] = process.env[key];
+    }
+
+    this.initConfiguration(settings);
+  }
+
+  private initParamsConfiguration(settings: {[name: string]: any}): void {
+    this.initConfiguration(settings);
+  }
+
+  private initEnvFileConfiguration(): void {
+    const env = process.env.ENVIRONMENT;
+
+    if (env) {
+      this.initFileConfiguration(env);
+    }
+  }
+
+  private initDefaultFileConfiguration(): void {
+    this.initFileConfiguration("application");
+  }
+
+  private initFileConfiguration(fileName: string): void {
+    const path = process.env.PWD + "/conf/" + fileName + ".json";
+
+    if (fs.existsSync(path)) {
+      const rawSetting = fs.readFileSync(path, "utf8");
+      this.initConfiguration(JSON.parse(rawSetting));
+    }
+  }
+
+  private initDefaultConfiguration(): void {
+    this.initConfiguration(defaultConfiguration);
+  }
+
+  private initConfiguration(settings: {[name: string]: any}): void {
+    for (const key of Object.keys(settings)) {
+      if (!this._settings[key]) {
+        this._settings[key] = settings[key];
+      }
+    }
   }
 
   private logError(req: IHttpRequest|IEventRequest, err: Error): void {

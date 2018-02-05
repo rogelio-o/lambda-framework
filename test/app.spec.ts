@@ -13,53 +13,87 @@ import otherEvent from "./utils/otherEvent";
  * Test for App.
  */
 describe("App", () => {
-  let app: App;
+  let defaultApp: App;
 
   beforeEach(() => {
-    app = new App();
+    defaultApp = new App();
   });
 
-  it("#init without settings should init with default configuration", async () => {
-    app.init();
-    Object.keys(defaultConfiguration)
-      .forEach((param) => Chai.expect(defaultConfiguration[param]).to.be.equal(app.get(param)));
-  });
+  describe("#constructor", () => {
+    it("#construct without settings should init with default configuration", async () => {
+      const app = new App();
+      Object.keys(defaultConfiguration)
+        .forEach((param) => Chai.expect(defaultConfiguration[param]).to.be.equal(app.get(param)));
+    });
 
-  it("#init with settings should init with custom configuration", async () => {
-    const settings = {};
-    settings[configuration.DEFAULT_MYME_TYPE] = "text/html";
+    it("#construct with settings should init with custom configuration", async () => {
+      const settings = {};
+      settings[configuration.DEFAULT_MYME_TYPE] = "text/html";
 
-    app.init(settings);
-    Object.keys(settings)
-      .forEach((param) => Chai.expect(settings[param]).to.be.equal(app.get(param)));
+      const app = new App(settings);
+      Object.keys(settings)
+        .forEach((param) => Chai.expect(settings[param]).to.be.equal(app.get(param)));
+    });
+
+    it("#construct set env variables as app settings", async () => {
+
+    });
+
+    it("#construct set the settings in the env file", async () => {
+
+    });
+
+    it("#construct set the settings in the default file", async () => {
+
+    });
+
+    it("#construct set the default configuration", async () => {
+
+    });
+
+    it("#construct set the env settings before others", async () => {
+
+    });
+
+    it("#construct set the params settings before files and default configuration", async () => {
+
+    });
+
+    it("#construct set the env file settings before default file and default configuration", async () => {
+
+    });
+
+    it("#construct set the default file settings before default configuration", async () => {
+
+    });
   });
 
   it("#enable should set the param as true", async () => {
-    app.enable("option1");
-    Chai.expect(app.get("option1")).to.be.true;
+    defaultApp.enable("option1");
+    Chai.expect(defaultApp.get("option1")).to.be.true;
   });
 
   it("#disable should set the param as false", async () => {
-    app.disable("option1");
-    Chai.expect(app.get("option1")).to.be.false;
+    defaultApp.disable("option1");
+    Chai.expect(defaultApp.get("option1")).to.be.false;
   });
 
   it("#set should set the param with the indicated value", async () => {
-    app.set("option1", "value1");
-    Chai.expect(app.get("option1")).to.be.equal("value1");
+    defaultApp.set("option1", "value1");
+    Chai.expect(defaultApp.get("option1")).to.be.equal("value1");
   });
 
   describe("#handle", () => {
     it("should call the router httpHandle if the event type is HTTP.", () => {
       const httpHandleStub = stub(Router.prototype, "httpHandle");
-      app.handle(httpEvent, new DefaultCallback());
+      defaultApp.handle(httpEvent, new DefaultCallback());
       Chai.expect(httpHandleStub.calledOnce).to.be.true;
       httpHandleStub.restore();
     });
 
     it("should call the router eventHandle if the event type is NOT HTTP.", () => {
       const eventHandleStub = stub(Router.prototype, "eventHandle");
-      app.handle(otherEvent, new DefaultCallback());
+      defaultApp.handle(otherEvent, new DefaultCallback());
       Chai.expect(eventHandleStub.calledOnce).to.be.true;
       eventHandleStub.restore();
     });
@@ -68,7 +102,7 @@ describe("App", () => {
   describe("#use", () => {
     it("should delegate the action to the default router.", () => {
       const useStub = stub(Router.prototype, "use");
-      app.use(null);
+      defaultApp.use(null);
       Chai.expect(useStub.calledOnce).to.be.true;
       useStub.restore();
     });
@@ -77,7 +111,7 @@ describe("App", () => {
   describe("#mount", () => {
     it("should delegate the action to the default router.", () => {
       const mountStub = stub(Router.prototype, "mount");
-      app.mount(null);
+      defaultApp.mount(null);
       Chai.expect(mountStub.calledOnce).to.be.true;
       mountStub.restore();
     });
@@ -86,7 +120,7 @@ describe("App", () => {
   describe("#param", () => {
     it("should delegate the action to the default router.", () => {
       const paramStub = stub(Router.prototype, "param");
-      app.param(null, null);
+      defaultApp.param(null, null);
       Chai.expect(paramStub.calledOnce).to.be.true;
       paramStub.restore();
     });
@@ -95,7 +129,7 @@ describe("App", () => {
   describe("#route", () => {
     it("should delegate the action to the default router.", () => {
       const routeStub = stub(Router.prototype, "route");
-      app.route(null);
+      defaultApp.route(null);
       Chai.expect(routeStub.calledOnce).to.be.true;
       routeStub.restore();
     });
@@ -104,7 +138,7 @@ describe("App", () => {
   describe("#event", () => {
     it("should delegate the action to the default router.", () => {
       const eventStub = stub(Router.prototype, "event");
-      app.event(null, null);
+      defaultApp.event(null, null);
       Chai.expect(eventStub.calledOnce).to.be.true;
       eventStub.restore();
     });
@@ -113,7 +147,7 @@ describe("App", () => {
   describe("#addTemplateEngine", () => {
     it("should delegate the action to the default router.", () => {
       const addTepmlateEngineStub = stub(Router.prototype, "addTemplateEngine");
-      app.addTemplateEngine(null);
+      defaultApp.addTemplateEngine(null);
       Chai.expect(addTepmlateEngineStub.calledOnce).to.be.true;
       addTepmlateEngineStub.restore();
     });
