@@ -36,8 +36,10 @@ export default class HttpRequest implements IHttpRequest {
     this.params = mergeParams(event);
 
     this._headers = {};
-    for (const key of Object.keys(this._event.headers)) {
-      this._headers[key.toLowerCase()] = this._event.headers[key];
+    if (this._event.headers) {
+      for (const key of Object.keys(this._event.headers)) {
+        this._headers[key.toLowerCase()] = this._event.headers[key];
+      }
     }
 
     this._cookies = getCookiesFromHeader(this._headers.cookie, app.get(configuration.COOKIE_SECRET));
