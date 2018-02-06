@@ -125,7 +125,7 @@ export default class App implements IApp {
   }
 
   private initEnvFileConfiguration(): void {
-    const env = process.env.ENVIRONMENT;
+    const env = this.get(configuration.ENVIRONMENT);
 
     if (env) {
       this.initFileConfiguration(env);
@@ -150,9 +150,11 @@ export default class App implements IApp {
   }
 
   private initConfiguration(settings: {[name: string]: any}): void {
-    for (const key of Object.keys(settings)) {
-      if (!this._settings[key]) {
-        this._settings[key] = settings[key];
+    if (settings) {
+      for (const key of Object.keys(settings)) {
+        if (!this._settings[key]) {
+          this._settings[key] = settings[key];
+        }
       }
     }
   }

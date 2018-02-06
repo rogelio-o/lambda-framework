@@ -1,6 +1,7 @@
 /* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
-import { stub } from "sinon";
+import * as fs from "fs";
+import { SinonStub, stub } from "sinon";
 import { App } from "../src/index";
 import { configuration } from "../src/index";
 import defaultConfiguration from "../src/lib/configuration/defaultConfiguration";
@@ -14,19 +15,37 @@ import otherEvent from "./utils/otherEvent";
  */
 describe("App", () => {
   let defaultApp: App;
+  let readFileStub: SinonStub;
+  let existsStub: SinonStub;
+
+  const mockFile = (file, config) => {
+    const path = process.env.PWD + "/conf/" + file + ".json";
+    readFileStub.withArgs(path, "utf8").returns(JSON.stringify(config));
+    existsStub.withArgs(path).returns(true);
+  };
 
   beforeEach(() => {
     defaultApp = new App();
+    readFileStub = stub(fs, "readFileSync");
+    existsStub = stub(fs, "existsSync");
+  });
+
+  afterEach(() => {
+    readFileStub.restore();
+    existsStub.restore();
+
+    delete process.env.ENVIRONMENT;
+    delete process.env.TEST;
   });
 
   describe("#constructor", () => {
-    it("#construct without settings should init with default configuration", async () => {
+    it("without settings should init with default configuration", async () => {
       const app = new App();
       Object.keys(defaultConfiguration)
         .forEach((param) => Chai.expect(defaultConfiguration[param]).to.be.equal(app.get(param)));
     });
 
-    it("#construct with settings should init with custom configuration", async () => {
+    it("with settings should init with custom configuration", async () => {
       const settings = {};
       settings[configuration.DEFAULT_MYME_TYPE] = "text/html";
 
@@ -35,36 +54,84 @@ describe("App", () => {
         .forEach((param) => Chai.expect(settings[param]).to.be.equal(app.get(param)));
     });
 
-    it("#construct set env variables as app settings", async () => {
+    it("should set env variables as app settings", async () => {
+      process.env.TEST = "test";
 
+      const app = new App();
+      Chai.expect(app.get("TEST")).to.be.equal("test");
     });
 
-    it("#construct set the settings in the env file", async () => {
+    it("should set the settings in the env file", async () => {
+      process.env.ENVIRONMENT = "test";
+      const config: {[name: string]: any} = {TEST: "test"};
+      mockFile("test", config);
 
+      const app = new App();
+      Chai.expect(app.get("TEST")).to.be.equal("test");
     });
 
-    it("#construct set the settings in the default file", async () => {
+    it("should set the settings in the default file", async () => {
+      const config: {[name: string]: any} = {TEST: "test"};
+      mockFile("application", config);
 
+      const app = new App();
+      Chai.expect(app.get("TEST")).to.be.equal("test");
     });
 
-    it("#construct set the default configuration", async () => {
-
+    it("should set the default configuration", async () => {
+      const app = new App();
+      Chai.expect(app.get(configuration.ENVIRONMENT)).to.be.equal("development");
     });
 
-    it("#construct set the env settings before others", async () => {
+    it("should set the env settings before others", async () => {
+      process.env.ENVIRONMENT = "test1";
 
+      const envConfig: {[name: string]: any} = {ENVIRONMENT: "test2"};
+      mockFile("test1", envConfig);
+
+      const appConfig: {[name: string]: any} = {ENVIRONMENT: "test3"};
+      mockFile("application", appConfig);
+
+      const paramConfig: {[name: string]: any} = {ENVIRONMENT: "test4"};
+
+      const app = new App(paramConfig);
+      Chai.expect(app.get(configuration.ENVIRONMENT)).to.be.equal("test1");
     });
 
-    it("#construct set the params settings before files and default configuration", async () => {
+    it("should set the params settings before files and default configuration", async () => {
+      process.env.ENVIRONMENT = "test1";
 
+      const envConfig: {[name: string]: any} = {COOKIE_SECRET: "1"};
+      mockFile("test1", envConfig);
+
+      const appConfig: {[name: string]: any} = {COOKIE_SECRET: "2"};
+      mockFile("application", appConfig);
+
+      const paramConfig: {[name: string]: any} = {COOKIE_SECRET: "3"};
+
+      const app = new App(paramConfig);
+      Chai.expect(app.get(configuration.COOKIE_SECRET)).to.be.equal("3");
     });
 
-    it("#construct set the env file settings before default file and default configuration", async () => {
+    it("should set the env file settings before default file and default configuration", async () => {
+      process.env.ENVIRONMENT = "test1";
 
+      const envConfig: {[name: string]: any} = {COOKIE_SECRET: "1"};
+      mockFile("test1", envConfig);
+
+      const appConfig: {[name: string]: any} = {COOKIE_SECRET: "2"};
+      mockFile("application", appConfig);
+
+      const app = new App();
+      Chai.expect(app.get(configuration.COOKIE_SECRET)).to.be.equal("1");
     });
 
-    it("#construct set the default file settings before default configuration", async () => {
+    it("should set the default file settings before default configuration", async () => {
+      const appConfig: {[name: string]: any} = {COOKIE_SECRET: "1"};
+      mockFile("application", appConfig);
 
+      const app = new App();
+      Chai.expect(app.get(configuration.COOKIE_SECRET)).to.be.equal("1");
     });
   });
 
