@@ -16,11 +16,20 @@ describe("HttpRequest", () => {
   let request: IHttpRequest;
   let event: IRawEvent;
   const app = new App();
+
   beforeEach((done) => {
     event = Object.assign({}, httpEvent);
     request = new HttpRequest(app, event);
 
     done();
+  });
+
+  it("should have empty header if the headers of the event is undefined.", () => {
+    delete event.headers;
+
+    request = new HttpRequest(app, event);
+
+    Chai.expect(request.headers).to.be.empty;
   });
 
   it("#headers should return the incoming request headers", () => {
