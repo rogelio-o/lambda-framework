@@ -70,6 +70,14 @@ describe("App", () => {
       Chai.expect(app.get("TEST")).to.be.equal("test");
     });
 
+    it("should set the settings in the 'development' env file by default", async () => {
+      const config: {[name: string]: any} = {TEST: "test"};
+      mockFile("development", config);
+
+      const app = new App();
+      Chai.expect(app.get("TEST")).to.be.equal("test");
+    });
+
     it("should set the settings in the default file", async () => {
       const config: {[name: string]: any} = {TEST: "test"};
       mockFile("application", config);
