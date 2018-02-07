@@ -127,7 +127,7 @@ export default class App implements IApp {
   }
 
   private initEnvFileConfiguration(): void {
-    const env = this.get(configuration.ENVIRONMENT);
+    const env = this.get(configuration.ENVIRONMENT) || defaultConfiguration[configuration.ENVIRONMENT];
 
     if (env) {
       this.initFileConfiguration(env);
@@ -139,11 +139,19 @@ export default class App implements IApp {
   }
 
   private initFileConfiguration(fileName: string): void {
-    const path = process.env.PWD + "/conf/" + fileName + ".json";
+    const path = this.getProjectBasePath() + "/conf/" + fileName + ".json";
 
     if (fs.existsSync(path)) {
       const rawSetting = fs.readFileSync(path, "utf8");
       this.initConfiguration(JSON.parse(rawSetting));
+    }
+  }
+
+  private getProjectBasePath(): string {
+    if (!process.env.PWD) {
+      return process.cwd();
+    } else {
+      return process.env.PWD;
     }
   }
 
