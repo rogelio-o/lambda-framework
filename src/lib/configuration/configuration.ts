@@ -10,7 +10,8 @@ const configuration = {
   COOKIE_SECRET: "COOKIE_SECRET",
   JSON_REPLACER: "JSON_REPLACER",
   JSON_SPACES: "JSON_SPACES",
-  JSON_ESCAPE: "JSON_ESCAPE"
+  JSON_ESCAPE: "JSON_ESCAPE",
+  PATH_CONTEXT: "PATH_CONTEXT"
 };
 
 export default configuration;

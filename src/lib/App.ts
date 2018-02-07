@@ -32,13 +32,15 @@ export default class App implements IApp {
 
   constructor(settings?: object) {
     this._settings = {};
-    this._router = new Router();
-
     this.initEnvConfiguration();
     this.initParamsConfiguration(settings);
     this.initEnvFileConfiguration();
     this.initDefaultFileConfiguration();
     this.initDefaultConfiguration();
+
+    this._router = new Router({
+      subpath: this.get(configuration.PATH_CONTEXT)
+    });
   }
 
   public enable(key: string): void {
