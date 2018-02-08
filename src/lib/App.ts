@@ -129,9 +129,7 @@ export default class App implements IApp {
   private initEnvFileConfiguration(): void {
     const env = this.get(configuration.ENVIRONMENT) || defaultConfiguration[configuration.ENVIRONMENT];
 
-    if (env) {
-      this.initFileConfiguration(env);
-    }
+    this.initFileConfiguration(env);
   }
 
   private initDefaultFileConfiguration(): void {
@@ -148,7 +146,9 @@ export default class App implements IApp {
   }
 
   private getProjectBasePath(): string {
+    console.log(process.env.PWD);
     if (!process.env.PWD) {
+      console.log(process.cwd());
       return process.cwd();
     } else {
       return process.env.PWD;

@@ -17,9 +17,10 @@ describe("App", () => {
   let defaultApp: App;
   let readFileStub: SinonStub;
   let existsStub: SinonStub;
+  let oldPWD: string;
 
   const mockFile = (file, config) => {
-    const path = process.env.PWD + "/conf/" + file + ".json";
+    const path = "/test/conf/" + file + ".json";
     readFileStub.withArgs(path, "utf8").returns(JSON.stringify(config));
     existsStub.withArgs(path).returns(true);
   };
@@ -28,6 +29,9 @@ describe("App", () => {
     defaultApp = new App();
     readFileStub = stub(fs, "readFileSync");
     existsStub = stub(fs, "existsSync");
+
+    oldPWD = process.env.PWD;
+    process.env.PWD = "/test";
   });
 
   afterEach(() => {
@@ -36,6 +40,8 @@ describe("App", () => {
 
     delete process.env.ENVIRONMENT;
     delete process.env.TEST;
+
+    process.env.PWD = oldPWD;
   });
 
   describe("#constructor", () => {
@@ -84,6 +90,20 @@ describe("App", () => {
 
       const app = new App();
       Chai.expect(app.get("TEST")).to.be.equal("test");
+    });
+
+    it("should set the settings in the default file if the PWD env variable is not set", async () => {
+      delete process.env.PWD;
+      const oldCWD = process.cwd;
+      process.cwd = () => "/test";
+
+      const config: {[name: string]: any} = {TEST: "test"};
+      mockFile("application", config);
+
+      const app = new App();
+      Chai.expect(app.get("TEST")).to.be.equal("test");
+
+      process.cwd = oldCWD;
     });
 
     it("should set the default configuration", async () => {
