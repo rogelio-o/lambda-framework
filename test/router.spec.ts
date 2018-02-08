@@ -33,6 +33,13 @@ describe("Router", () => {
     res = new HttpResponse(app, httpReq, callback);
   });
 
+  describe("#constructor", () => {
+    it("can initialize the router with a subpath.", () => {
+      const subpathRouter = new Router({subpath: "/subpath"});
+      Chai.expect(subpathRouter.fullSubpath).to.be.equal("/subpath");
+    });
+  });
+
   describe("#fullSubpath", () => {
     it("should return each parent subpath concadenated with the current subrouter subpath.", () => {
       const subrouter = new Router();

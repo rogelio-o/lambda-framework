@@ -16,15 +16,6 @@ import IRouter from "./IRouter";
 export default interface IApp {
 
   /**
-   * Initialize the framework with the configuration of `settings`. If
-   * no `settings`are given, the framework is initialized with the
-   * default configuration.
-   *
-   * @param {object} settings
-   */
-  init(settings?: object): void;
-
-  /**
    * Set to _true_ the configuration param `key`.
    *
    * @param {string} key

@@ -3,14 +3,15 @@
  */
 
 const configuration = {
-  DEFAULT_MYME_TYPE: "default_myme_type",
-  ENVIRONMENT: "environment",
-  TRUST_PROXY: "trus_proxy",
-  ETAG_FN: "etag_fn",
-  COOKIE_SECRET: "cookie_secret",
-  JSON_REPLACER: "json_replacer",
-  JSON_SPACES: "json_spaces",
-  JSON_ESCAPE: "json_escape"
+  DEFAULT_MYME_TYPE: "DEFAULT_MYME_TYPE",
+  ENVIRONMENT: "ENVIRONMENT",
+  TRUST_PROXY: "TRUST_PROXY",
+  ETAG_FN: "ETAG_FN",
+  COOKIE_SECRET: "COOKIE_SECRET",
+  JSON_REPLACER: "JSON_REPLACER",
+  JSON_SPACES: "JSON_SPACES",
+  JSON_ESCAPE: "JSON_ESCAPE",
+  PATH_CONTEXT: "PATH_CONTEXT"
 };
 
 export default configuration;

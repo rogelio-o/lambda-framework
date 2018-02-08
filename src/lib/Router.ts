@@ -60,6 +60,7 @@ export default class Router implements IRouter {
     this._eventStack = [];
     this._caseSensitive = options.caseSensitive || false;
     this._strict = options.strict || false;
+    this._subpath = options.subpath;
   }
 
   get subrouters(): IRouter[] {
