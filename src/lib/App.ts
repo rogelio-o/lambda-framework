@@ -146,9 +146,7 @@ export default class App implements IApp {
   }
 
   private getProjectBasePath(): string {
-    console.log(process.env.PWD);
     if (!process.env.PWD) {
-      console.log(process.cwd());
       return process.cwd();
     } else {
       return process.env.PWD;
