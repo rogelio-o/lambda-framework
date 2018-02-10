@@ -1,4 +1,5 @@
 import IHttpError from "./../exceptions/IHttpError";
+import IApp from "./../IApp";
 import INext from "./../INext";
 import IRouter from "./../IRouter";
 import ICookie from "./ICookie";
@@ -8,6 +9,8 @@ import IHttpHandler from "./IHttpHandler";
  * This class represents an HTTP response, with the helpers to be sent.
  */
 export default interface IHttpResponse {
+
+  readonly app: IApp;
 
   /**
    * The current router.

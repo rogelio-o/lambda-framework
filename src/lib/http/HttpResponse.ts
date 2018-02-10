@@ -43,6 +43,10 @@ export default class HttpResponse implements IHttpResponse {
     this._cookies = {};
   }
 
+  get app(): IApp {
+    return this._app;
+  }
+
   get statusCode(): number {
     return this._statusCode;
   }

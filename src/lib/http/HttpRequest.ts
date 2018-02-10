@@ -24,6 +24,7 @@ export default class HttpRequest implements IHttpRequest {
   public params: { [name: string]: string };
   public route: IHttpRoute;
 
+  private _app: IApp;
   private _event: IRawEvent;
   private _headers: { [name: string]: string };
   private _context: { [name: string]: any };
@@ -31,6 +32,7 @@ export default class HttpRequest implements IHttpRequest {
 
   constructor(app: IApp, event: IRawEvent) {
     this.body = event.body; // Default body
+    this._app = app;
     this._event = event;
     this._context = {};
     this.params = mergeParams(event);
@@ -43,6 +45,10 @@ export default class HttpRequest implements IHttpRequest {
     }
 
     this._cookies = getCookiesFromHeader(this._headers.cookie, app.get(configuration.COOKIE_SECRET));
+  }
+
+  get app(): IApp {
+    return this._app;
   }
 
   get headers(): { [name: string]: string } {

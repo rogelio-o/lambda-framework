@@ -24,6 +24,12 @@ describe("HttpRequest", () => {
     done();
   });
 
+  describe("#app", () => {
+    it("should return the app that receives the incoming request.", () => {
+      Chai.expect(request.app).to.be.equal(app);
+    });
+  });
+
   it("should have empty header if the headers of the event is undefined.", () => {
     delete event.headers;
 
