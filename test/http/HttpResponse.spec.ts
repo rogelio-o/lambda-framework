@@ -40,6 +40,12 @@ describe("HttpResponse", () => {
     done();
   });
 
+  describe("#app", () => {
+    it("should return the app owner of the response.", () => {
+      Chai.expect(response.app).to.be.equal(app);
+    });
+  });
+
   it("#status should set the outcoming response status code", () => {
     response.status(302);
     response.send("");

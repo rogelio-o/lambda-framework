@@ -1,3 +1,4 @@
+import IApp from "./../IApp";
 import INext from "./../INext";
 import ICookie from "./ICookie";
 import IHttpResponse from "./IHttpResponse";
@@ -8,6 +9,8 @@ import IHttpUploadedFile from "./IHttpUploadedFile";
  * A incoming request created when the event is APIGatewayEvent.
  */
 export default interface IHttpRequest {
+
+  readonly app: IApp;
 
   /**
    * Base path of the handling router.
