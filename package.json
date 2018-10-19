@@ -1,6 +1,6 @@
 {
   "name": "lambda-framework",
-  "version": "1.2.0",
+  "version": "1.2.3",
   "description": "Framework to create web apps with any provider. This is the core, you can use it with an official provider implementation or you can implement your own provider.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -33,7 +33,7 @@
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
     "mocha": "^5.2.0",
-    "mock-fs": "^4.5.0",
+    "mock-fs": "^4.7.0",
     "npm-auto-version": "^1.0.0",
     "nyc": "^11.9.0",
     "sinon": "^4.5.0",
