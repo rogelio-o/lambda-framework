@@ -181,6 +181,7 @@ describe("App", () => {
   describe("#handle", () => {
     it("should call the router httpHandle if the event type is HTTP.", () => {
       const httpHandleStub = stub(Router.prototype, "httpHandle");
+      defaultApp.addEndHandler(() => Promise.resolve());
       defaultApp.handle(httpEvent, new DefaultCallback());
       Chai.expect(httpHandleStub.calledOnce).to.be.true;
       httpHandleStub.restore();
@@ -188,6 +189,7 @@ describe("App", () => {
 
     it("should call the router eventHandle if the event type is NOT HTTP.", () => {
       const eventHandleStub = stub(Router.prototype, "eventHandle");
+      defaultApp.addEndHandler(() => Promise.resolve());
       defaultApp.handle(otherEvent, new DefaultCallback());
       Chai.expect(eventHandleStub.calledOnce).to.be.true;
       eventHandleStub.restore();

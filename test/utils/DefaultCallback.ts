@@ -42,6 +42,9 @@ export default class DefaultCallback implements IRawCallback {
 
   public finalize(): void {
     this._isFinalized = true;
+    if (this._callback) {
+      this._callback();
+    }
   }
 
 }

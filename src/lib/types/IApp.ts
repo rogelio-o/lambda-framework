@@ -4,6 +4,7 @@ import IHttpHandler from "./http/IHttpHandler";
 import IHttpPlaceholderHandler from "./http/IHttpPlaceholderHandler";
 import IHttpRoute from "./http/IHttpRoute";
 import ITemplateRenderer from "./http/renderEngine/ITemplateRenderer";
+import IEndHandler from "./IEndHandler";
 import IRawCallback from "./IRawCallback";
 import IRawEvent from "./IRawEvent";
 import IRouter from "./IRouter";
@@ -122,5 +123,7 @@ export default interface IApp {
    * @return {IRouter}
    */
   addTemplateEngine(renderer: ITemplateRenderer, engineConfiguration?: {[name: string]: any}): IApp;
+
+  addEndHandler(handler: IEndHandler): void;
 
 }

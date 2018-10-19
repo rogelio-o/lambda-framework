@@ -1,5 +1,6 @@
 /* tslint:disable:no-unused-expression */
 import * as Chai from "chai";
+import { SinonStub, stub } from "sinon";
 import eventFinalHandler from "./../../src/lib/event/eventFinalHandler";
 import EventRequest from "./../../src/lib/event/EventRequest";
 import DefaultCallback from "./../utils/DefaultCallback";
@@ -40,12 +41,34 @@ describe("eventFinalHandler", () => {
     handler();
   });
 
-  it("should calls the finalize method of raw callback if it exists.", () => {
+  it("should calls the finalize method of raw callback if it exists.", (done) => {
     const rawCallback: DefaultCallback = new DefaultCallback();
     const handler = eventFinalHandler(req, rawCallback, null);
-    handler();
 
-    Chai.expect(rawCallback.isFinalized).to.be.true;
+    rawCallback.setCallback(() => {
+      Chai.expect(rawCallback.isFinalized).to.be.true;
+      done();
+    });
+
+    handler();
+  });
+
+  it("should call the endHandlers.", (done) => {
+    const rawCallback: DefaultCallback = new DefaultCallback();
+    const endHandler: SinonStub = stub();
+    endHandler.returns(Promise.resolve());
+
+    rawCallback.setCallback(() => {
+      Chai.expect(endHandler.calledOnce).to.be.true;
+      done();
+    });
+
+    const handler = eventFinalHandler(req, rawCallback, {
+      endHandlers: [
+        endHandler
+      ]
+    });
+    handler();
   });
 
 });
