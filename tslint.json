@@ -1,6 +1,7 @@
 {
     "extends": "tslint:recommended",
     "rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
+    "exclude": "**/node_modules/**/*",
     "rules": {
 
         /**
