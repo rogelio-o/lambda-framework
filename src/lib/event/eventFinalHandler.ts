@@ -1,3 +1,4 @@
+import IEndHandler from "../types/IEndHandler";
 import IEventRequest from "./../types/event/IEventRequest";
 import INext from "./../types/INext";
 import IRawCallback from "./../types/IRawCallback";
@@ -17,13 +18,17 @@ export default function eventFinalHandler(req: IEventRequest, callback: IRawCall
   const onerror = opts.onerror;
 
   return (err?: Error) => {
+    const endHandlers: IEndHandler[] = opts.endHandlers || [];
+
     // schedule onerror callback
     if (onerror) {
       setImmediate(() => onerror(err, req));
     }
 
-    if (callback) {
-      callback.finalize(err);
-    }
+    Promise.all(endHandlers.map((f) => f())).then(() => {
+      if (callback) {
+        callback.finalize(err);
+      }
+    });
   };
 }

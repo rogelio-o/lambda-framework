@@ -14,7 +14,7 @@ describe("DevTemplateLoader", () => {
   beforeEach(() => {
     mock({
       "/base/path": {
-        "prueba.pug": new Buffer("Test content.", "utf8")
+        "prueba.pug": Buffer.from("Test content.", "utf8")
       }
     });
   });

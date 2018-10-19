@@ -18,6 +18,7 @@ import IHttpResponse from "./types/http/IHttpResponse";
 import IHttpRoute from "./types/http/IHttpRoute";
 import ITemplateRenderer from "./types/http/renderEngine/ITemplateRenderer";
 import IApp from "./types/IApp";
+import IEndHandler from "./types/IEndHandler";
 import IRawCallback from "./types/IRawCallback";
 import IRawEvent from "./types/IRawEvent";
 import IRouter from "./types/IRouter";
@@ -29,8 +30,11 @@ export default class App implements IApp {
 
   private _settings: object;
   private _router: IRouter;
+  private _endHandlers: IEndHandler[];
 
   constructor(settings?: object) {
+    this._endHandlers = [];
+
     this._settings = {};
     this.initEnvConfiguration();
     this.initParamsConfiguration(settings);
@@ -65,14 +69,16 @@ export default class App implements IApp {
       const res: IHttpResponse = new HttpResponse(this, req, callback);
       const done = httpFinalHandler(req, res, {
         env: this.get(configuration.ENVIRONMENT),
-        onerror: this.logError.bind(this, req)
+        onerror: this.logError.bind(this, req),
+        endHandlers: this._endHandlers
       });
       this._router.httpHandle(req, res, done);
     } else {
       const req: IEventRequest = new EventRequest(event);
       const done = eventFinalHandler(req, callback, {
         env: this.get(configuration.ENVIRONMENT),
-        onerror: this.logError.bind(this, req)
+        onerror: this.logError.bind(this, req),
+        endHandlers: this._endHandlers
       });
       this._router.eventHandle(req, done);
     }
@@ -110,6 +116,10 @@ export default class App implements IApp {
     this._router.addTemplateEngine(renderer, engineConfiguration);
 
     return this;
+  }
+
+  public addEndHandler(handler: IEndHandler): void {
+    this._endHandlers.push(handler);
   }
 
   private initEnvConfiguration(): void {

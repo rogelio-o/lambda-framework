@@ -1,5 +1,6 @@
 import * as escapeHtml from "escape-html";
 import * as  statuses from "statuses";
+import IEndHandler from "../types/IEndHandler";
 import HttpError from "./../exceptions/HttpError";
 import IHttpRequest from "./../types/http/IHttpRequest";
 import IHttpResponse from "./../types/http/IHttpResponse";
@@ -144,9 +145,12 @@ export default function httpFinalHandler(req: IHttpRequest, res: IHttpResponse, 
       setImmediate(() => onerror(err, req, res));
     }
 
-    if (!res.isSent) {
-      // send response
-      send(req, res, status, headers, msg);
-    }
+    const endHandlers: IEndHandler[] = opts.endHandlers || [];
+    Promise.all(endHandlers.map((f) => f())).then(() => {
+      if (!res.isSent) {
+        // send response
+        send(req, res, status, headers, msg);
+      }
+    });
   };
 }
